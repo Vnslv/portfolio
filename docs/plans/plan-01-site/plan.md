@@ -19,6 +19,7 @@
 ### Approval (2026-11-24)
 
 - Plan and routes approved (owner).
+- T01 built without the builder agent or the project hooks: accepted for T01 only. From T02, the builder agent in a guarded session (owner).
 
 ## Design Spec
 
@@ -28,7 +29,7 @@ Locked: [design brief](../../standards/design-brief.md), [board](../../design/bo
 
 Tickets run in order; several change the same files. One ticket per session and per PR.
 
-- [ ] T01 Remove Postgres (ADR 0001) -> tickets/01-remove-postgres.md
+- [x] T01 Remove Postgres (ADR 0001) -> tickets/01-remove-postgres.md
 - [ ] T02 Scaffold the app and checks (NFR-01) -> tickets/02-scaffold.md
 - [ ] T03 Typed content and its logic (CONT-01, WORK-01, WORK-02, WORK-04, WORK-05, WORK-06, AWARD-01) -> tickets/03-content.md
 - [ ] T04 Page shell, sections, navigation (SITE-01, SITE-02, SITE-03) -> tickets/04-shell.md

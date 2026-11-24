@@ -3,13 +3,6 @@
     "playwright": {
       "command": "npx",
       "args": ["-y", "@playwright/mcp@0.0.86"]
-    },
-    "postgres-readonly": {
-      "command": "uvx",
-      "args": ["postgres-mcp@0.3.0", "--access-mode=restricted"],
-      "env": {
-        "DATABASE_URI": "${DATABASE_URL_READONLY}"
-      }
     }
   }
 }
