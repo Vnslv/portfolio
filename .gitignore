@@ -8,5 +8,6 @@ coverage/
 playwright-report/
 test-results/
 .lighthouseci/
+*.tsbuildinfo
 .claude/settings.local.json
 .DS_Store
