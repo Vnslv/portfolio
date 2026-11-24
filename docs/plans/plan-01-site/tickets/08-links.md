@@ -33,6 +33,7 @@
 
 ## Acceptance Criteria
 
+- When `profile.photo` is supplied, the intro shows it with its description in the reserved space; until then the labeled placeholder stays (owner, 2026-11-25).
 - LINK-01 acceptance, LINK-02 acceptance 2-3. LINK-02 acceptance 1 is checked when the owner supplies the link.
 - A link the owner has not supplied is a labeled placeholder, never a dead or invented address.
 

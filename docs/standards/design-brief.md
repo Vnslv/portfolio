@@ -1,6 +1,6 @@
 # Design Brief
 
-**Status:** Locked 2026-11-24 by the owner: direction B, File explorer.
+**Status:** Locked 2026-11-24 by the owner: direction B, File explorer. Changed by the owner 2026-11-25: see [first-look.md](../design/first-look.md).
 
 This file holds *how* the product looks: tokens and visual rules. It never adds requirements; the PRD does.
 

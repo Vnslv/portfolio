@@ -1,6 +1,6 @@
 # First Look
 
-Flow and wireframes before styling. Requirements: `docs/PRD.md` 0.3.0. Text in `<angle brackets>` is a labeled placeholder.
+Flow and wireframes before styling. Requirements: `docs/PRD.md` 0.5.0. Text in `<angle brackets>` is a labeled placeholder.
 
 ## Decisions
 
@@ -29,6 +29,12 @@ Flow and wireframes before styling. Requirements: `docs/PRD.md` 0.3.0. Text in `
 - Theme toggle stays at the right of the taskbar (owner). PRD 0.3.0 adds THEME-01.
 - Heading font changed to Pixelify Sans so names keep their capitalization (owner).
 - No ADR for the look: it can be changed later through the tokens.
+
+### Change After Lock (2026-11-25)
+
+- Projects show no outcome; an opened card shows the stack where supplied (owner, PRD 0.5.0).
+- Taskvane is now Idiya (owner). The wireframes below are updated.
+- The intro strip reads "Frontend developer, project manager" (owner).
 
 ### For The Plan Gate
 
@@ -79,7 +85,7 @@ The page scrolls normally. Each section is one window on a desktop background. T
 |  +-[ Work ]----------------------------------------------------------------------------- _ [] x-+ |
 |  |  Show: (o) All  ( ) Software development  ( ) Project management                             | |
 |  |  +--------------------------------------+  +--------------------------------------+          | |
-|  |  | [+] Taskvane                         |  | [+] Alunsina                         |          | |
+|  |  | [+] Idiya                            |  | [+] Alunsina                         |          | |
 |  |  |     Development, project management  |  |     Project management               |          | |
 |  |  |     Solo project                     |  |     Team of <n>   [* <award badge>]  |          | |
 |  |  +--------------------------------------+  +--------------------------------------+          | |
@@ -108,11 +114,11 @@ Open project (pushes the cards below it down, full width of the window):
 
 ```text
 |  +--------------------------------------------------------------------------------------------+  |
-|  | [-] Taskvane                                                       [ Copy link ]            |  |
+|  | [-] Idiya                                                          [ Copy link ]            |  |
 |  |     Full-stack developer and project manager, solo project                                 |  |
 |  |     Problem:  <owner-checked text>                                                          |  |
 |  |     What I did: <owner-checked text>                                                        |  |
-|  |     Outcome:  <owner-checked text>                                                          |  |
+|  |     Stack:    <where supplied>                                                              |  |
 |  |     <image>   <image>       [ Link: <label> ]                                               |  |
 |  +--------------------------------------------------------------------------------------------+  |
 ```
@@ -140,7 +146,7 @@ Windows become full-width panels. The taskbar keeps one Menu button and the curr
 | [ Work ]-------------------- _ [] x  |
 |  Show: [ All                  v ]    |
 |  +--------------------------------+  |
-|  | [+] Taskvane                   |  |
+|  | [+] Idiya                      |  |
 |  |  Development, project mgmt     |  |
 |  |  Solo project                  |  |
 |  +--------------------------------+  |
@@ -174,7 +180,7 @@ The page is built ahead of time, so sections have no loading state of their own;
 | Intro | Title bar, name, one-line intro, two buttons | Space kept for the portrait | Labeled placeholder until launch | Missing image shows the icon |
 | Awards | Award rows, images | Space kept per image | Section hidden (AWARD-01) | Failed image shows its text description |
 | Work | Role filter, cards, badge, Copy link | Space kept per image | Not expected; both roles have a project | Unknown #link shows the page normally (WORK-04) |
-| Project | Problem, what I did, outcome, links, images | As above | "Coming soon" (WORK-06) | Failed image shows its text description |
+| Project | Problem, what I did, stack where supplied, links, images | As above | "Coming soon" (WORK-06) | Failed image shows its text description |
 | About | Text | None | Labeled placeholder until launch | None |
 | Links | GitHub, LinkedIn, CV | None | Labeled placeholder until launch | A broken Drive link is Google's page, outside the site |
 | Footer | Copyright line, privacy note | None | None | None |

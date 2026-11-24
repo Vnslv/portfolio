@@ -30,6 +30,11 @@
 
 - The not-found page's taskbar marks nothing current, unlike the board's "Welcome": accepted (owner).
 
+### Project content (2026-11-25)
+
+- Follow the owner's project file; no outcome; optional stack; private links left out; the five projects stay; Taskvane is Idiya (owner, PRD 0.5.0).
+- T10 added and runs before T05. T08 also shows the owner's photo once supplied (owner).
+
 ## Design Spec
 
 Locked: [design brief](../../standards/design-brief.md), [board](../../design/board-b.html), [flow, wireframes, states](../../design/first-look.md).
@@ -42,6 +47,7 @@ Tickets run in order; several change the same files. One ticket per session and 
 - [x] T02 Scaffold the app and checks (NFR-01) -> tickets/02-scaffold.md
 - [x] T03 Typed content and its logic (CONT-01, WORK-01, WORK-02, WORK-04, WORK-05, WORK-06, AWARD-01) -> tickets/03-content.md
 - [x] T04 Page shell, sections, navigation (SITE-01, SITE-02, SITE-03) -> tickets/04-shell.md
+- [ ] T10 Project content and Idiya rename, before T05 (CONT-01, WORK-01, WORK-03, WORK-05) -> tickets/10-project-content.md
 - [ ] T05 Light and dark themes with a toggle (THEME-01) -> tickets/05-theme.md
 - [ ] T06 Work list, filter, details, links (WORK-01 to WORK-06) -> tickets/06-work.md
 - [ ] T07 Awards section and badges (AWARD-01, AWARD-02, AWARD-03) -> tickets/07-awards.md

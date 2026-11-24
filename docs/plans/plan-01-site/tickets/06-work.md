@@ -35,6 +35,8 @@
 ## Acceptance Criteria
 
 - WORK-01 to WORK-06 acceptance.
+- An opened project shows Problem, What I did (a line and its points), Stack where supplied, and links. There is no outcome.
+- All five projects are now ready. "Coming soon" stays supported; test it with a fixture that never reaches a production build.
 - Matches `board-b.html`: rows from 900 px, cards below; radios from 640 px, a select below.
 - Project text is readable without JavaScript. Copy link reports success, and failure with the address shown.
 
@@ -42,7 +44,7 @@
 
 1. Happy: filter, return to all, open, close by keyboard.
 2. Shared link opens its project even when a filter hides it.
-3. Empty: a project that is not ready shows "Coming soon" and cannot be opened.
+3. Empty (fixture): a project that is not ready shows "Coming soon" and cannot be opened.
 4. Error: an unknown link shows the page normally; a failed image shows its description.
 
 ## Done When
