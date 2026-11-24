@@ -1,0 +1,171 @@
+<title>Vnslv Portfolio Direction B</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&family=IBM+Plex+Sans:wght@400;700&family=Pixelify+Sans:wght@500;700&display=swap">
+<style>
+/* Layout: a quiet review bench (controls, one scaled device frame, tokens) around a 90s desktop portfolio in three directions. */
+:root { --bg:#eceff1; --fg:#171b1e; --dim:#4a545b; --line:#b4bec4; --panel:#fff; --act:#12307a; --act-fg:#fff; --ui:"Arimo",Arial,sans-serif; --disp:"Pixelify Sans","Arimo",sans-serif }
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ --bg:#14181b; --fg:#eef2f4; --dim:#b3bec5; --line:#445059; --panel:#1f2529; --act:#9cc3ff; --act-fg:#0b1526; color-scheme:dark } }
+:root[data-theme="dark"]{ --bg:#14181b; --fg:#eef2f4; --dim:#b3bec5; --line:#445059; --panel:#1f2529; --act:#9cc3ff; --act-fg:#0b1526; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.5 var(--ui)}
+.bench{max-width:1360px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:16px}
+.bench>*{min-width:0}
+.bench>h1{font:700 30px/1.1 var(--disp);margin:0}#tokens>h2{font:700 20px/1.2 var(--disp);margin:0}
+.bench>p,#tokens>p{margin:0;color:var(--dim);max-width:68ch}
+.bar{display:flex;flex-wrap:wrap;gap:8px 20px}
+.grp{display:flex;flex-wrap:wrap;gap:6px;align-items:center;border:0;padding:0;margin:0}
+.grp>span{font-weight:700;font-size:14px;margin-right:2px}
+.bb{font:inherit;font-size:15px;min-height:40px;padding:6px 12px;background:var(--panel);color:var(--fg);border:1px solid var(--line);cursor:pointer}
+.bb[aria-pressed="true"]{background:var(--act);color:var(--act-fg);border-color:var(--act)}
+.bb:focus-visible{outline:3px solid var(--act);outline-offset:2px}
+.stage{overflow:hidden;position:relative}
+.frame{position:absolute;left:0;top:0;transform-origin:0 0;border:2px solid var(--line);container-type:inline-size;overflow:hidden}
+.flow{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.fb{font:inherit;text-align:left;background:var(--panel);color:var(--fg);border:1px solid var(--line);padding:12px;cursor:pointer;display:grid;gap:4px;align-content:start}
+.fb b{font:700 18px/1.2 var(--disp)}.fb small{color:var(--dim);font-size:14px}.fb:focus-visible{outline:3px solid var(--act);outline-offset:2px}
+.tok{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
+.tk{display:flex;gap:8px;align-items:center;font-size:14px}.tk i{width:28px;height:28px;border:1px solid var(--line);flex:none}
+/* ---------- portfolio mock: every color comes from direction tokens set on .frame ---------- */
+.scr{height:100%;overflow:auto;background-color:var(--desk);color:var(--text);font:16px/1.5 var(--body);position:relative;scroll-behavior:auto}
+
+.scr[data-d="B"]{background-image:linear-gradient(45deg,var(--desk2) 25%,transparent 25% 75%,var(--desk2) 75%);background-size:8px 8px}
+
+:where(.scr) :where(h2,h3,p,ul,dl,dd){margin:0;padding:0}
+.scr a{color:var(--link)}
+.scr :focus-visible{outline:2px dashed var(--text);outline-offset:2px}
+.scr .tb :focus-visible,.scr .bt:focus-visible{outline-offset:-5px}
+.pg{min-height:calc(100% - 52px);padding:16px;display:grid;gap:16px;max-width:1120px;margin:0 auto;align-content:start}
+.pg>*{min-width:0}
+.win{background:var(--face);color:var(--text);border:2px solid;border-color:var(--hi) var(--edge) var(--edge) var(--hi);box-shadow:inset -1px -1px 0 var(--lo),inset 1px 1px 0 var(--face)}
+.tt{display:flex;gap:8px;align-items:center;margin:3px 3px 0;padding:5px 8px;min-height:34px;background:linear-gradient(90deg,var(--title),var(--title2));color:var(--titleText);font:700 18px/1.2 var(--display)}
+.tt svg{flex:none}
+.bd{padding:16px;display:grid;gap:14px}.bd>*{min-width:0}
+.st{margin:0 3px 3px;padding:4px 8px;border:1px solid;border-color:var(--lo) var(--hi) var(--hi) var(--lo);font-size:14px;color:var(--muted)}
+.nm{font:700 clamp(30px,7cqi,52px)/1.05 var(--display);text-wrap:balance}
+.lead{font-size:18px;max-width:46ch}
+.row{display:flex;flex-wrap:wrap;gap:10px}
+.bt{font:inherit;min-height:44px;padding:8px 16px;background:var(--face);color:var(--text);border:2px solid;border-color:var(--hi) var(--edge) var(--edge) var(--hi);box-shadow:inset -1px -1px 0 var(--lo);cursor:pointer;display:inline-flex;gap:8px;align-items:center;text-decoration:none}
+.scr a.bt{color:var(--text)}
+.bt:active,.bt[aria-expanded="true"].mn,.bt[aria-current="true"]{border-color:var(--edge) var(--hi) var(--hi) var(--edge);box-shadow:inset 1px 1px 0 var(--lo)}
+.bt[aria-current="true"]{font-weight:700}
+.ph{display:grid;place-items:center;text-align:center;background:var(--field);color:var(--muted);border:2px solid;border-color:var(--lo) var(--hi) var(--hi) var(--lo);font-size:14px;padding:8px;min-height:120px}
+.scr[data-s="loading"] .ph.im{background:repeating-linear-gradient(90deg,var(--lo) 0 14px,var(--field) 14px 18px)}
+.in{display:grid;gap:16px}
+.aw{display:grid;gap:12px;padding-bottom:14px;border-bottom:2px groove var(--lo)}.aw:last-child{border:0;padding:0}
+.aw h3,.pj h3{font:700 19px/1.25 var(--display)}
+.fl{display:none;flex-wrap:wrap;gap:6px 18px;border:0;padding:0;margin:0}.fl label{display:inline-flex;gap:8px;align-items:center;min-height:32px;cursor:pointer}
+.fl input{width:18px;height:18px;accent-color:var(--title)}
+.fs{display:grid;gap:4px}.fs select{font:inherit;min-height:44px;padding:6px;background:var(--field);color:var(--text);border:2px solid;border-color:var(--lo) var(--hi) var(--hi) var(--lo)}
+.pl{display:grid;gap:10px;list-style:none}
+.pj{background:var(--field);border:2px solid;border-color:var(--lo) var(--hi) var(--hi) var(--lo);min-width:0}
+.ph2{width:100%;font:inherit;text-align:left;background:none;border:0;color:inherit;padding:12px;min-height:44px;display:grid;grid-template-columns:auto 1fr;gap:2px 12px;align-items:start}
+button.ph2{cursor:pointer}.ph2 .ic{grid-row:span 4}.ph2 .mt{color:var(--muted);font-size:15px}
+.tag{justify-self:start;display:inline-block;margin-top:4px;padding:1px 8px;font-size:14px;border:1px solid var(--lo);background:var(--face);color:var(--text)}
+.bg{display:inline-flex;gap:6px;align-items:center;margin:0 12px 12px;padding:4px 8px;min-height:32px;background:var(--badge);font-size:14px;font-weight:700}
+.scr a.bg{color:var(--badgeText)}
+.dt{padding:12px;border-top:2px groove var(--lo);display:grid;gap:12px}.dt dt{font-weight:700}.dt dd{max-width:65ch}.dt dl{display:grid;gap:10px}
+.two{display:grid;gap:16px}
+.ft{padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px 24px;align-items:center}
+.ft button{font:inherit;background:none;border:0;color:var(--link);text-decoration:underline;cursor:pointer;min-height:32px;padding:0}
+.tb{position:sticky;bottom:0;background:var(--face);border-top:2px solid var(--hi);padding:4px;display:flex;gap:4px;align-items:center;min-height:52px;z-index:3}
+.tb .bt{padding:4px 12px}.tb .th{margin-left:auto}.tb .sec{display:none}.tb .now{padding:0 10px;color:var(--text)}
+.mp{position:absolute;left:4px;bottom:54px;width:220px;display:grid;padding:4px}.mp .bt{border-color:transparent;box-shadow:none;justify-content:flex-start}
+.tree{display:none}
+/* Direction B: one explorer window with a folder tree; projects are rows */
+.scr[data-d="B"] .pl{gap:0}.scr[data-d="B"] .pj{border-width:0 0 1px;border-color:var(--lo);border-style:solid}
+.scr[data-d="B"] .pw{background:var(--field);border:2px solid;border-color:var(--lo) var(--hi) var(--hi) var(--lo)}
+
+
+
+
+
+
+
+@container (min-width:640px){
+ .fl{display:flex}.fs{display:none}
+ .in{grid-template-columns:180px 1fr;align-items:center}.in .ph{min-height:200px}
+ .aw{grid-template-columns:260px 1fr;align-items:center}.aw .ph{min-height:160px}
+ .tb .sec{display:inline-flex}.tb .now{display:none}
+ 
+ 
+}
+@container (min-width:900px){
+ .pg{padding:28px;gap:28px}
+ 
+ .two{grid-template-columns:1.4fr 1fr}
+ .scr[data-d="B"] .pg{grid-template-columns:220px minmax(0,1fr);gap:20px;max-width:1200px}
+ .scr[data-d="B"] .pg>*{grid-column:2}
+ .scr[data-d="B"] .tree{display:block;grid-column:1;grid-row:1/span 8;align-self:start;position:sticky;top:28px}
+ .tree .bd{gap:2px;padding:8px}.tree .bt{border-color:transparent;box-shadow:none;justify-content:flex-start;background:none;width:100%}
+ .tree .bt[aria-current="true"]{background:var(--title);color:var(--titleText)}
+ .scr[data-d="B"] .tb .sec,.scr[data-d="B"] .tb .mn,.scr[data-d="B"] .mp{display:none}.scr[data-d="B"] .tb .now{display:block}
+ .scr[data-d="B"] .ph2{grid-template-columns:40px 1.2fr 1.4fr 1fr;align-items:center}.scr[data-d="B"] .ph2 .ic{grid-row:auto}
+ 
+ 
+}
+</style>
+<div class="bench">
+ <h1>Portfolio look board</h1>
+ <p>The locked design, direction B. Text in &lt;angle brackets&gt; is a placeholder for you to supply. Click through the frame: filter, open a project, use the taskbar.</p>
+ <div class="bar" id="ctl"></div>
+ <p id="note" aria-live="polite"></p>
+ <div id="flow" class="flow" hidden></div>
+ <div class="stage" id="stage"><div class="frame" id="frame"></div></div>
+ <section id="tokens" style="display:grid;gap:12px"></section>
+</div>
+<script>
+const TOK={
+B:{name:"File explorer",note:"A folder tree beside the sections on desktop, with projects as a detailed list. The most orderly, with the calmest work section.",display:'"Pixelify Sans","IBM Plex Sans",sans-serif',body:'"IBM Plex Sans",Arial,sans-serif',rest:"Type 14 to 19, 30 to 52. Radius 0. Two-step bevel, sunken lists. Spacing 16 phone, 20 to 28 desktop.",
+ light:{desk:"#5a4a78",desk2:"#514170",face:"#d8d4e0",field:"#fbfaff",text:"#1d1826",muted:"#4a4358",hi:"#ffffff",lo:"#8a8299",edge:"#2a2338",title:"#4b2a7b",title2:"#7a2f74",titleText:"#ffffff",link:"#4b2a7b",badge:"#b7f0d0",badgeText:"#08351f"},
+ dark:{desk:"#1d1630",desk2:"#251c3c",face:"#322b42",field:"#221c30",text:"#f3effa",muted:"#c5bcd6",hi:"#5f5578",lo:"#7d7199",edge:"#0a0712",title:"#5a3596",title2:"#86387f",titleText:"#ffffff",link:"#cdb4ff",badge:"#7fe0b0",badgeText:"#08351f"}}};
+const BITS={home:"0001100000111100011111101111111101111110011001100110011001100110",
+ trophy:"1111111110111101101111010111111000111100000110000001100000111100",folder:"0000000011100000111111111000000110000001100000011000000111111111",
+ person:"0011110000111100001111000001100001111110111111111111111111111111",link:"0000111100000011000001010000100111010000100000001000010011111100",doc:"0111110001000110010000100111101001000010011110100100001001111110"};
+const ico=(n,s=20)=>{let r="";const b=BITS[n];for(let i=0;i<64;i++)if(b[i]==="1")r+=`<rect x="${i%8}" y="${i>>3}" width="1.02" height="1.02"/>`;return `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 8 8" shape-rendering="crispEdges" fill="currentColor" aria-hidden="true">${r}</svg>`};
+const PRJ=[
+ {id:"taskvane",n:"Taskvane",r:["dev","pm"],role:"Full-stack developer and project manager",team:"Solo project",d:["<problem, from owner>","Draft from the project README, owner to check: a free task platform with team boards, a timeline, enforced task dependencies, sprints and an optional AI assistant.","<outcome, from owner>"]},
+ {id:"alunsina",n:"Alunsina",r:["pm"],role:"Project management",team:"Team of <n>",badge:1,d:["<problem, from owner>","<what I did, from owner>","<outcome, from owner>"]},
+ {id:"umak-kalinga",n:"UMak Kalinga",r:["pm"],role:"Project management",team:"Team of <n>",d:["<problem, from owner>","Draft from the project README, owner to check: a donation and campaign management system for the University of Makati. My part: <from owner>","<outcome, from owner>"]},
+ {id:"heronpay",n:"HeronPay",r:["pm"],role:"Project management",soon:1},{id:"ehanda",n:"eHanda",r:["pm"],role:"Project management",soon:1}];
+const SEC=[["welcome","Welcome","home"],["awards","Awards","trophy"],["work","Work","folder"],["about","About","person"],["links","Links","link"]];
+const e=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+let S={view:"B",theme:"light",w:1280,state:"normal",filter:"all",open:null,menu:false,priv:false,cur:"welcome",msg:""};
+const $=id=>document.getElementById(id);
+const img=(label)=>S.state==="loading"?`<div class="ph im" role="img" aria-label="Image loading"></div>`:S.state==="imgerror"?`<div class="ph">Image unavailable. ${label}</div>`:`<div class="ph im">${label}</div>`;
+const win=(id,t,ic,body,st)=>`<section class="win" id="s-${id}" tabindex="-1" aria-labelledby="h-${id}"><h2 class="tt" id="h-${id}">${ico(ic)}${t}</h2><div class="bd">${body}</div>${st?`<p class="st">${st}</p>`:""}</section>`;
+function page(){
+ if(S.state==="notfound")return `<div class="pg">${win("welcome","Page not found","doc",`<p class="lead">This address does not match anything here.</p><div class="row"><button class="bt" data-a="home">Go to the home page</button></div>`)}</div>`;
+ const list=PRJ.filter(p=>S.filter==="all"||p.r.includes(S.filter)||p.id===S.open);
+ const proj=list.map(p=>{const op=S.open===p.id;const head=`${ico("folder",32)}<h3>${p.n}</h3><span class="mt">${p.role}</span>${p.soon?`<span class="tag">Coming soon</span>`:`<span class="mt">${e(p.team)}</span>`}`;
+  return `<li class="pj${op?" op":""}" id="p-${p.id}">${p.soon?`<div class="ph2">${head}</div>`:`<button class="ph2" id="b-${p.id}" aria-expanded="${op}" data-a="open" data-v="${p.id}">${head}</button>`}${p.badge?`<a class="bg" href="#" data-a="go" data-v="awards">${ico("trophy",16)}${e("<Placement>, <Hackathon>")}</a>`:""}${op?`<div class="dt"><dl><div><dt>Problem</dt><dd>${e(p.d[0])}</dd></div><div><dt>What I did</dt><dd>${e(p.d[1])}</dd></div><div><dt>Outcome</dt><dd>${e(p.d[2])}</dd></div></dl>${img("&lt;project image&gt;")}<div class="row"><button class="bt" data-a="copy" data-v="${p.id}">Copy link</button><button class="bt" data-a="open" data-v="${p.id}">Close</button></div></div>`:""}</li>`}).join("");
+ const opts=[["all","All"],["dev","Software development"],["pm","Project management"]];
+ const awards=S.state==="noawards"?"":win("awards","Awards","trophy",`<div class="als bd" style="padding:0">${[1,2].map(()=>`<div class="aw">${img("&lt;award image&gt;")}<div><h3>${e("<Placement>, <Hackathon>")}</h3><p>${e("<Organizer>, <date>")}</p><p>${e("Project: <project>. My role: <role>. Team of <n>.")}</p></div></div>`).join("")}</div>`,e("<n> awards"));
+ const tree=S.view==="B"?`<nav class="win tree" aria-label="Sections"><p class="tt">${ico("folder")}Contents</p><div class="bd">${SEC.filter(s=>s[0]!=="awards"||S.state!=="noawards").map(s=>`<button class="bt" data-a="go" data-v="${s[0]}" aria-current="${S.cur===s[0]}">${ico(s[2])}${s[1]}</button>`).join("")}</div></nav>`:"";
+ return `<div class="pg">${tree}${win("welcome","Welcome","home",`<div class="in"><div class="ph im">&lt;your photo&gt;</div><div class="bd" style="padding:0"><p class="nm">Vonn Salve</p><p class="lead">${e("<One-line intro: software development and project management>")}</p><div class="row"><button class="bt" data-a="go" data-v="work">See my work</button><button class="bt" data-a="ph" data-v="CV link">${ico("doc")}Download CV</button></div></div></div>`,"Software developer, project manager")}${awards}${win("work","Work","folder",`<fieldset class="fl"><legend style="float:left;margin-right:14px;font-weight:700;line-height:32px;padding:0">Show</legend>${opts.map(o=>`<label><input type="radio" name="role" id="r-${o[0]}" data-f="${o[0]}" ${S.filter===o[0]?"checked":""}>${o[1]}</label>`).join("")}</fieldset><div class="fs"><label for="rs"><b>Show</b></label><select id="rs">${opts.map(o=>`<option value="${o[0]}" ${S.filter===o[0]?"selected":""}>${o[1]}</option>`).join("")}</select></div><div class="pw"><ul class="pl">${proj}</ul></div>`,`${list.length} of ${PRJ.length} projects`)}<div class="two">${win("about","About","person",`<p>${e("<About text from the owner>")}</p>`)}${win("links","Links","link",`<div class="row"><a class="bt" href="https://github.com/Vnslv" target="_blank" rel="noopener">${ico("link")}GitHub</a><button class="bt" data-a="ph" data-v="LinkedIn link">${ico("link")}LinkedIn</button><button class="bt" data-a="ph" data-v="CV link">${ico("doc")}Download CV</button></div>`)}</div><footer class="win"><div class="ft"><span>© 2026 Vonn Salve</span><button data-a="priv" aria-expanded="${S.priv}">Privacy note</button></div>${S.priv?`<div class="bd"><p>Draft: this site counts visits with Vercel Web Analytics, without cookies, and reports errors to Sentry. Final wording must match what the live site sends.</p></div>`:""}</footer></div>`;
+}
+function bar(){const secs=SEC.filter(s=>s[0]!=="awards"||S.state!=="noawards");return `<nav class="tb" aria-label="Taskbar"><button class="bt mn" data-a="menu" aria-expanded="${S.menu}">${ico("home")}Menu</button>${secs.map(s=>`<button class="bt sec" data-a="go" data-v="${s[0]}" aria-current="${S.cur===s[0]}">${s[1]}</button>`).join("")}<span class="now">${secs.find(s=>s[0]===S.cur)?.[1]??"Welcome"}</span><button class="bt th" id="th" data-a="theme">${S.theme==="light"?"Dark theme":"Light theme"}</button>${S.menu?`<div class="win mp">${secs.map(s=>`<button class="bt" data-a="go" data-v="${s[0]}">${ico(s[2])}${s[1]}</button>`).join("")}</div>`:""}</nav>`}
+function ctl(){const g=(l,k,o)=>`<div class="grp" role="group" aria-label="${l}"><span>${l}</span>${o.map(([v,t])=>`<button class="bb" data-k="${k}" data-v="${v}" aria-pressed="${String(S[k])===String(v)}">${t}</button>`).join("")}</div>`;
+ $("ctl").innerHTML=g("View","view",[["flow","Flow"],["B","B: File explorer (locked)"]])+(S.view==="flow"?"":g("Theme","theme",[["light","Light"],["dark","Dark"]])+g("Width","w",[[390,"Phone 390"],[768,"Tablet 768"],[1280,"Desktop 1280"]])+g("State","state",[["normal","Normal"],["loading","Images loading"],["imgerror","Image error"],["noawards","No awards"],["notfound","Not found"]]))}
+function size(){if(S.view==="flow")return;const h={390:760,768:900,1280:800}[S.w],a=$("stage").clientWidth,k=Math.min(1,a/S.w);const f=$("frame");f.style.width=S.w+"px";f.style.height=h+"px";f.style.transform=`translateX(${Math.max(0,(a-S.w*k)/2)}px) scale(${k})`;$("stage").style.height=h*k+"px"}
+function draw(keep=true){
+ ctl();const fl=S.view==="flow";$("flow").hidden=!fl;$("stage").hidden=fl;$("tokens").hidden=fl;$("note").textContent=S.msg||(fl?"Each box opens that part of direction B.":TOK[S.view].note);
+ if(fl){const F=[["welcome","Intro","Entry. A visitor learns who you are, then scrolls or uses the taskbar."],["awards","Awards","Hackathon wins with images."],["work","Work","Filter by role, then open a project."],["open:taskvane","Project details","Entry for shared project links. Problem, what I did, outcome. Close returns to Work."],["about","About","Your story."],["links","Links","Goal: GitHub, LinkedIn or the CV."],["priv","Privacy note","Opens from the footer."],["nf","Not found","Wrong address, with a way home."]];
+  $("flow").innerHTML=F.map((x,i)=>`<button class="fb" data-flow="${x[0]}"><b>${x[1]}</b><small>${x[2]}</small></button>`).join("");return}
+ const d=TOK[S.view],t=d[S.theme],f=$("frame"),old=f.querySelector(".scr"),top=keep&&old?old.scrollTop:0,fid=document.activeElement&&f.contains(document.activeElement)?document.activeElement.id:"";
+ for(const k in t)f.style.setProperty("--"+k,t[k]);f.style.setProperty("--display",d.display);f.style.setProperty("--body",d.body);f.style.colorScheme=S.theme;
+ f.innerHTML=`<div class="scr" data-d="${S.view}" data-s="${S.state}" tabindex="0" role="region" aria-label="Portfolio preview">${page()}${bar()}</div>`;size();f.querySelector(".scr").scrollTop=top;if(fid&&$(fid))$(fid).focus({preventScroll:true});
+ $("tokens").innerHTML=`<h2>Tokens: ${d.name}</h2><p>${d.rest} Display font ${e(d.display.split(",")[0])}, text font ${e(d.body.split(",")[0])}.</p>`+["light","dark"].map(m=>`<b>${m==="light"?"Light":"Dark"}</b><div class="tok">${Object.entries(d[m]).map(([k,v])=>`<span class="tk"><i style="background:${v}"></i>${k} ${v}</span>`).join("")}</div>`).join("");
+}
+function go(id){S.cur=id.startsWith("p-")?"work":id;S.menu=false;draw();const scr=$("frame").querySelector(".scr"),el=$(id.startsWith("p-")?id:"s-"+id);if(!el)return;let y=0,n=el;while(n&&n!==scr){y+=n.offsetTop;n=n.offsetParent}scr.scrollTop=Math.max(0,y-12);if(!id.startsWith("p-"))el.focus({preventScroll:true})}
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-k],[data-a],[data-flow]");if(!b)return;S.msg="";
+ if(b.dataset.k){const k=b.dataset.k;S[k]=k==="w"?+b.dataset.v:b.dataset.v;if(k==="view")S.open=null;draw(false);return}
+ if(b.dataset.flow){const v=b.dataset.flow;S.view="B";S.state=v==="nf"?"notfound":"normal";if(v==="nf"){draw(false);return}if(v==="priv"){S.priv=true;draw(false);const s=$("frame").querySelector(".scr");s.scrollTop=s.scrollHeight;return}if(v.startsWith("open:")){S.open=v.slice(5);S.filter="all";draw(false);go("p-"+S.open);return}draw(false);go(v);return}
+ ev.preventDefault();const a=b.dataset.a,v=b.dataset.v;
+ if(a==="go")go(v);else if(a==="open"){S.open=S.open===v?null:v;draw();const x=$("b-"+v);if(x)x.focus({preventScroll:true})}
+ else if(a==="theme"){S.theme=S.theme==="light"?"dark":"light";draw()}else if(a==="menu"){S.menu=!S.menu;draw()}else if(a==="priv"){S.priv=!S.priv;draw();const s=$("frame").querySelector(".scr");s.scrollTop=s.scrollHeight}
+ else if(a==="copy"){S.msg="On the live site this copies the address ending in #"+v+".";draw()}else if(a==="ph"){S.msg=v+" is a placeholder until you supply it.";draw()}else if(a==="home"){S.state="normal";draw(false)}});
+document.addEventListener("change",ev=>{const t=ev.target;if(t.dataset.f||t.id==="rs"){S.filter=t.dataset.f||t.value;S.open=null;draw()}});
+document.addEventListener("keydown",ev=>{if(ev.key==="Escape"&&S.menu){S.menu=false;draw()}});
+$("frame").addEventListener("scroll",()=>{const s=$("frame").querySelector(".scr");if(!s)return;let c="welcome";const top=s.getBoundingClientRect().top,k=s.getBoundingClientRect().height/s.offsetHeight||1;for(const x of SEC){const el=$("s-"+x[0]);if(el&&(el.getBoundingClientRect().top-top)/k<s.clientHeight*.4)c=x[0]}if(s.scrollTop+s.clientHeight>=s.scrollHeight-4&&S.cur==="links")c="links";if(c!==S.cur){S.cur=c;s.querySelectorAll("[aria-current]").forEach(b=>b.setAttribute("aria-current",String(b.dataset.v===c)));const n=s.querySelector(".now");if(n)n.textContent=SEC.find(x=>x[0]===c)[1]}},true);
+addEventListener("resize",size);draw();
+</script>
