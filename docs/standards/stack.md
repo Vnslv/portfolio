@@ -62,7 +62,7 @@ Add `import 'server-only'` at the top of every module in `src/server/`.
 These cannot be committed. Set them when the repository is created.
 
 1. Settings, Rules, Rulesets, New branch ruleset for `main`:
-   - Require a pull request with 1 approval and review from Code Owners.
+   - Require a pull request, 0 approvals (owner decision, 2026-11-24: GitHub does not let a solo owner approve their own PR).
    - Require status checks: `ci-pass`.
    - Block force pushes. Require linear history. Restrict deletions.
 2. Settings, Code security: turn on secret scanning and push protection (free on public repos).
@@ -73,7 +73,7 @@ Equivalent command (run by the owner):
 gh api repos/Vnslv/portfolio/rulesets --method POST --input .github/ruleset-main.json
 ```
 
-Write `.github/ruleset-main.json` from the settings above when you first run it, or set them in the UI.
+The settings live in `.github/ruleset-main.json`.
 
 ## Swapping The Stack
 
