@@ -35,6 +35,11 @@
 - Follow the owner's project file; no outcome; optional stack; private links left out; the five projects stay; Taskvane is Idiya (owner, PRD 0.5.0).
 - T10 added and runs before T05. T08 also shows the owner's photo once supplied (owner).
 
+### Images and links (2026-11-25)
+
+- Five edited images in `public/images/`: the owner approved each, confirmed everyone pictured agreed, and chose copies in the repo over Drive embeds. Badges, an ID card, a phone, papers, bystanders, and a license plate were cropped out or blurred; no camera data.
+- CV through the owner's Drive link (LINK-02). Award dates from the owner; the July 2026 eGovPH date is the awarding, not the September prize release.
+
 ## Design Spec
 
 Locked: [design brief](../../standards/design-brief.md), [board](../../design/board-b.html), [flow, wireframes, states](../../design/first-look.md).

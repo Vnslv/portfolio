@@ -19,9 +19,8 @@
 Everything the owner will supply later. Each item names the file or setting that takes it.
 
 - [x] Name as shown, one-line intro, about text, LinkedIn URL: supplied, T03
-- [ ] Photo: `src/content/profile.ts`
-- [ ] Drive CV link (LINK-02 acceptance 1): `src/content/profile.ts`
+- [x] Photo and Drive CV link: supplied, shown in T08
 - [x] Each project's team size, problem, what I did, stack, links: supplied, T10
-- [ ] Project images: `src/content/projects.ts`
+- [x] Project images: two logos supplied, shown in T06
 - [x] Each award's hackathon, organizer, placement, project, role, team size: supplied, T03
-- [ ] Each award's date and image, with consent and hidden details checked (AWARD-03 acceptance 2-3): `src/content/awards.ts`
+- [x] Award dates, and images with consent and hidden details checked (AWARD-03 acceptance 2-3): supplied, shown in T07; eGovPH has no image

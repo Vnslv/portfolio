@@ -73,7 +73,7 @@ The page scrolls normally. Each section is one window on a desktop background. T
 |  |  | <portrait |   <One-line intro: software development and project management>               | |
 |  |  |  or icon> |   [ See my work ]   [ Download CV ]                                           | |
 |  |  +-----------+                                                                               | |
-|  +-[ Software developer | Project manager ]-----------------------------------------------------+ |
+|  +-[ Frontend developer, project manager ]------------------------------------------------------+ |
 |                                                                                                  |
 |  +-[ Awards ]--------------------------------------------------------------------------- _ [] x-+ |
 |  |  +--------------------+  <Placement>, <Hackathon>                                            | |

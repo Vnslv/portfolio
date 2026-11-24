@@ -23,7 +23,8 @@
 
 - `src/app/page.tsx`
 - `src/components/Work.tsx`, `src/components/ProjectCard.tsx`, `src/components/RoleFilter.tsx`, and one `.module.css` for each
-- `src/lib/projects.ts`, `src/lib/projects.test.ts` (only for gaps the tests show)
+- `src/lib/projects.ts`, `src/lib/projects.test.ts` (only for gaps the tests show, and the project images)
+- `src/content/projects.ts` (project images only)
 - `e2e/flows/work-projects.spec.ts`
 
 ## Rules
@@ -37,6 +38,7 @@
 - WORK-01 to WORK-06 acceptance.
 - An opened project shows Problem, What I did (a line and its points), Stack where supplied, and links. There is no outcome.
 - All five projects are now ready. "Coming soon" stays supported; test it with a fixture that never reaches a production build.
+- Images (owner, 2026-11-25): HeronPay `/images/heronpay-logo.png`, "HeronPay logo: a heron with signal waves"; Alunsina `/images/alunsina-logo.png`, "Alunsina logo: a cat, a dog and a rabbit around a cross". No other project has an image.
 - Matches `board-b.html`: rows from 900 px, cards below; radios from 640 px, a select below.
 - Project text is readable without JavaScript. Copy link reports success, and failure with the address shown.
 
