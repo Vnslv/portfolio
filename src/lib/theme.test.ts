@@ -1,15 +1,26 @@
 import { runInNewContext } from 'node:vm';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from 'vitest';
 import {
   THEME_KEY,
   getStorage,
   otherTheme,
-  readStoredTheme,
   resolveTheme,
   storeTheme,
   themeInitScript,
   toggleLabel,
 } from './theme';
+
+const BLOCKED_MESSAGE = 'theme: device storage is blocked, so the site follows the device setting';
+const NOT_SAVED_MESSAGE = 'theme: could not save the choice, so it lasts for this page view only';
+let warn: MockInstance<typeof console.warn>;
+
+beforeEach(() => {
+  warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+});
+
+afterEach(() => {
+  warn.mockRestore();
+});
 
 // A storage that fails like a browser with device storage blocked.
 const blocked = {
@@ -55,39 +66,47 @@ describe('THEME-01 theme choice', () => {
 });
 
 describe('THEME-01 device storage', () => {
-  it('reads what was stored, and null when nothing or storage is blocked', () => {
-    expect(readStoredTheme(memory('dark'))).toBe('dark');
-    expect(readStoredTheme(memory())).toBeNull();
-    expect(readStoredTheme(blocked)).toBeNull();
-    expect(readStoredTheme(null)).toBeNull();
-  });
-
   it('stores the choice, and reports false instead of throwing when blocked', () => {
     const storage = memory();
     expect(storeTheme(storage, 'dark')).toBe(true);
-    expect(readStoredTheme(storage)).toBe('dark');
+    expect(storage.getItem(THEME_KEY)).toBe('dark');
+    expect(warn).not.toHaveBeenCalled();
     expect(storeTheme(blocked, 'dark')).toBe(false);
+    expect(warn).toHaveBeenCalledExactlyOnceWith(NOT_SAVED_MESSAGE);
+  });
+
+  it('storeTheme with no storage reports false and leaves the warning to getStorage', () => {
     expect(storeTheme(null, 'dark')).toBe(false);
+    expect(warn).not.toHaveBeenCalled();
   });
 
   it('getStorage returns the storage, or null when merely reading it throws', () => {
     const storage = memory();
     expect(getStorage({ localStorage: storage })).toBe(storage);
+    expect(warn).not.toHaveBeenCalled();
     const denied = {
       get localStorage(): never {
         throw new Error('SecurityError');
       },
     };
     expect(getStorage(denied)).toBeNull();
+    expect(warn).toHaveBeenCalledExactlyOnceWith(BLOCKED_MESSAGE);
   });
 });
 
 describe('THEME-01 first-paint script', () => {
+  const scriptWarn = vi.fn();
+
+  beforeEach(() => {
+    scriptWarn.mockClear();
+  });
+
   function run(storage: unknown) {
     const root: { dataset: Record<string, string> } = { dataset: {} };
     runInNewContext(themeInitScript, {
       localStorage: storage,
       document: { documentElement: root },
+      console: { warn: scriptWarn },
     });
     return root.dataset['theme'];
   }
@@ -95,11 +114,14 @@ describe('THEME-01 first-paint script', () => {
   it('sets the stored theme before first paint', () => {
     expect(run(memory('dark'))).toBe('dark');
     expect(run(memory('light'))).toBe('light');
+    expect(scriptWarn).not.toHaveBeenCalled();
   });
 
   it('sets nothing when there is no valid choice or storage is blocked', () => {
     expect(run(memory())).toBeUndefined();
     expect(run(memory('blue'))).toBeUndefined();
+    expect(scriptWarn).not.toHaveBeenCalled();
     expect(run(blocked)).toBeUndefined();
+    expect(scriptWarn).toHaveBeenCalledExactlyOnceWith(BLOCKED_MESSAGE);
   });
 });

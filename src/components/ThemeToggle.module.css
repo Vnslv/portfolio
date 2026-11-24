@@ -1,13 +1,17 @@
-/* At the right of the taskbar, as .th in board-b.html. The slot keeps its width before the button mounts. */
+/* At the right of the taskbar, as .th in board-b.html. All children share one grid cell: the
+   invisible label copies set its size, so the button can mount or change label without a shift. */
 .slot {
   margin-left: auto;
-  display: flex;
-  min-width: 7.1rem;
-  min-height: 44px;
+  display: grid;
 }
 
-.toggle {
-  flex: 1;
+.slot > * {
+  grid-area: 1 / 1;
   justify-content: center;
   white-space: nowrap;
+}
+
+.ghost {
+  visibility: hidden;
+  pointer-events: none;
 }
