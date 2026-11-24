@@ -4,7 +4,7 @@ The default stack. Swap it only with an ADR in `docs/adr/` and updates to this f
 
 ## Default
 
-TypeScript, Next.js (App Router), Postgres, Playwright, Vitest, GitHub Actions, pnpm, Node 22 (`.nvmrc`). Error logging: Sentry (swappable). Load tests: k6.
+TypeScript, Next.js (App Router), Playwright, Vitest, GitHub Actions, pnpm, Node 22 (`.nvmrc`). Error logging: Sentry (swappable). Load tests: k6.
 
 ## Scaffold (run once per project)
 
@@ -19,10 +19,8 @@ pnpm add -D vitest @vitest/coverage-v8 @playwright/test @axe-core/playwright pre
 Then:
 
 1. Set `"packageManager": "pnpm@<version>"` in `package.json` (CI's pnpm setup reads it).
-2. Add a database client and migration tool, then a `db:migrate` script.
-3. Add Sentry with its wizard, keeping the DSN in `.env` and listing every variable name in `.env.example`.
-4. Create `lighthouserc.json` with budgets from the PRD's page-speed `NFR-` IDs.
-5. Install `uv` (for the read-only Postgres MCP) and set `DATABASE_URL_READONLY` to a read-only database role in your shell.
+2. Add Sentry with its wizard, keeping the DSN in `.env` and listing every variable name in `.env.example`.
+3. Create `lighthouserc.json` with budgets from the PRD's page-speed `NFR-` IDs.
 
 ## Required Package Scripts
 
@@ -34,7 +32,6 @@ Then:
 | `test` | `vitest run --coverage` with an 80% line threshold in `vitest.config.ts` |
 | `build` | `next build` |
 | `test:e2e` | `playwright test` |
-| `db:migrate` | the migration tool's apply command |
 | `check` | `pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build` |
 
 The coverage threshold changes only through the PRD or an ADR, never to make CI pass.
