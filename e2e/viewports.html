@@ -1,0 +1,73 @@
+<!doctype html>
+<!-- Viewport viewer: the running site at real CSS widths, scaled down with transform so a
+     laptop can see wide screens. The page inside reflows at its true width; only the picture
+     is shrunk. Open this file in a browser while the dev server runs; set the URL field to its address. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Viewport Viewer</title>
+<style>
+  :root { --bg: #f4f6f6; --ink: #0b2e30; --muted: #4a6567; --line: #d5dfe0; --frame: #ffffff; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #0e1617; --ink: #e6f5f5; --muted: #9cc2c4; --line: #2a3a3c; --frame: #000; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.4 system-ui, sans-serif; }
+  header { position: sticky; top: 0; z-index: 1; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center;
+    padding: 12px 16px; background: var(--bg); border-bottom: 1px solid var(--line); }
+  input[type=url] { flex: 1 1 260px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--frame); color: var(--ink); }
+  label { display: inline-flex; gap: 4px; align-items: center; color: var(--muted); }
+  main { display: grid; gap: 28px; padding: 16px; }
+  figure { margin: 0; }
+  figcaption { margin-bottom: 6px; color: var(--muted); }
+  figcaption b { color: var(--ink); }
+  .box { overflow: hidden; border: 1px solid var(--line); border-radius: 6px; background: var(--frame); }
+  iframe { display: block; border: 0; transform-origin: 0 0; }
+</style>
+</head>
+<body>
+<header>
+  <input id="url" type="url" value="http://localhost:3000" aria-label="Site URL">
+  <span id="sizes"></span>
+  <label><input id="tall" type="checkbox"> full height</label>
+</header>
+<main id="frames"></main>
+<script>
+  // Common screens: phone, tablet, laptop, desktop, 1440p monitor, ultrawide.
+  const SIZES = [[390, 844], [768, 1024], [1280, 800], [1440, 900], [1920, 1080], [2560, 1440], [3440, 1440]];
+  const $ = (id) => document.getElementById(id);
+  const saved = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch { return d; } };
+  const save = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
+  $("url").value = saved("vv-url", $("url").value);
+  const on = new Set(JSON.parse(saved("vv-on", "[1280,1920,2560,3440]")));
+
+  $("sizes").innerHTML = SIZES.map(([w]) =>
+    `<label><input type="checkbox" value="${w}" ${on.has(w) ? "checked" : ""}> ${w}</label>`).join(" ");
+
+  function render() {
+    const url = $("url").value;
+    const avail = $("frames").clientWidth - 32; // minus main padding
+    $("frames").innerHTML = "";
+    for (const [w, h0] of SIZES.filter(([w]) => on.has(w))) {
+      const h = $("tall").checked ? h0 * 3 : h0;
+      const s = Math.min(1, avail / w);
+      const fig = document.createElement("figure");
+      fig.innerHTML = `<figcaption><b>${w} × ${h0}</b> shown at ${Math.round(s * 100)}%</figcaption>
+        <div class="box" style="width:${w * s}px;height:${h * s}px">
+          <iframe src="${url}" title="${w} px" width="${w}" height="${h}" style="transform:scale(${s})"></iframe>
+        </div>`;
+      $("frames").append(fig);
+    }
+  }
+  $("sizes").addEventListener("change", (e) => {
+    const w = +e.target.value;
+    e.target.checked ? on.add(w) : on.delete(w);
+    save("vv-on", JSON.stringify([...on]));
+    render();
+  });
+  $("url").addEventListener("change", () => { save("vv-url", $("url").value); render(); });
+  $("tall").addEventListener("change", render);
+  addEventListener("resize", () => { clearTimeout(render.t); render.t = setTimeout(render, 200); });
+  render();
+</script>
+</body>
+</html>
