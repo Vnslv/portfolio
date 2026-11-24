@@ -1,0 +1,17 @@
+/* At the right of the taskbar, as .th in board-b.html. All children share one grid cell: the
+   invisible label copies set its size, so the button can mount or change label without a shift. */
+.slot {
+  margin-left: auto;
+  display: grid;
+}
+
+.slot > * {
+  grid-area: 1 / 1;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.ghost {
+  visibility: hidden;
+  pointer-events: none;
+}
