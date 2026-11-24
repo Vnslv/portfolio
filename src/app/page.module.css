@@ -5,8 +5,7 @@
   flex-direction: column;
 }
 
-.page,
-.solo {
+.page {
   flex: 1;
   width: 100%;
   max-width: 1120px;
@@ -45,12 +44,8 @@
 }
 
 @media (min-width: 900px) {
-  .page,
-  .solo {
-    padding: 28px;
-  }
-
   .page {
+    padding: 28px;
     grid-template-columns: 220px minmax(0, 1fr);
     gap: 20px;
     max-width: 1200px;
@@ -63,5 +58,9 @@
 
   .two {
     grid-template-columns: 1.4fr 1fr;
+  }
+
+  .second {
+    grid-column: 2;
   }
 }

@@ -24,7 +24,34 @@ async function openMenu(page: Page) {
   await page.locator('summary', { hasText: 'Menu' }).click();
 }
 
+// Opens the Menu and presses Escape in one page task, before any delayed event can run.
+// False until the page has hydrated, so callers poll it.
+function fastEscapeCloses(page: Page) {
+  return page.evaluate(() => {
+    const details = document.querySelector('details');
+    const summary = details?.querySelector('summary');
+    if (!details || !summary) return false;
+    details.open = false;
+    summary.click();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    return !details.open && document.activeElement === summary;
+  });
+}
+
 test.describe('SITE-01, SITE-02, SITE-03 page shell', () => {
+  test('phone: a fast Escape or a fast link click closes the Menu', async ({ page }) => {
+    await page.setViewportSize(phone);
+    await page.goto('/');
+    await expect.poll(() => fastEscapeCloses(page)).toBe(true);
+    const openAfterLinkClick = await page.evaluate(() => {
+      const details = document.querySelector('details');
+      details?.querySelector('summary')?.click();
+      details?.querySelector<HTMLElement>('a[href="#about"]')?.click();
+      return details?.open;
+    });
+    expect(openAfterLinkClick).toBe(false);
+  });
+
   test('phone: order, intro first, menu, links, keyboard', async ({ page }) => {
     await page.setViewportSize(phone);
     await page.goto('/');
@@ -152,6 +179,29 @@ test.describe('SITE-01, SITE-02, SITE-03 page shell', () => {
     await page.getByRole('link', { name: 'Go to the home page' }).click();
     await expect(page).toHaveURL('/');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Vonn Salve');
+  });
+
+  test('error state: not-found keeps the board layout, taskbar and working links', async ({
+    page,
+  }) => {
+    await page.setViewportSize(phone);
+    await page.goto('/no-such-page');
+    await expect.poll(() => fastEscapeCloses(page)).toBe(true);
+    await expect(page.locator('[aria-current]')).toHaveCount(0);
+    await openMenu(page);
+    await page
+      .getByRole('navigation', { name: 'Taskbar' })
+      .getByRole('link', { name: 'About' })
+      .click();
+    await expect(page).toHaveURL('/#about');
+    await expect(page.locator('#about')).toBeInViewport();
+
+    // Board: from 900 px the window sits in the content column of the same 1200 px page.
+    await page.setViewportSize(desktop);
+    await page.goto('/no-such-page');
+    const box = await page.locator('section').boundingBox();
+    expect(Math.abs((box?.x ?? 0) - 308)).toBeLessThanOrEqual(2);
+    expect(Math.abs((box?.x ?? 0) + (box?.width ?? 0) - 1212)).toBeLessThanOrEqual(2);
   });
 
   test('SITE-02: the browser tab title is the owner name', async ({ page }) => {

@@ -16,7 +16,9 @@ function subscribe(onChange: () => void) {
 
 // Ported from the design board: the last section whose top has passed 40% of the viewport.
 // Where two sections share a top (About and Links side by side), the earlier one wins.
-function currentSnapshot(): SectionId {
+function currentSnapshot(): SectionId | null {
+  // A page without the sections (the not-found page) marks nothing current.
+  if (!document.getElementById(SECTIONS[0].id)) return null;
   const viewport = window.innerHeight;
   let current: SectionId = SECTIONS[0].id;
   let best = -Infinity;
