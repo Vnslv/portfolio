@@ -1,0 +1,103 @@
+/* Tokens from docs/standards/design-brief.md. Light first; dark follows the visitor's setting (THEME-01 toggle is T05). */
+:root {
+  --desk: #5a4a78;
+  --desk2: #514170;
+  --face: #d8d4e0;
+  --field: #fbfaff;
+  --text: #1d1826;
+  --muted: #4a4358;
+  --hi: #ffffff;
+  --lo: #8a8299;
+  --edge: #2a2338;
+  --title: #4b2a7b;
+  --title2: #7a2f74;
+  --titleText: #ffffff;
+  --link: #4b2a7b;
+  --badge: #b7f0d0;
+  --badgeText: #08351f;
+  --display: var(--font-pixelify), 'IBM Plex Sans', sans-serif;
+  --body: var(--font-plex), Arial, sans-serif;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --desk: #1d1630;
+    --desk2: #251c3c;
+    --face: #322b42;
+    --field: #221c30;
+    --text: #f3effa;
+    --muted: #c5bcd6;
+    --hi: #5f5578;
+    --lo: #7d7199;
+    --edge: #0a0712;
+    --title: #5a3596;
+    --title2: #86387f;
+    --titleText: #ffffff;
+    --link: #cdb4ff;
+    --badge: #7fe0b0;
+    --badgeText: #08351f;
+    color-scheme: dark;
+  }
+}
+
+/* Resets */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--desk);
+  background-image: linear-gradient(45deg, var(--desk2) 25%, transparent 25% 75%, var(--desk2) 75%);
+  background-size: 8px 8px;
+  color: var(--text);
+  font: 16px/1.5 var(--body);
+}
+
+:where(h1, h2, h3, p, ul, dl, dd) {
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  color: var(--link);
+}
+
+:focus-visible {
+  outline: 2px dashed var(--text);
+  outline-offset: 2px;
+}
+
+/* The raised button used by the intro, the taskbar, the tree and the not-found window. */
+.button {
+  font: inherit;
+  min-height: 44px;
+  padding: 8px 16px;
+  background: var(--face);
+  color: var(--text);
+  border: 2px solid;
+  border-color: var(--hi) var(--edge) var(--edge) var(--hi);
+  box-shadow: inset -1px -1px 0 var(--lo);
+  cursor: pointer;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  text-decoration: none;
+}
+
+a.button {
+  color: var(--text);
+}
+
+.button:active,
+.button[aria-current='true'] {
+  border-color: var(--edge) var(--hi) var(--hi) var(--edge);
+  box-shadow: inset 1px 1px 0 var(--lo);
+}
+
+.button[aria-current='true'] {
+  font-weight: 700;
+}

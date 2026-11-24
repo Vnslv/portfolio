@@ -1,0 +1,45 @@
+.win {
+  background: var(--face);
+  color: var(--text);
+  border: 2px solid;
+  border-color: var(--hi) var(--edge) var(--edge) var(--hi);
+  box-shadow:
+    inset -1px -1px 0 var(--lo),
+    inset 1px 1px 0 var(--face);
+  scroll-margin-top: 12px;
+}
+
+.title {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 3px 3px 0;
+  padding: 5px 8px;
+  min-height: 34px;
+  background: linear-gradient(90deg, var(--title), var(--title2));
+  color: var(--titleText);
+  font: 700 18px/1.2 var(--display);
+}
+
+.title svg {
+  flex: none;
+}
+
+.body {
+  padding: 16px;
+  display: grid;
+  gap: 14px;
+}
+
+.body > * {
+  min-width: 0;
+}
+
+.status {
+  margin: 0 3px 3px;
+  padding: 4px 8px;
+  border: 1px solid;
+  border-color: var(--lo) var(--hi) var(--hi) var(--lo);
+  font-size: 14px;
+  color: var(--muted);
+}

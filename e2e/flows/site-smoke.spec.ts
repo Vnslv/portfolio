@@ -8,7 +8,7 @@ test.describe('NFR-01 site opens', () => {
     });
 
     await test.step('the document title is the site title', async () => {
-      await expect(page).toHaveTitle('portfolio');
+      await expect(page).toHaveTitle('Vonn Salve');
     });
   });
 });
