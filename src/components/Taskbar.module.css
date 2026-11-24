@@ -1,0 +1,79 @@
+.bar {
+  position: sticky;
+  bottom: 0;
+  background: var(--face);
+  border-top: 2px solid var(--hi);
+  padding: 4px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  min-height: 52px;
+  z-index: 3;
+}
+
+.bar :global(.button) {
+  padding: 4px 12px;
+}
+
+.bar :focus-visible {
+  outline-offset: -5px;
+}
+
+.bar .summary {
+  list-style: none;
+}
+
+.bar .summary::-webkit-details-marker {
+  display: none;
+}
+
+.menu[open] > .summary {
+  border-color: var(--edge) var(--hi) var(--hi) var(--edge);
+  box-shadow: inset 1px 1px 0 var(--lo);
+}
+
+.panel {
+  composes: win from './Window.module.css';
+  position: absolute;
+  left: 4px;
+  bottom: calc(100% + 2px);
+  width: 220px;
+  display: grid;
+  padding: 4px;
+}
+
+.panel :global(.button) {
+  border-color: transparent;
+  box-shadow: none;
+  justify-content: flex-start;
+}
+
+.bar .section {
+  display: none;
+}
+
+.now {
+  padding: 0 10px;
+  color: var(--text);
+}
+
+@media (min-width: 640px) {
+  .bar .section {
+    display: inline-flex;
+  }
+
+  .bar .now {
+    display: none;
+  }
+}
+
+@media (min-width: 900px) {
+  .bar .section,
+  .bar .menu {
+    display: none;
+  }
+
+  .bar .now {
+    display: block;
+  }
+}
