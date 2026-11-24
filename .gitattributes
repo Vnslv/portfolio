@@ -1,0 +1,2 @@
+# Keep LF in working copies on every platform; Prettier requires it.
+* text=auto eol=lf

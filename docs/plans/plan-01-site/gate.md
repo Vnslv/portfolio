@@ -18,7 +18,9 @@
 
 Everything the owner will supply later. Each item names the file or setting that takes it.
 
-- [ ] Name as shown, one-line intro, about text, photo: `src/content/profile.ts`
-- [ ] LinkedIn URL and Drive CV link (LINK-02 acceptance 1): `src/content/profile.ts`
-- [ ] Each project's team size, problem, what I did, outcome, links, images: `src/content/projects.ts`
-- [ ] Each award's facts and image, with consent and hidden details checked (AWARD-03 acceptance 2-3): `src/content/awards.ts`
+- [x] Name as shown, one-line intro, about text, LinkedIn URL: supplied, T03
+- [ ] Photo: `src/content/profile.ts`
+- [ ] Drive CV link (LINK-02 acceptance 1): `src/content/profile.ts`
+- [ ] Each project's team size (Taskvane supplied), problem, what I did, outcome, links, images: `src/content/projects.ts`
+- [x] Each award's hackathon, organizer, placement, project, role, team size: supplied, T03
+- [ ] Each award's date and image, with consent and hidden details checked (AWARD-03 acceptance 2-3): `src/content/awards.ts`
