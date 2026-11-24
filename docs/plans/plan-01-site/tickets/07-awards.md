@@ -39,13 +39,13 @@
 
 - AWARD-01, AWARD-02, AWARD-03 acceptance, except AWARD-03 acceptance 2-3, which the owner confirms per image.
 - Navigation leaves out Awards while the section is hidden.
-- Production content stays empty until the owner supplies awards. Fixtures are used only in tests and never reach a production build.
+- Production content is the owner-supplied awards in `src/content/awards.ts`. Fixtures are used only in tests and never reach a production build.
 
 ## Tests First
 
 1. Happy: an award shows its facts and image; its badge leads to it.
 2. Missing facts are left out; an award without an image still appears.
-3. Empty: no section, no badge, no navigation entry.
+3. Empty (fixture): no section, no badge, no navigation entry.
 4. Error: a failed image shows its description.
 
 ## Done When

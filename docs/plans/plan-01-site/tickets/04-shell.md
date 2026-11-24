@@ -15,6 +15,7 @@
 - `src/content/profile.ts`
 - `src/app/layout.tsx`
 - `src/app/page.tsx`
+- `src/lib/site.ts`, `src/lib/site.test.ts`, `e2e/flows/site-smoke.spec.ts`
 - `docs/PRD.md`: only SITE-01, SITE-02, SITE-03, and any ID they name
 
 ## Files Allowed
@@ -22,6 +23,7 @@
 - `src/app/layout.tsx`, `src/app/page.tsx`, `src/app/not-found.tsx`, `src/app/tokens.css`, `src/app/page.module.css`
 - `src/components/Window.tsx`, `src/components/Icon.tsx`, `src/components/SectionNav.tsx`, `src/components/Taskbar.tsx`, `src/components/Footer.tsx`, and one `.module.css` for each
 - `src/components/Intro.tsx`, `src/components/About.tsx`, and one `.module.css` for each
+- `src/lib/site.ts`, `src/lib/site.test.ts`, `e2e/flows/site-smoke.spec.ts` (browser tab title only)
 - `e2e/flows/site-shell.spec.ts`
 
 ## Rules
@@ -33,10 +35,11 @@
 ## Acceptance Criteria
 
 - SITE-01, SITE-02, SITE-03 acceptance.
-- Matches `board-b.html` at 390, 768, and 1280 px. Awards, Work, and Links are empty windows until their tickets; the awards window is absent until AWARD-01 has content.
+- Matches `board-b.html` at 390, 768, and 1280 px. Awards, Work, and Links are empty windows until their tickets. Award content now exists, so the Awards window is present; hiding it is T07.
 - All sections and links work without JavaScript. Fonts are self-hosted through `next/font`.
 - The footer has the copyright line. The privacy note is plan 02.
 - A wrong address shows the not-found window with a link home.
+- The browser tab title is the owner's name from `src/content/profile.ts` (owner, 2026-11-25).
 
 ## Tests First
 
@@ -45,6 +48,7 @@
 3. The intro is the first content.
 4. Keyboard: Menu opens, Escape closes it and returns focus.
 5. A wrong address shows the not-found window.
+6. The document title is the owner's name.
 
 ## Done When
 
