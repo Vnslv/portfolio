@@ -1,4 +1,4 @@
-/* Tokens from docs/standards/design-brief.md. Light first; dark follows the visitor's setting (THEME-01 toggle is T05). */
+/* Tokens from docs/standards/design-brief.md. Light first; dark follows the device setting until the visitor chooses with the toggle (THEME-01). */
 :root {
   --desk: #5a4a78;
   --desk2: #514170;
@@ -20,8 +20,10 @@
   color-scheme: light;
 }
 
+/* The dark values appear twice because plain CSS cannot share them between the media query
+   (device setting, no stored choice) and the attribute (stored or toggled choice). */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     --desk: #1d1630;
     --desk2: #251c3c;
     --face: #322b42;
@@ -39,6 +41,25 @@
     --badgeText: #08351f;
     color-scheme: dark;
   }
+}
+
+:root[data-theme='dark'] {
+  --desk: #1d1630;
+  --desk2: #251c3c;
+  --face: #322b42;
+  --field: #221c30;
+  --text: #f3effa;
+  --muted: #c5bcd6;
+  --hi: #5f5578;
+  --lo: #7d7199;
+  --edge: #0a0712;
+  --title: #5a3596;
+  --title2: #86387f;
+  --titleText: #ffffff;
+  --link: #cdb4ff;
+  --badge: #7fe0b0;
+  --badgeText: #08351f;
+  color-scheme: dark;
 }
 
 /* Resets */

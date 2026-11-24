@@ -5,6 +5,7 @@ import { SECTIONS } from '@/lib/site';
 import { Icon } from './Icon';
 import { useCurrentSection } from './SectionNav';
 import styles from './Taskbar.module.css';
+import { ThemeToggle } from './ThemeToggle';
 
 // hrefBase is "/" on pages that have no sections, so the links go to the home page.
 export function Taskbar({ hrefBase = '' }: { hrefBase?: string }) {
@@ -59,6 +60,7 @@ export function Taskbar({ hrefBase = '' }: { hrefBase?: string }) {
         </a>
       ))}
       <span className={styles.now}>{label}</span>
+      <ThemeToggle />
     </nav>
   );
 }

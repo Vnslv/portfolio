@@ -1,0 +1,13 @@
+/* At the right of the taskbar, as .th in board-b.html. The slot keeps its width before the button mounts. */
+.slot {
+  margin-left: auto;
+  display: flex;
+  min-width: 7.1rem;
+  min-height: 44px;
+}
+
+.toggle {
+  flex: 1;
+  justify-content: center;
+  white-space: nowrap;
+}
