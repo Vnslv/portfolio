@@ -13,14 +13,17 @@ type ProjectBase = {
   ownerRole?: string;
 };
 
-// A project that is not ready has no problem, work or outcome fields at all (WORK-06).
+// What the owner did: an optional lead-in line, then the points (WORK-03).
+export type ProjectWork = { line?: string; points: readonly string[] };
+
+// A project that is not ready has no problem or work fields at all (WORK-06).
 export type ComingSoonProject = ProjectBase & { ready: false };
 
 export type ReadyProject = ProjectBase & {
   ready: true;
   problem: string;
-  work: string;
-  outcome: string;
+  work: ProjectWork;
+  stack?: string;
   links?: readonly ProjectLink[];
   images?: readonly ProjectImage[];
 };
