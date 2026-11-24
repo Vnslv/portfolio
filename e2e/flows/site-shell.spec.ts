@@ -70,7 +70,7 @@ test.describe('SITE-01, SITE-02, SITE-03 page shell', () => {
       await expect(page.getByRole('heading', { level: 1 })).toHaveText('Vonn Salve');
       await expect(page.getByRole('heading', { level: 1 })).toBeInViewport();
       await expect(intro.getByText('Frontend developer and project manager')).toBeVisible();
-      await expect(intro.getByText('Software developer, project manager')).toBeVisible();
+      await expect(intro.getByText('Frontend developer, project manager')).toBeVisible();
       const firstTop = await intro.boundingBox();
       expect(firstTop?.y).toBeLessThan(40);
     });

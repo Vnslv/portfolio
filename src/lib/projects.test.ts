@@ -16,13 +16,13 @@ const fixture: readonly Project[] = [
 
 const ids = (list: readonly Project[]) => list.map((p) => p.id);
 
-describe('project content (WORK-01, WORK-05, WORK-06)', () => {
+describe('project content (CONT-01, WORK-01, WORK-03, WORK-05)', () => {
   it('lists the five projects once each with the PRD role labels', () => {
     expect(projects.map((p) => p.name)).toEqual([
       'Alunsina',
       'HeronPay',
       'eHanda',
-      'Taskvane',
+      'Idiya',
       'UMak Kalinga',
     ]);
     const roles = Object.fromEntries(projects.map((p) => [p.name, [...p.roles].sort()]));
@@ -32,28 +32,65 @@ describe('project content (WORK-01, WORK-05, WORK-06)', () => {
       Alunsina: pm,
       HeronPay: pm,
       eHanda: pm,
-      Taskvane: both,
+      Idiya: both,
       'UMak Kalinga': both,
     });
   });
 
   it('uses the locked ids', () => {
-    expect(ids(projects)).toEqual(['alunsina', 'heronpay', 'ehanda', 'taskvane', 'umak-kalinga']);
+    expect(ids(projects)).toEqual(['alunsina', 'heronpay', 'ehanda', 'idiya', 'umak-kalinga']);
   });
 
-  it('shows Taskvane as solo, full-stack developer and project manager', () => {
-    const taskvane = projects.find((p) => p.id === 'taskvane');
-    expect(taskvane?.teamSize).toBe(1);
-    expect(taskvane?.ownerRole).toBe('Full-stack developer and project manager');
+  it('shows Idiya as solo, full-stack developer and project manager', () => {
+    const idiya = projects.find((p) => p.id === 'idiya');
+    expect(idiya?.teamSize).toBe(1);
+    expect(idiya?.ownerRole).toBe('Full-stack developer and project manager');
   });
 
-  it('marks all five not ready, with no problem, work or outcome', () => {
+  it('gives the team sizes from the owner', () => {
+    expect(Object.fromEntries(projects.map((p) => [p.id, p.teamSize]))).toEqual({
+      alunsina: 4,
+      heronpay: 3,
+      ehanda: 5,
+      idiya: 1,
+      'umak-kalinga': 4,
+    });
+  });
+
+  it('marks all five ready, with a problem, at least one point and no outcome', () => {
     for (const p of projects) {
-      expect(p.ready).toBe(false);
-      expect(p).not.toHaveProperty('problem');
-      expect(p).not.toHaveProperty('work');
+      expect(p.ready).toBe(true);
       expect(p).not.toHaveProperty('outcome');
+      expect(p).not.toHaveProperty('images');
+      if (!p.ready) throw new Error(`${p.id} is not ready`);
+      expect(p.problem.length).toBeGreaterThan(0);
+      expect(p.work.points.length).toBeGreaterThan(0);
     }
+  });
+
+  it('has a "What I did" line for every project except eHanda', () => {
+    const withLine = projects.flatMap((p) => (p.ready && p.work.line ? [p.id] : []));
+    expect(withLine).toEqual(['alunsina', 'heronpay', 'idiya', 'umak-kalinga']);
+    const ehanda = projects.find((p) => p.id === 'ehanda');
+    expect(ehanda?.ready && ehanda.work).not.toHaveProperty('line');
+  });
+
+  it('has exactly the three owner links', () => {
+    const links = projects.flatMap((p) => (p.ready && p.links ? [[p.id, p.links]] : []));
+    expect(links).toEqual([
+      ['alunsina', [{ label: 'Landing page', url: 'https://alunsina-landing.vercel.app/' }]],
+      ['ehanda', [{ label: 'Live', url: 'https://e-handa.vercel.app/' }]],
+      ['idiya', [{ label: 'Live', url: 'https://idiya.vercel.app/' }]],
+    ]);
+  });
+
+  it('shows a stack only where the owner supplied one', () => {
+    const stacks = projects.flatMap((p) => (p.ready && p.stack ? [[p.id, p.stack]] : []));
+    expect(stacks).toEqual([
+      ['ehanda', 'React, Vite, Supabase'],
+      ['idiya', 'Next.js 15, TypeScript, Tailwind, Prisma, Neon Postgres, Auth.js'],
+      ['umak-kalinga', 'React, Vite, React Router'],
+    ]);
   });
 });
 
@@ -62,19 +99,19 @@ describe('filterProjects (WORK-02, WORK-04)', () => {
     expect(ids(filterProjects(projects, 'all'))).toEqual(ids(projects));
   });
 
-  it('software development: Taskvane and UMak Kalinga', () => {
+  it('software development: Idiya and UMak Kalinga', () => {
     expect(ids(filterProjects(projects, 'software-development'))).toEqual([
-      'taskvane',
+      'idiya',
       'umak-kalinga',
     ]);
   });
 
-  it('project management: all five, so Taskvane and UMak Kalinga are in both', () => {
+  it('project management: all five, so Idiya and UMak Kalinga are in both', () => {
     expect(ids(filterProjects(projects, 'project-management'))).toEqual([
       'alunsina',
       'heronpay',
       'ehanda',
-      'taskvane',
+      'idiya',
       'umak-kalinga',
     ]);
   });
@@ -103,7 +140,7 @@ describe('filterProjects (WORK-02, WORK-04)', () => {
 
 describe('projectIdFromHash (WORK-04)', () => {
   it('reads a known id with or without the leading #', () => {
-    expect(projectIdFromHash('#taskvane', projects)).toBe('taskvane');
+    expect(projectIdFromHash('#idiya', projects)).toBe('idiya');
     expect(projectIdFromHash('umak-kalinga', projects)).toBe('umak-kalinga');
   });
 
@@ -116,8 +153,9 @@ describe('projectIdFromHash (WORK-04)', () => {
     '#toString',
     '%E0%A4%A',
     '#%E0%A4%A',
-    '#Taskvane',
-    '##taskvane',
+    '#Idiya',
+    '##idiya',
+    '#taskvane',
   ])('gives no project for %j', (hash) => {
     expect(projectIdFromHash(hash, projects)).toBeNull();
   });

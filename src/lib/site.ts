@@ -15,7 +15,7 @@ export const SECTIONS = [
 export type SectionId = (typeof SECTIONS)[number]['id'];
 
 // The status strip under the intro window, as locked in the design board.
-export const INTRO_STRIP = 'Software developer, project manager';
+export const INTRO_STRIP = 'Frontend developer, project manager';
 
 export function copyrightLine(name: string): string {
   return `© 2026 ${name}`;
