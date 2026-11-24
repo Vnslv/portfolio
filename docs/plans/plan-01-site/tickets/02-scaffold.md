@@ -2,7 +2,7 @@
 
 **PRD IDs:** NFR-01
 **Route:** builder (see `docs/model-routing.md`)
-**E2E flow:** none (no screen yet)
+**E2E flow:** `e2e/flows/site-smoke.spec.ts`
 
 ## Read List
 
@@ -24,6 +24,7 @@
 - `src/app/layout.tsx`, `src/app/page.tsx`
 - `src/lib/site.ts`, `src/lib/site.test.ts`
 - `e2e/flows/_example-flow.spec.ts` (only to exclude it from runs)
+- `e2e/flows/site-smoke.spec.ts`
 - `.gitignore`, `docs/issue-log.md`
 
 ## Rules
@@ -42,9 +43,19 @@
 - No Sentry or analytics: those are plan 02.
 - The scaffolder may refuse a non-empty folder. If so, scaffold in a temporary folder, copy only the files above, and log it in `docs/issue-log.md`.
 
+### Owner answers (2026-11-24)
+
+- Versions: normal ranges; the lockfile fixes exact versions.
+- `site-smoke.spec.ts` checks that the home page opens, so `pnpm test:e2e` has a test.
+- Coverage: the 80% threshold applies to `src/lib/`; pages are covered by browser tests.
+- Lighthouse: `/`, phone preset, 3 runs, performance at least 0.9, LCP at most 2500 ms, served by `pnpm start` on port 3000.
+- Prettier and ESLint may skip kit-owned files, including root Markdown, `.mcp.json`, `KIT_VERSION`, the lockfile, and the example spec. Never `src/` or new tests.
+- pnpm build scripts: approve only what is needed and report each one.
+
 ## Tests First
 
 1. `site.test.ts`: the site title constant is "portfolio" until the owner supplies a name.
+2. `site-smoke.spec.ts`: the home page opens and its document title is the site title.
 
 ## Done When
 

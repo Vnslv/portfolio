@@ -10,7 +10,7 @@
 - [ ] NFR-04: automated checks pass, and a manual keyboard pass reaches and operates every control.
 - [ ] Parity: build and `docs/design/board-b.html` match within 8 px at 390, 768, and 1280 px, both themes.
 - [ ] Production gate items: none apply until launch (plan 02); see the [production checklist](../../standards/production-checklist.md#gate-items).
-- [ ] Independent review in a fresh session: T01 reviewed 2026-11-24 at 496b0af, no blockers, 1 required fix (PR #4 body lacked the template's checklist), applied after the review and not re-reviewed. T02 to T09: owed.
+- [ ] Independent review in a fresh session: T01 reviewed 2026-11-24 at 496b0af, no blockers, 1 required fix (PR #4 body lacked the template's checklist), applied after the review and not re-reviewed. T02 reviewed 2026-11-24 at b60e169, no blockers, 1 required fix (`.prettierignore` patterns also skip folders under `src/`), fixed in 51be602; re-reviewed 2026-11-25 at 51be602, no blockers, 0 required fixes. T03 to T09: owed.
 - [ ] Verified SHA: <sha>
 - [ ] Owner accepts the page: <date>
 
