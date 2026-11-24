@@ -1,0 +1,59 @@
+# Ticket 07: Awards and badges
+
+**PRD IDs:** AWARD-01, AWARD-02, AWARD-03
+**Route:** builder (see `docs/model-routing.md`)
+**E2E flow:** `e2e/flows/awards-list.spec.ts`
+
+## Read List
+
+- `AGENTS.md`
+- `docs/standards/definition-of-done.md`
+- `docs/standards/design-brief.md`
+- `docs/design/board-b.html`
+- `docs/design/first-look.md`
+- `src/content/types.ts`
+- `src/content/awards.ts`
+- `src/lib/awards.ts`
+- `src/components/Window.tsx`
+- `src/components/ProjectCard.tsx`
+- `src/components/SectionNav.tsx`
+- `src/components/Taskbar.tsx`
+- `src/app/page.tsx`
+- `docs/PRD.md`: only AWARD-01, AWARD-02, AWARD-03, and any ID they name
+
+## Files Allowed
+
+- `src/app/page.tsx`
+- `src/components/Awards.tsx`, `src/components/Awards.module.css`, `src/components/AwardBadge.tsx`, `src/components/AwardBadge.module.css`
+- `src/components/ProjectCard.tsx`, `src/components/SectionNav.tsx`, `src/components/Taskbar.tsx`
+- `src/content/types.ts`, `src/lib/awards.ts`, `src/lib/awards.test.ts`
+- `e2e/flows/awards-list.spec.ts`, `e2e/support/award-fixtures.ts`
+
+## Rules
+
+- `.claude/rules/testing.md`
+- `.claude/rules/system-design.md`
+- `.claude/rules/security.md`
+
+## Acceptance Criteria
+
+- AWARD-01, AWARD-02, AWARD-03 acceptance, except AWARD-03 acceptance 2-3, which the owner confirms per image.
+- Navigation leaves out Awards while the section is hidden.
+- Production content stays empty until the owner supplies awards. Fixtures are used only in tests and never reach a production build.
+
+## Tests First
+
+1. Happy: an award shows its facts and image; its badge leads to it.
+2. Missing facts are left out; an award without an image still appears.
+3. Empty: no section, no badge, no navigation entry.
+4. Error: a failed image shows its description.
+
+## Done When
+
+- Tests above red then green, recorded in the evidence row.
+- `pnpm check` passes.
+- Evidence row appended.
+
+## Stop Conditions
+
+- Conflict with the PRD, a missing fact, or a needed file outside "Files Allowed".
