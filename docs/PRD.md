@@ -1,6 +1,6 @@
 # portfolio Product Requirements (PRD)
 
-**Version:** 0.4.0
+**Version:** 0.5.0
 **Owner:** @Vnslv
 
 ## Rules (read first)
@@ -66,10 +66,10 @@ Each requirement is a level-3 heading `ID: title`, followed by a statement, acce
 
 ### WORK-01: Project list
 
-**Statement:** The work section lists Alunsina, HeronPay, eHanda, Taskvane, and UMak Kalinga in one list.
+**Statement:** The work section lists Alunsina, HeronPay, eHanda, Idiya, and UMak Kalinga in one list.
 **Acceptance:**
 - Each project appears once.
-- Each shows its role label: project management for Alunsina, HeronPay, and eHanda; software development and project management for UMak Kalinga and Taskvane.
+- Each shows its role label: project management for Alunsina, HeronPay, and eHanda; software development and project management for UMak Kalinga and Idiya.
 **Status:** Approved
 
 ### WORK-02: Role filter
@@ -82,7 +82,7 @@ Each requirement is a level-3 heading `ID: title`, followed by a statement, acce
 
 ### WORK-03: Project details
 
-**Statement:** Each project card expands in place to show the problem, what the owner did, the outcome, and any links or images.
+**Statement:** Each project card expands in place to show the problem, what the owner did, the stack where supplied, and any links or images.
 **Acceptance:**
 - It can be opened and closed with a keyboard.
 - Only owner-supplied or owner-checked facts are shown.
@@ -100,7 +100,7 @@ Each requirement is a level-3 heading `ID: title`, followed by a statement, acce
 
 **Statement:** Each project shows the owner's role and the team size, and names no teammates.
 **Acceptance:**
-- Taskvane is shown as a solo project: full-stack developer and project manager.
+- Idiya is shown as a solo project: full-stack developer and project manager.
 - No teammate's name appears in text or in images, except award images (AWARD-03).
 **Status:** Approved
 
@@ -234,6 +234,7 @@ Version 1 does not include: freelance services, a contact form, a blog, a databa
 
 | Version | Date | Change | Approved by |
 | --- | --- | --- | --- |
+| 0.5.0 | 2026-11-25 | Taskvane renamed Idiya; WORK-03: outcome removed, stack added | @Vnslv |
 | 0.4.0 | 2026-11-24 | WORK-01: UMak Kalinga role; AWARD-01: placements | @Vnslv |
 | 0.3.0 | 2026-11-24 | Added THEME-01 | @Vnslv |
 | 0.2.0 | 2026-11-24 | Version 1 requirements from grill-spec | @Vnslv |
