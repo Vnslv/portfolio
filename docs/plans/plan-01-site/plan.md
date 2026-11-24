@@ -21,6 +21,11 @@
 - Plan and routes approved (owner).
 - T01 built without the builder agent or the project hooks: accepted for T01 only. From T02, the builder agent in a guarded session (owner).
 
+### T03 review (2026-11-25)
+
+- `docs/issue-log.md` may be changed in T03's PR to log the CRLF problem (owner).
+- A `.gitattributes` PR before T04; T04 sets the browser tab title to the owner's name; plan records updated for supplied content (owner).
+
 ## Design Spec
 
 Locked: [design brief](../../standards/design-brief.md), [board](../../design/board-b.html), [flow, wireframes, states](../../design/first-look.md).
@@ -31,7 +36,7 @@ Tickets run in order; several change the same files. One ticket per session and 
 
 - [x] T01 Remove Postgres (ADR 0001) -> tickets/01-remove-postgres.md
 - [x] T02 Scaffold the app and checks (NFR-01) -> tickets/02-scaffold.md
-- [ ] T03 Typed content and its logic (CONT-01, WORK-01, WORK-02, WORK-04, WORK-05, WORK-06, AWARD-01) -> tickets/03-content.md
+- [x] T03 Typed content and its logic (CONT-01, WORK-01, WORK-02, WORK-04, WORK-05, WORK-06, AWARD-01) -> tickets/03-content.md
 - [ ] T04 Page shell, sections, navigation (SITE-01, SITE-02, SITE-03) -> tickets/04-shell.md
 - [ ] T05 Light and dark themes with a toggle (THEME-01) -> tickets/05-theme.md
 - [ ] T06 Work list, filter, details, links (WORK-01 to WORK-06) -> tickets/06-work.md
