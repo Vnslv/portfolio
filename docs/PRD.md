@@ -1,6 +1,6 @@
 # portfolio Product Requirements (PRD)
 
-**Version:** 0.3.0
+**Version:** 0.4.0
 **Owner:** @Vnslv
 
 ## Rules (read first)
@@ -69,7 +69,7 @@ Each requirement is a level-3 heading `ID: title`, followed by a statement, acce
 **Statement:** The work section lists Alunsina, HeronPay, eHanda, Taskvane, and UMak Kalinga in one list.
 **Acceptance:**
 - Each project appears once.
-- Each shows its role label: project management for Alunsina, HeronPay, eHanda, and UMak Kalinga; software development and project management for Taskvane.
+- Each shows its role label: project management for Alunsina, HeronPay, and eHanda; software development and project management for UMak Kalinga and Taskvane.
 **Status:** Approved
 
 ### WORK-02: Role filter
@@ -114,7 +114,7 @@ Each requirement is a level-3 heading `ID: title`, followed by a statement, acce
 
 ### AWARD-01: Hackathon awards
 
-**Statement:** An awards section before the work section lists the hackathon awards the owner's teams won.
+**Statement:** An awards section before the work section lists the hackathon awards the owner's teams won or placed in.
 **Acceptance:**
 - Each award shows the hackathon, organizer, placement, date, project, the owner's role, and team size.
 - Only owner-supplied facts are shown. Missing facts are left out, never invented.
@@ -234,6 +234,7 @@ Version 1 does not include: freelance services, a contact form, a blog, a databa
 
 | Version | Date | Change | Approved by |
 | --- | --- | --- | --- |
+| 0.4.0 | 2026-11-24 | WORK-01: UMak Kalinga role; AWARD-01: placements | @Vnslv |
 | 0.3.0 | 2026-11-24 | Added THEME-01 | @Vnslv |
 | 0.2.0 | 2026-11-24 | Version 1 requirements from grill-spec | @Vnslv |
 | 0.1.0 | 2026-11-24 | Template created | @Vnslv |
