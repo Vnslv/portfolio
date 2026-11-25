@@ -122,6 +122,61 @@ test.describe('WORK-01 to WORK-06 work list, filter, details', () => {
     await expect(card(page, 'umak-kalinga').getByText('Problem')).toBeInViewport();
   });
 
+  test('WORK-04: the same link opens its project again after it was closed', async ({ page }) => {
+    await page.goto('/');
+    // Wait for the page to run script: Next rewrites the address while it hydrates, which can
+    // erase a hash set before then (seen with a scratch test, 3 of 6 runs).
+    await expect(page.locator('#work').getByRole('radio', { name: 'All' })).toBeEnabled();
+    const hash = () => new URL(page.url()).hash;
+    const link = async (id: string) => {
+      await page.evaluate((h) => (location.hash = h), `#${id}`);
+      await expect.poll(() => isOpen(page, id)).toBe(true);
+    };
+
+    await test.step('closed with the summary', async () => {
+      await link('idiya');
+      await summary(page, 'idiya').click();
+      await expect.poll(() => isOpen(page, 'idiya')).toBe(false);
+      expect(hash()).toBe('');
+      await link('idiya');
+    });
+
+    await test.step('closed with Close', async () => {
+      await card(page, 'idiya').getByRole('button', { name: 'Close' }).click();
+      await expect.poll(() => isOpen(page, 'idiya')).toBe(false);
+      expect(hash()).toBe('');
+      await link('idiya');
+    });
+
+    await test.step('closed by opening another project', async () => {
+      await summary(page, 'ehanda').click();
+      await expect.poll(() => isOpen(page, 'idiya')).toBe(false);
+      await expect.poll(() => isOpen(page, 'ehanda')).toBe(true);
+      expect(hash()).toBe('');
+      await link('idiya');
+      await expect.poll(() => isOpen(page, 'ehanda')).toBe(false);
+    });
+  });
+
+  test('WORK-02: choosing a filter closes the open project and lists only matching ones', async ({
+    page,
+  }) => {
+    await page.goto('/#alunsina');
+    const work = page.locator('#work');
+    await expect.poll(() => isOpen(page, 'alunsina')).toBe(true);
+    await work.getByRole('radio', { name: SOFTWARE }).check();
+    await expect(work.locator('li[data-project]')).toHaveCount(2);
+    await expect(card(page, 'alunsina')).toHaveCount(0);
+    await expect(work.locator('details[open]')).toHaveCount(0);
+    expect(new URL(page.url()).hash).toBe('');
+
+    await summary(page, 'idiya').click();
+    await expect.poll(() => isOpen(page, 'idiya')).toBe(true);
+    await work.getByRole('radio', { name: 'Project management' }).check();
+    await expect(work.locator('li[data-project]')).toHaveCount(5);
+    await expect(work.locator('details[open]')).toHaveCount(0);
+  });
+
   test('WORK-06: nothing on the real page is "Coming soon"; the fixture is in Work.test.tsx', async ({
     page,
   }) => {
@@ -152,6 +207,40 @@ test.describe('WORK-01 to WORK-06 work list, filter, details', () => {
     await summary(page, 'heronpay').click();
     await expect(card(page, 'heronpay').getByText(HERONPAY_ALT)).toBeVisible();
     await expect(card(page, 'heronpay').getByRole('img')).toHaveCount(0);
+  });
+
+  test('error: a failed image is logged once, with its path and no visitor data', async ({
+    page,
+  }) => {
+    const warnings: string[] = [];
+    page.on('console', (m) => m.type() === 'warning' && warnings.push(m.text()));
+    await page.route('**/images/heronpay-logo.png', (route) => route.abort());
+    await page.goto('/');
+    await summary(page, 'alunsina').click();
+    await expect(card(page, 'alunsina').getByRole('img')).toBeVisible();
+    await summary(page, 'heronpay').click();
+    await expect(card(page, 'heronpay').getByText(HERONPAY_ALT)).toBeVisible();
+    await expect
+      .poll(() => warnings.filter((w) => w.includes('image')))
+      .toEqual(['work: image failed to load /images/heronpay-logo.png']);
+  });
+
+  test.describe('without JavaScript, image blocked', () => {
+    test.use({ javaScriptEnabled: false, viewport: phone });
+
+    test('a failed image keeps its space and its description can be seen', async ({ page }) => {
+      await page.route('**/images/heronpay-logo.png', (route) => route.abort());
+      await page.goto('/');
+      await summary(page, 'heronpay').click();
+      const logo = card(page, 'heronpay').getByRole('img', { name: HERONPAY_ALT });
+      await expect(logo).toBeVisible();
+      const box = await logo.boundingBox();
+      expect(box?.width).toBeGreaterThan(100);
+      expect(box?.height).toBeGreaterThan(100);
+      // next/image sets color: transparent, which hides the alt text a broken image draws.
+      const color = await logo.evaluate((el) => getComputedStyle(el).color);
+      expect(color).not.toMatch(/^rgba\(0, 0, 0, 0\)$|^transparent$/);
+    });
   });
 
   test('Copy link reports success, and failure with the address shown', async ({ page }) => {

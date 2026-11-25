@@ -45,6 +45,12 @@
 - T06 may add `src/components/Work.test.tsx`; native open and close sections; bold text font for award and project names (owner).
 - Motion becomes its own ticket after T08 and before T09, once the owner approves the PRD and design update (owner).
 
+### T06 review (2026-11-25)
+
+- Idiya's closed row shows the WORK-01 role label; the owner role is inside (lead's reading of WORK-01, not an owner answer).
+- Choosing a filter closes the open project and drops its link, as the locked board does (lead).
+- `site-shell.spec.ts` may select the Menu inside the taskbar only (owner).
+
 ## Design Spec
 
 Locked: [design brief](../../standards/design-brief.md), [board](../../design/board-b.html), [flow, wireframes, states](../../design/first-look.md).

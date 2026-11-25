@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Project, ProjectImage, ReadyProject } from '../content/types';
 import { roleLabel, teamLabel } from '../lib/projects';
 import { Icon } from './Icon';
@@ -14,11 +14,20 @@ type CopyState = { kind: 'idle' } | { kind: 'ok' } | { kind: 'failed'; url: stri
 function ProjectPicture({ image }: { image: ProjectImage }) {
   const [failed, setFailed] = useState(false);
   const ref = useRef<HTMLImageElement>(null);
+  const logged = useRef(false);
+  const fail = useCallback(() => {
+    // Once per image. The message is the image path only: no visitor data.
+    if (!logged.current) {
+      logged.current = true;
+      console.warn(`work: image failed to load ${image.src}`);
+    }
+    setFailed(true);
+  }, [image.src]);
   // An image can fail before the page hydrates, so the handler alone would miss it.
   useEffect(() => {
     const el = ref.current;
-    if (el?.complete && el.naturalWidth === 0) setFailed(true);
-  }, []);
+    if (el?.complete && el.naturalWidth === 0) fail();
+  }, [fail]);
   return (
     <figure className={styles.picture}>
       {failed ? (
@@ -32,14 +41,16 @@ function ProjectPicture({ image }: { image: ProjectImage }) {
           unoptimized
           sizes="160px"
           className={styles.img}
-          onError={() => setFailed(true)}
+          onError={fail}
         />
       )}
     </figure>
   );
 }
 
-function Details({ project, enhanced }: { project: ReadyProject; enhanced: boolean }) {
+type DetailsProps = { project: ReadyProject; enhanced: boolean; onClose: () => void };
+
+function Details({ project, enhanced, onClose }: DetailsProps) {
   const [copy, setCopy] = useState<CopyState>({ kind: 'idle' });
 
   async function copyLink() {
@@ -59,6 +70,7 @@ function Details({ project, enhanced }: { project: ReadyProject; enhanced: boole
     if (!details) return;
     details.open = false;
     details.querySelector('summary')?.focus();
+    onClose();
   }
 
   return (
@@ -138,7 +150,9 @@ function Details({ project, enhanced }: { project: ReadyProject; enhanced: boole
 // A ready project is a native details section, so it opens and closes without script and its
 // text is in the page. All sections share one name, so opening one closes the others, as the
 // board does. A project that is not ready has no section and cannot be opened (WORK-06).
-export function ProjectCard({ project, enhanced }: { project: Project; enhanced: boolean }) {
+type ProjectCardProps = { project: Project; enhanced: boolean; onClose: () => void };
+
+export function ProjectCard({ project, enhanced, onClose }: ProjectCardProps) {
   const team = teamLabel(project.teamSize);
   const head = (
     <>
@@ -161,7 +175,7 @@ export function ProjectCard({ project, enhanced }: { project: Project; enhanced:
       {project.ready ? (
         <details name="projects">
           <summary className={styles.head}>{head}</summary>
-          <Details project={project} enhanced={enhanced} />
+          <Details project={project} enhanced={enhanced} onClose={onClose} />
         </details>
       ) : (
         <div className={styles.head}>{head}</div>

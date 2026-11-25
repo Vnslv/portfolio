@@ -103,6 +103,9 @@ details[open] > .head {
 
 .img {
   object-fit: contain;
+  /* next/image sets color: transparent inline, which hides the description a failed image draws
+     when no script can swap in the fallback. */
+  color: var(--muted) !important;
 }
 
 .broken {
