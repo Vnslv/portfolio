@@ -67,6 +67,12 @@ html:has(.bar) {
 }
 
 @media (min-width: 640px) {
+  /* Narrower sides while the Menu and every section button share the bar, so it keeps room for
+     wider fallback fonts and a fifth section. */
+  .bar :global(.button) {
+    padding: 4px 8px;
+  }
+
   .bar .section {
     display: inline-flex;
   }
@@ -82,6 +88,10 @@ html:has(.bar) {
 }
 
 @media (min-width: 900px) {
+  .bar :global(.button) {
+    padding: 4px 12px;
+  }
+
   .bar .menu {
     display: none;
   }
@@ -93,5 +103,10 @@ html:has(.bar) {
   .bar .section[aria-current='true'] {
     background: var(--title);
     color: var(--titleText);
+  }
+
+  /* The usual outline color is too faint on the title color in the light theme (NFR-04). */
+  .bar .section[aria-current='true']:focus-visible {
+    outline-color: var(--titleText);
   }
 }

@@ -1,23 +1,25 @@
+import { readFileSync } from 'node:fs';
 import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-const IDS = ['welcome', 'awards', 'work', 'about', 'links'];
-const LABELS = ['Welcome', 'Awards', 'Work', 'About', 'Links'];
+const IDS = ['welcome', 'awards', 'work', 'links'];
+const LABELS = ['Welcome', 'Awards', 'Projects', 'Links'];
 const phone = { width: 390, height: 844 };
 const desktop = { width: 1280, height: 800 };
+// The owner's words (T12 ticket).
+const LEAD = 'Full-stack developer and project manager';
+// The removed status strip under Welcome (T13 ticket): it must be nowhere on the page.
+const STRIP = 'Full-stack developer, project manager';
+const ABOUT =
+  'BS Computer Science, University of Makati (UMak), College of Computing and Information Sciences. I build full-stack web apps and lead teams from idea to shipped product as project manager. Member of the UMak SIC Research and Development Committee.';
 
-async function sectionOrder(page: Page, strict: boolean) {
+async function sectionOrder(page: Page) {
   const ids = await page.locator('main section').evaluateAll((els) => els.map((el) => el.id));
   expect(ids).toEqual(IDS);
   const tops = await Promise.all(
     IDS.map(async (id) => (await page.locator(`#${id}`).boundingBox())?.y ?? -1),
   );
-  tops.slice(1).forEach((top, i) => {
-    const before = tops[i] ?? 0;
-    // About and Links sit side by side on desktop, so their tops are equal there.
-    if (strict) expect(top).toBeGreaterThan(before);
-    else expect(top).toBeGreaterThanOrEqual(before);
-  });
+  tops.slice(1).forEach((top, i) => expect(top).toBeGreaterThan(tops[i] ?? 0));
 }
 
 const bar = (page: Page) => page.getByRole('navigation', { name: 'Taskbar' });
@@ -42,7 +44,7 @@ function fastEscapeCloses(page: Page) {
   });
 }
 
-test.describe('SITE-01, SITE-02, SITE-03 page shell', () => {
+test.describe('SITE-01, SITE-02 page shell', () => {
   test('phone: a fast Escape or a fast link click closes the Menu', async ({ page }) => {
     await page.setViewportSize(phone);
     await page.goto('/');
@@ -52,7 +54,7 @@ test.describe('SITE-01, SITE-02, SITE-03 page shell', () => {
         'nav[aria-label="Taskbar"] details',
       );
       details?.querySelector('summary')?.click();
-      details?.querySelector<HTMLElement>('a[href="#about"]')?.click();
+      details?.querySelector<HTMLElement>('a[href="#links"]')?.click();
       return details?.open;
     });
     expect(openAfterLinkClick).toBe(false);
@@ -63,7 +65,7 @@ test.describe('SITE-01, SITE-02, SITE-03 page shell', () => {
     await page.goto('/');
 
     await test.step('SITE-01: sections appear in order, top to bottom', async () => {
-      await sectionOrder(page, true);
+      await sectionOrder(page);
       for (const [i, id] of IDS.entries()) {
         await expect(
           page.locator(`#${id}`).getByRole('heading', { name: LABELS[i], level: 2 }),
@@ -71,20 +73,14 @@ test.describe('SITE-01, SITE-02, SITE-03 page shell', () => {
       }
     });
 
-    await test.step('SITE-02: the intro is the first content, with name, intro line and strip', async () => {
+    await test.step('SITE-02: the intro is the first content, with name, intro line and about text', async () => {
       const intro = page.locator('#welcome');
       await expect(page.getByRole('heading', { level: 1 })).toHaveText('Vonn Salve');
       await expect(page.getByRole('heading', { level: 1 })).toBeInViewport();
-      await expect(intro.getByText('Frontend developer and project manager')).toBeVisible();
-      await expect(intro.getByText('Frontend developer, project manager')).toBeVisible();
+      await expect(intro.getByText(LEAD)).toBeVisible();
+      await expect(intro.getByText(ABOUT, { exact: true })).toBeVisible();
       const firstTop = await intro.boundingBox();
       expect(firstTop?.y).toBeLessThan(40);
-    });
-
-    await test.step('SITE-03: the about window shows the owner text', async () => {
-      await expect(page.locator('#about')).toContainText(
-        'BS Computer Science, University of Makati',
-      );
     });
 
     await test.step('SITE-01: each section opens from its own Menu link', async () => {
@@ -97,7 +93,7 @@ test.describe('SITE-01, SITE-02, SITE-03 page shell', () => {
         await expect(page).toHaveURL(new RegExp(`#${id}$`));
         await expect(page.locator(`#${id}`)).toBeInViewport();
         await expect(
-          page.getByRole('navigation', { name: 'Taskbar' }).getByRole('link', { name: 'Work' }),
+          page.getByRole('navigation', { name: 'Taskbar' }).getByRole('link', { name: 'Projects' }),
         ).toBeHidden();
       }
     });
@@ -119,11 +115,11 @@ test.describe('SITE-01, SITE-02, SITE-03 page shell', () => {
       await menu.focus();
       await page.keyboard.press('Enter');
       await expect(
-        page.getByRole('navigation', { name: 'Taskbar' }).getByRole('link', { name: 'About' }),
+        page.getByRole('navigation', { name: 'Taskbar' }).getByRole('link', { name: 'Links' }),
       ).toBeVisible();
       await page.keyboard.press('Escape');
       await expect(
-        page.getByRole('navigation', { name: 'Taskbar' }).getByRole('link', { name: 'About' }),
+        page.getByRole('navigation', { name: 'Taskbar' }).getByRole('link', { name: 'Links' }),
       ).toBeHidden();
       await expect(menu).toBeFocused();
     });
@@ -133,8 +129,8 @@ test.describe('SITE-01, SITE-02, SITE-03 page shell', () => {
     await page.setViewportSize(desktop);
     await page.goto('/');
 
-    await test.step('SITE-01: sections appear in order (About and Links side by side)', async () => {
-      await sectionOrder(page, false);
+    await test.step('SITE-01: sections appear in order, top to bottom', async () => {
+      await sectionOrder(page);
     });
 
     await test.step('SITE-01: there is no sidebar; each section opens from the taskbar, which marks the current one', async () => {
@@ -200,13 +196,13 @@ test.describe('SITE-01, SITE-02, SITE-03 page shell', () => {
       test('the windows are one centered column of at most 1040 px', async ({ page }) => {
         await page.goto('/');
         const sections = page.locator('main > section, main > div > section');
-        await expect(sections).toHaveCount(5);
+        await expect(sections).toHaveCount(4);
         const first = await sections.first().boundingBox();
         expect(first!.width).toBeLessThanOrEqual(1040);
         // 984 px at 1280: the 1040 px page less its 28 px edges. 844 px at 900.
         expect(Math.round(first!.width)).toBe(Math.min(984, width - 56));
         expect(first!.x + first!.width / 2).toBeCloseTo(width / 2, 0);
-        // One column: the full-width windows share both edges; About and Links share the last row.
+        // One column: every window shares both edges, Links too.
         const edges = async (id: string) => {
           const b = await page.locator(`#${id}`).boundingBox();
           return [Math.round(b!.x), Math.round(b!.x + b!.width)];
@@ -214,8 +210,7 @@ test.describe('SITE-01, SITE-02, SITE-03 page shell', () => {
         const column = await edges('welcome');
         expect(await edges('awards')).toEqual(column);
         expect(await edges('work')).toEqual(column);
-        expect((await edges('about'))[0]).toBe(column[0]);
-        expect((await edges('links'))[1]).toBe(column[1]);
+        expect(await edges('links')).toEqual(column);
         expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
           width,
         );
@@ -234,10 +229,10 @@ test.describe('SITE-01, SITE-02, SITE-03 page shell', () => {
         }
         await page.keyboard.press('Tab');
         await expect(bar(page).locator('button')).toBeFocused();
-        await barLink(page, 'About').focus();
+        await barLink(page, 'Links').focus();
         await page.keyboard.press('Enter');
-        await expect(page).toHaveURL('/#about');
-        await expect(page.locator('#about')).toBeInViewport();
+        await expect(page).toHaveURL('/#links');
+        await expect(page.locator('#links')).toBeInViewport();
       });
 
       for (const scheme of ['light', 'dark'] as const) {
@@ -279,10 +274,10 @@ test.describe('SITE-01, SITE-02, SITE-03 page shell', () => {
           await page.goto('/');
           await expect(page.locator('[aria-current]')).toHaveCount(0);
           await expect(bar(page).locator('summary')).toBeHidden();
-          await expect(barLink(page, 'About').locator('svg')).toBeVisible();
-          await barLink(page, 'About').click();
-          await expect(page).toHaveURL('/#about');
-          await expect(page.locator('#about')).toBeInViewport();
+          await expect(barLink(page, 'Links').locator('svg')).toBeVisible();
+          await barLink(page, 'Links').click();
+          await expect(page).toHaveURL('/#links');
+          await expect(page.locator('#links')).toBeInViewport();
           await expect(page.locator('[aria-current]')).toHaveCount(0);
         });
       });
@@ -302,9 +297,9 @@ test.describe('SITE-01, SITE-02, SITE-03 page shell', () => {
           await expect(link).toHaveAttribute('href', `/#${id}`);
           await expect(link.locator('svg')).toBeVisible();
         }
-        await barLink(page, 'About').click();
-        await expect(page).toHaveURL('/#about');
-        await expect(page.locator('#about')).toBeInViewport();
+        await barLink(page, 'Links').click();
+        await expect(page).toHaveURL('/#links');
+        await expect(page.locator('#links')).toBeInViewport();
       });
     });
   }
@@ -347,10 +342,10 @@ test.describe('SITE-01, SITE-02, SITE-03 page shell', () => {
       await openMenu(page);
       await page
         .getByRole('navigation', { name: 'Taskbar' })
-        .getByRole('link', { name: 'About' })
+        .getByRole('link', { name: 'Links' })
         .click();
-      await expect(page).toHaveURL(/#about$/);
-      await expect(page.locator('#about')).toBeInViewport();
+      await expect(page).toHaveURL(/#links$/);
+      await expect(page.locator('#links')).toBeInViewport();
     });
   });
 
@@ -375,10 +370,10 @@ test.describe('SITE-01, SITE-02, SITE-03 page shell', () => {
     await openMenu(page);
     await page
       .getByRole('navigation', { name: 'Taskbar' })
-      .getByRole('link', { name: 'About' })
+      .getByRole('link', { name: 'Links' })
       .click();
-    await expect(page).toHaveURL('/#about');
-    await expect(page.locator('#about')).toBeInViewport();
+    await expect(page).toHaveURL('/#links');
+    await expect(page.locator('#links')).toBeInViewport();
 
     // From 900 px the window is the one centered column, as on the home page (owner, 2026-11-25).
     await page.setViewportSize(desktop);
@@ -392,4 +387,394 @@ test.describe('SITE-01, SITE-02, SITE-03 page shell', () => {
     await page.goto('/');
     await expect(page).toHaveTitle('Vonn Salve');
   });
+
+  for (const path of ['/', '/no-such-page']) {
+    test(`the tab icon is the supplied file and nothing fails to load, on ${path}`, async ({
+      page,
+    }) => {
+      const failed: string[] = [];
+      page.on('requestfailed', (r) => failed.push(r.url()));
+      // The not-found document itself answers 404 on purpose.
+      page.on('response', (r) => {
+        if (r.status() >= 400 && r.request().resourceType() !== 'document') failed.push(r.url());
+      });
+      await page.goto(path);
+      const icon = page.locator('link[rel~="icon"]');
+      await expect(icon).toHaveCount(1);
+      await expect(icon).toHaveAttribute('href', /^\/icon\.svg(\?.*)?$/);
+      await expect(icon).toHaveAttribute('type', 'image/svg+xml');
+      const response = await page.request.get((await icon.getAttribute('href')) ?? '');
+      expect(response.status()).toBe(200);
+      expect(response.headers()['content-type']).toContain('image/svg+xml');
+      const supplied = readFileSync(new URL('../../src/app/icon.svg', import.meta.url));
+      expect((await response.body()).equals(supplied)).toBe(true);
+      expect(failed).toEqual([]);
+    });
+  }
+});
+
+// Below 640 px the section links are in the Menu; from 900 px they are in the bar.
+const NAV = [
+  { size: phone, place: 'Menu', reveal: openMenu },
+  { size: desktop, place: 'bar', reveal: () => Promise.resolve() },
+];
+
+test.describe('SITE-01, SITE-02 the owner words and the name Projects', () => {
+  for (const { size, place, reveal } of NAV) {
+    test(`the intro, the Projects names and the about text at ${size.width} px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(size);
+      await page.goto('/');
+      const intro = page.locator('#welcome');
+      await expect(intro.getByText(LEAD, { exact: true })).toBeVisible();
+      await expect(page.getByText(STRIP, { exact: true })).toHaveCount(0);
+      await expect(
+        intro.getByRole('link', { name: 'See my projects', exact: true }),
+      ).toHaveAttribute('href', '#work');
+      await expect(page.locator('#work').getByRole('heading', { level: 2 })).toHaveText('Projects');
+      await expect(intro.getByText(ABOUT, { exact: true })).toBeVisible();
+      await reveal(page);
+      await expect(barLink(page, 'Projects')).toBeVisible();
+      await expect(barLink(page, 'Projects')).toHaveAttribute('href', '#work');
+      await expect(
+        bar(page).getByRole('link', { name: 'Work', exact: true, includeHidden: true }),
+      ).toHaveCount(0);
+    });
+
+    test(`the intro button, #work and the current mark at ${size.width} px (${place})`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(size);
+      await page.goto('/');
+      await page.getByRole('link', { name: 'See my projects', exact: true }).click();
+      await expect(page).toHaveURL('/#work');
+      await expect(page.locator('#work')).toBeInViewport();
+      await page.goto('about:blank');
+      await page.goto('/#work');
+      await expect(page.locator('#work')).toBeInViewport();
+      // The link in the Menu and the button in the bar are the same section; one is marked.
+      await expect(bar(page).locator('[aria-current="true"]')).toHaveAttribute('href', '#work');
+      // The bar names the section: in its text below 640 px, on its button from 900 px.
+      await expect(
+        bar(page).getByText('Projects', { exact: true }).filter({ visible: true }),
+      ).toHaveCount(1);
+      await reveal(page);
+      await barLink(page, 'Projects').click();
+      await expect(page).toHaveURL('/#work');
+      await expect(page.locator('#work')).toBeInViewport();
+    });
+
+    test(`error state: the not-found Projects link goes to #work at ${size.width} px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(size);
+      await page.goto('/no-such-page');
+      await reveal(page);
+      await expect(barLink(page, 'Projects')).toHaveAttribute('href', '/#work');
+      await barLink(page, 'Projects').click();
+      await expect(page).toHaveURL('/#work');
+      await expect(page.locator('#work')).toBeInViewport();
+      await expect(page.locator('#work').getByRole('heading', { level: 2 })).toHaveText('Projects');
+    });
+  }
+
+  // The narrowest and widest width of each bar layout. "Projects" is longer than the old name.
+  const NARROW = ['Menu', 'Projects', 'Dark theme'];
+  const MIDDLE = ['Menu', ...LABELS, 'Dark theme'];
+  const WIDE = [...LABELS, 'Dark theme'];
+  for (const [width, shown] of [
+    [320, NARROW],
+    [390, NARROW],
+    [639, NARROW],
+    [640, MIDDLE],
+    [899, MIDDLE],
+    [900, WIDE],
+    [1280, WIDE],
+  ] as const) {
+    test(`the bar fits on one row, inside the screen, at ${width} px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto('/#work');
+      await expect(bar(page).locator('button')).toBeVisible();
+      await expect(bar(page).locator('a[href="#work"][aria-current="true"]')).toHaveCount(1);
+      const items = await bar(page).evaluate((nav) =>
+        [
+          ...nav.querySelectorAll<HTMLElement>(
+            ':scope > details > summary, :scope > a, :scope > span',
+          ),
+        ]
+          .filter((el) => el.checkVisibility())
+          .map((el) => {
+            const box = el.getBoundingClientRect();
+            return {
+              // Only the text that is shown: the toggle also holds hidden text that sizes it.
+              text: el.innerText.trim(),
+              left: box.left,
+              right: box.right,
+              top: box.top,
+              bottom: box.bottom,
+              clipped: el.scrollWidth > el.clientWidth && el.clientWidth > 0,
+            };
+          }),
+      );
+      expect(items.map((i) => i.text)).toEqual(shown);
+      expect(items.filter((i) => i.left < 0 || i.right > width)).toEqual([]);
+      expect(items.filter((i) => i.clipped)).toEqual([]);
+      // Left to right without overlap, and all sharing one row.
+      expect(items.filter((i, n) => i.left < (items[n - 1]?.right ?? 0) - 0.5)).toEqual([]);
+      expect(Math.max(...items.map((i) => i.top))).toBeLessThan(
+        Math.min(...items.map((i) => i.bottom)),
+      );
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+        width,
+      );
+    });
+  }
+});
+
+test.describe('SITE-01, SITE-02 the about text is in Welcome and there is no About section', () => {
+  const targets = IDS.map((id) => `#${id}`);
+  const hrefs = (page: Page, selector: string) =>
+    bar(page)
+      .locator(selector)
+      .evaluateAll((els) => els.map((el) => el.getAttribute('href')));
+
+  for (const { size, reveal } of NAV) {
+    test(`four sections in the page, bar and Menu, and no About, at ${size.width} px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(size);
+      await page.goto('/');
+      await sectionOrder(page);
+      await expect(page.getByRole('heading', { level: 2 })).toHaveText(LABELS);
+      expect(await hrefs(page, ':scope > a')).toEqual(targets);
+      expect(await hrefs(page, 'details a')).toEqual(targets);
+      await expect(page.locator('#about')).toHaveCount(0);
+      await expect(page.locator('a[href$="#about"]')).toHaveCount(0);
+      await expect(page.getByText('About', { exact: true })).toHaveCount(0);
+      await expect(page.getByText(STRIP, { exact: true })).toHaveCount(0);
+      await expect(page.locator('#welcome > p')).toHaveCount(0);
+      // The about text is on the page once.
+      await expect(page.getByText(ABOUT, { exact: true })).toHaveCount(1);
+    });
+
+    test(`Welcome shows the photo, name, role line, about text, then buttons, at ${size.width} px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(size);
+      await page.goto('/');
+      const intro = page.locator('#welcome');
+      const parts = [
+        intro.locator('figure'),
+        intro.getByRole('heading', { level: 1 }),
+        intro.getByText(LEAD, { exact: true }),
+        intro.getByText(ABOUT, { exact: true }),
+        intro.getByRole('link', { name: 'See my projects', exact: true }),
+      ];
+      await expect(intro.getByRole('link', { name: 'Download CV', exact: true })).toBeVisible();
+      await expect(intro.getByText(ABOUT, { exact: true })).toHaveText(ABOUT);
+      // The reading order, as a screen reader meets it.
+      expect(
+        await intro.locator('figure, h1, p, a').evaluateAll((els) => els.map((el) => el.tagName)),
+      ).toEqual(['FIGURE', 'H1', 'P', 'P', 'A', 'A']);
+      const boxes = [];
+      for (const part of parts) {
+        await expect(part).toBeVisible();
+        const box = await part.boundingBox();
+        if (!box) throw new Error('no box');
+        boxes.push(box);
+      }
+      const [photo, ...text] = boxes;
+      if (!photo || !text[0]) throw new Error('no photo or name');
+      // On a phone the photo is above the name; from 640 px it is in the column to its left.
+      const beside = photo.x + photo.width <= text[0].x;
+      const above = photo.y + photo.height <= text[0].y;
+      expect([beside, above]).toEqual(size.width < 640 ? [false, true] : [true, false]);
+      expect(
+        text.slice(1).filter((box, i) => box.y < (text[i]?.y ?? 0) + (text[i]?.height ?? 0)),
+      ).toEqual([]);
+    });
+
+    test(`an old #about address shows the page at the top, at ${size.width} px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(size);
+      await page.goto('/#about');
+      // The page has run script once the filter is on; below 640 px its radios are hidden.
+      await expect(page.locator('#work input[type="radio"]').first()).toBeEnabled();
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText('Vonn Salve');
+      await expect(page.getByRole('heading', { level: 1 })).toBeInViewport();
+      expect(await page.evaluate(() => window.scrollY)).toBe(0);
+      await sectionOrder(page);
+      await expect(bar(page).locator('[aria-current="true"]')).toHaveAttribute('href', '#welcome');
+      await expect(page.locator('a[href$="#about"]')).toHaveCount(0);
+    });
+
+    test(`the current mark follows each of the four sections, at ${size.width} px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(size);
+      await page.goto('/');
+      await expect(bar(page).locator('button')).toBeVisible();
+      for (const i of [3, 2, 1, 0]) {
+        await reveal(page);
+        await barLink(page, LABELS[i] ?? '').click();
+        await expect(page).toHaveURL(`/#${IDS[i]}`);
+        await expect(bar(page).locator('[aria-current="true"]')).toHaveCount(1);
+        await expect(bar(page).locator('[aria-current="true"]')).toHaveAttribute(
+          'href',
+          `#${IDS[i]}`,
+        );
+        // The bar names it: in its own text below 640 px, on the button from 900 px.
+        await expect(
+          bar(page)
+            .getByText(LABELS[i] ?? '', { exact: true })
+            .filter({ visible: true }),
+        ).toHaveCount(1);
+      }
+    });
+
+    test(`error state: not-found has the same four links and no About, at ${size.width} px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(size);
+      await page.goto('/no-such-page');
+      const away = targets.map((t) => `/${t}`);
+      expect(await hrefs(page, ':scope > a')).toEqual(away);
+      expect(await hrefs(page, 'details a')).toEqual(away);
+      await expect(page.locator('a[href$="#about"]')).toHaveCount(0);
+      await expect(page.getByText('About', { exact: true })).toHaveCount(0);
+      await expect(page.locator('[aria-current]')).toHaveCount(0);
+    });
+  }
+
+  test('at 320 px the about text is readable, with no sideways scroll', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 });
+    await page.goto('/');
+    const about = page.locator('#welcome').getByText(ABOUT, { exact: true });
+    await expect(about).toBeVisible();
+    const box = await about.evaluate((el) => {
+      const rect = el.getBoundingClientRect();
+      return {
+        left: rect.left,
+        right: rect.right,
+        across: el.scrollWidth <= el.clientWidth,
+        down: el.scrollHeight <= el.clientHeight,
+        size: getComputedStyle(el).fontSize,
+      };
+    });
+    expect(box).toMatchObject({ across: true, down: true, size: '16px' });
+    expect(box.left).toBeGreaterThanOrEqual(0);
+    expect(box.right).toBeLessThanOrEqual(320);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+      320,
+    );
+  });
+});
+
+// The bar keeps room: for wider fallback fonts, and for a fifth section, Tools, which only these
+// tests add (T13 ticket; the 32 px is the lead's number, 2026-11-26).
+test.describe('SITE-01 the room in the bar', () => {
+  const measure = (page: Page) =>
+    bar(page).evaluate((nav) => {
+      const items = [
+        ...nav.querySelectorAll<HTMLElement>(
+          ':scope > details > summary, :scope > a, :scope > span',
+        ),
+      ].filter((el) => el.checkVisibility());
+      const boxes = items.map((el) => el.getBoundingClientRect());
+      const [before, toggle] = boxes.slice(-2);
+      if (!before || !toggle) throw new Error('the bar is empty');
+      return {
+        // The space between the theme toggle and what is before it, beyond the usual gap.
+        free: toggle.left - before.right - parseFloat(getComputedStyle(nav).columnGap),
+        outside: boxes.filter((b) => b.left < 0 || b.right > window.innerWidth).length,
+        rows:
+          Math.max(...boxes.map((b) => b.top)) < Math.min(...boxes.map((b) => b.bottom)) ? 1 : 2,
+        clipped: items.filter((el) => el.clientWidth > 0 && el.scrollWidth > el.clientWidth).length,
+        sideways: document.documentElement.scrollWidth > window.innerWidth,
+      };
+    });
+  const FITS = { outside: 0, rows: 1, clipped: 0, sideways: false };
+
+  const addTools = (page: Page) =>
+    bar(page).evaluate((nav) => {
+      const last = [...nav.querySelectorAll<HTMLAnchorElement>(':scope > a')].at(-1);
+      if (!last?.lastChild) throw new Error('no section link');
+      const copy = last.cloneNode(true) as HTMLAnchorElement;
+      copy.removeAttribute('aria-current');
+      copy.setAttribute('href', '#tools');
+      if (copy.lastChild) copy.lastChild.textContent = 'Tools';
+      last.before(copy);
+    });
+
+  const loadedFonts = (page: Page) =>
+    page.evaluate(async () => {
+      await document.fonts.ready;
+      return [...document.fonts]
+        .filter((f) => f.status === 'loaded' && !f.family.includes('Fallback'))
+        .map((f) => f.family);
+    });
+
+  for (const path of ['/', '/#work', '/no-such-page']) {
+    test(`at 640 px with five sections, at least 32 px stay free in the site font, on ${path}`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 640, height: 800 });
+      await page.goto(path);
+      await expect(bar(page).locator('button')).toBeVisible();
+      expect((await loadedFonts(page)).join()).toMatch(/Plex/);
+      await addTools(page);
+      await expect(bar(page).locator(':scope > a:visible')).toHaveCount(5);
+      const room = await measure(page);
+      expect(room).toMatchObject(FITS);
+      expect(room.free).toBeGreaterThanOrEqual(32);
+    });
+
+    test(`at 640 px with five sections and web fonts blocked, nothing overflows, on ${path}`, async ({
+      page,
+    }) => {
+      await page.route('**/_next/static/media/**', (route) => route.abort());
+      await page.setViewportSize({ width: 640, height: 800 });
+      await page.goto(path);
+      await expect(bar(page).locator('button')).toBeVisible();
+      expect(await loadedFonts(page)).toEqual([]);
+      expect(await measure(page)).toMatchObject(FITS);
+      await addTools(page);
+      await expect(bar(page).locator(':scope > a:visible')).toHaveCount(5);
+      expect(await measure(page)).toMatchObject(FITS);
+    });
+  }
+
+  for (const width of [899, 900]) {
+    test(`at ${width} px a fifth section still fits on one row`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto('/#work');
+      await expect(bar(page).locator('button')).toBeVisible();
+      await addTools(page);
+      await expect(bar(page).locator(':scope > a:visible')).toHaveCount(5);
+      expect(await measure(page)).toMatchObject(FITS);
+    });
+  }
+
+  for (const blocked of [false, true]) {
+    test(`one row inside the screen at every width from 320 to 960 px, web fonts ${blocked ? 'blocked' : 'loaded'}`, async ({
+      page,
+    }) => {
+      if (blocked) await page.route('**/_next/static/media/**', (route) => route.abort());
+      await page.setViewportSize({ width: 320, height: 800 });
+      await page.goto('/#work');
+      await expect(bar(page).locator('button')).toBeVisible();
+      await loadedFonts(page);
+      const bad: unknown[] = [];
+      for (let width = 320; width <= 960; width += 1) {
+        await page.setViewportSize({ width, height: 800 });
+        const { outside, rows, clipped, sideways } = await measure(page);
+        if (outside || rows !== 1 || clipped || sideways) {
+          bad.push({ width, outside, rows, clipped, sideways });
+        }
+      }
+      expect(bad).toEqual([]);
+    });
+  }
 });

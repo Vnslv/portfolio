@@ -1,20 +1,24 @@
 /* Tokens from docs/standards/design-brief.md. Light first; dark follows the device setting until the visitor chooses with the toggle (THEME-01). */
 :root {
-  --desk: #5a4a78;
-  --desk2: #514170;
-  --face: #d8d4e0;
-  --field: #fbfaff;
-  --text: #1d1826;
-  --muted: #4a4358;
+  --desk: #8fb8ee;
+  --desk2: #c9dcf7;
+  --face: #d6dfec;
+  --field: #fafcff;
+  --text: #141c2b;
+  --muted: #3d4a61;
   --hi: #ffffff;
-  --lo: #8a8299;
-  --edge: #2a2338;
-  --title: #4b2a7b;
-  --title2: #7a2f74;
+  --lo: #7f8ea8;
+  --edge: #1c2a44;
+  --title: #1c4587;
+  --title2: #2b69b0;
   --titleText: #ffffff;
-  --link: #4b2a7b;
+  --link: #1c4587;
   --badge: #b7f0d0;
   --badgeText: #08351f;
+  /* Pixel clouds and pixel stars (owner mock A2): inline SVG tiles, so nothing is requested. */
+  --clouds: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='420' shape-rendering='crispEdges'%3E%3Cpath fill='%23f4f8ff' d='M346 206h80v16h-80zM330 222h112v16h-112zM362 190h40v16h-40z'/%3E%3Cpath fill='%23ffffff' d='M52 72h60v12h-60zM40 84h84v12h-84zM64 60h30v12h-30zM160 330h50v10h-50zM150 340h70v10h-70zM170 320h25v10h-25z'/%3E%3C/svg%3E");
+  --stars: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512' shape-rendering='crispEdges'%3E%3Cpath fill='%23ffffff' d='M470 148h2v2h-2zM170 78h4v4h-4zM448 30h2v2h-2zM260 214h2v2h-2zM472 262h2v2h-2zM272 314h2v2h-2zM202 362h4v4h-4zM208 78h2v2h-2zM112 322h4v4h-4zM140 4h2v2h-2zM0 314h2v2h-2zM250 352h2v2h-2zM352 456h2v2h-2zM446 470h2v2h-2zM484 246h2v2h-2zM370 148h2v2h-2zM458 18h2v2h-2zM54 42h2v2h-2zM484 98h2v2h-2zM212 30h2v2h-2zM246 508h2v2h-2zM160 2h2v2h-2z'/%3E%3Cpath fill='%23cdb4ff' d='M276 350h2v2h-2zM26 350h2v2h-2zM412 62h4v4h-4zM352 328h4v4h-4zM464 190h4v4h-4zM150 478h2v2h-2zM28 186h4v4h-4zM144 186h2v2h-2zM234 440h4v4h-4zM178 168h2v2h-2zM114 106h2v2h-2zM202 120h4v4h-4zM286 178h4v4h-4zM170 370h2v2h-2zM68 254h2v2h-2zM84 338h2v2h-2zM258 386h2v2h-2zM12 152h2v2h-2zM12 390h4v4h-4zM344 124h2v2h-2zM62 106h2v2h-2zM38 138h2v2h-2zM410 338h4v4h-4zM208 254h2v2h-2zM368 340h2v2h-2z'/%3E%3Cpath fill='%237f8cc9' d='M272 168h2v2h-2zM122 190h4v4h-4zM264 258h2v2h-2zM448 56h2v2h-2zM302 70h2v2h-2zM454 452h4v4h-4zM120 190h4v4h-4zM250 0h2v2h-2zM472 10h2v2h-2zM494 288h2v2h-2zM392 358h2v2h-2zM16 56h2v2h-2zM440 508h4v4h-4zM214 126h2v2h-2zM158 504h2v2h-2zM218 38h2v2h-2zM468 464h4v4h-4zM216 344h4v4h-4zM498 78h4v4h-4zM46 118h2v2h-2zM390 222h2v2h-2zM452 432h2v2h-2zM248 490h2v2h-2z'/%3E%3C/svg%3E");
+  --sky: var(--clouds);
   --display: var(--font-pixelify), 'IBM Plex Sans', sans-serif;
   --body: var(--font-plex), Arial, sans-serif;
   color-scheme: light;
@@ -24,41 +28,43 @@
    (device setting, no stored choice) and the attribute (stored or toggled choice). */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --desk: #1d1630;
-    --desk2: #251c3c;
-    --face: #322b42;
-    --field: #221c30;
-    --text: #f3effa;
-    --muted: #c5bcd6;
-    --hi: #5f5578;
-    --lo: #7d7199;
-    --edge: #0a0712;
-    --title: #5a3596;
-    --title2: #86387f;
+    --desk: #0c1030;
+    --desk2: #1b1440;
+    --face: #222a47;
+    --field: #161c33;
+    --text: #eef2ff;
+    --muted: #b9c3de;
+    --hi: #4a5680;
+    --lo: #6c7aa8;
+    --edge: #060917;
+    --title: #26337d;
+    --title2: #3b4ba3;
     --titleText: #ffffff;
-    --link: #cdb4ff;
+    --link: #b9c9ff;
     --badge: #7fe0b0;
     --badgeText: #08351f;
+    --sky: var(--stars);
     color-scheme: dark;
   }
 }
 
 :root[data-theme='dark'] {
-  --desk: #1d1630;
-  --desk2: #251c3c;
-  --face: #322b42;
-  --field: #221c30;
-  --text: #f3effa;
-  --muted: #c5bcd6;
-  --hi: #5f5578;
-  --lo: #7d7199;
-  --edge: #0a0712;
-  --title: #5a3596;
-  --title2: #86387f;
+  --desk: #0c1030;
+  --desk2: #1b1440;
+  --face: #222a47;
+  --field: #161c33;
+  --text: #eef2ff;
+  --muted: #b9c3de;
+  --hi: #4a5680;
+  --lo: #6c7aa8;
+  --edge: #060917;
+  --title: #26337d;
+  --title2: #3b4ba3;
   --titleText: #ffffff;
-  --link: #cdb4ff;
+  --link: #b9c9ff;
   --badge: #7fe0b0;
   --badgeText: #08351f;
+  --sky: var(--stars);
   color-scheme: dark;
 }
 
@@ -72,10 +78,25 @@
 body {
   margin: 0;
   background-color: var(--desk);
-  background-image: linear-gradient(45deg, var(--desk2) 25%, transparent 25% 75%, var(--desk2) 75%);
-  background-size: 8px 8px;
   color: var(--text);
   font: 16px/1.5 var(--body);
+}
+
+/* The sky or the night: a fixed layer behind the page, as large as the largest viewport, so it
+   covers every height and width and stays still while the page scrolls. The tile repeats from the
+   top left over the gradient. Its own compositing layer keeps scrolling from repainting it. */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100lvh;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--sky), linear-gradient(var(--desk), var(--desk2));
+  will-change: transform;
 }
 
 :where(h1, h2, h3, p, ul, dl, dd) {

@@ -4,7 +4,6 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { profile as content } from '../content/profile';
 import type { Profile, ProjectImage } from '../content/types';
-import { INTRO_STRIP } from '../lib/site';
 import { LinkItem } from './Links';
 import { Window } from './Window';
 import styles from './Intro.module.css';
@@ -45,7 +44,7 @@ function ProfilePhoto({ photo }: { photo: ProjectImage }) {
 
 export function Intro({ profile = content }: { profile?: Profile }) {
   return (
-    <Window id="welcome" title="Welcome" icon="home" status={INTRO_STRIP}>
+    <Window id="welcome" title="Welcome" icon="home">
       <div className={styles.intro}>
         {profile.photo ? (
           <ProfilePhoto photo={profile.photo} />
@@ -56,9 +55,11 @@ export function Intro({ profile = content }: { profile?: Profile }) {
         <div className={styles.text}>
           <h1 className={styles.name}>{profile.name}</h1>
           <p className={styles.lead}>{profile.intro}</p>
+          {/* The owner's about text, unchanged; labeled placeholder until supplied (SITE-02). */}
+          <p>{profile.about?.trim() ? profile.about : '<your about text>'}</p>
           <div className={styles.row}>
             <a className="button" href="#work">
-              See my work
+              See my projects
             </a>
             <LinkItem label="CV" icon="doc" url={profile.cvUrl} newTab={false} />
           </div>

@@ -75,6 +75,17 @@
 - Placement is Top 30, not Top 10; the unedited check photo is shown; everyone pictured agreed; July 2026 stays (owner).
 - No sidebar from 900 px: its links are in the bottom bar. The Copy link button is removed and the Idiya logo added. All in T11 (owner).
 
+### T12 (2026-11-25)
+
+- Full-stack intro and About text; Work is shown as Projects (address `#work`); Idiya full-stack, UMak Kalinga frontend; the Software development filter stays (owner, PRD 0.5.1).
+
+### T13 (2026-11-26)
+
+- The About text moves into Welcome; the About section and the intro strip are removed (owner, PRD 0.5.2).
+- Sky by day and starry night backgrounds, with blue headers and windows to match (owner, mock A2).
+- The tab icon is a dev sprite (owner).
+- Fonts are no longer preloaded, after CI `lighthouse` comparisons; a failed `lighthouse` job may be rerun once per commit, recorded (owner).
+
 ## Design Spec
 
 Locked: [design brief](../../standards/design-brief.md), [board](../../design/board-b.html), [flow, wireframes, states](../../design/first-look.md).
@@ -93,6 +104,8 @@ Tickets run in order; several change the same files. One ticket per session and 
 - [x] T07 Awards section and badges (AWARD-01, AWARD-02, AWARD-03) -> tickets/07-awards.md
 - [x] T08 Profile links and CV (LINK-01, LINK-02) -> tickets/08-links.md
 - [x] T11 Owner changes: eGovPH, taskbar, Idiya logo, Copy link (AWARD-01, AWARD-02, AWARD-03, SITE-01, WORK-03, WORK-04, NFR-01, NFR-04) -> tickets/11-egovph.md
+- [x] T12 Full-stack, Projects and role labels (SITE-01, SITE-02, SITE-03, WORK-01, WORK-02, WORK-05, CONT-01) -> tickets/12-wording.md
+- [x] T13 About text in the intro, sky theme, tab icon (SITE-01, SITE-02, THEME-01, NFR-01, NFR-04) -> tickets/13-about.md
 - [ ] T09 Accessibility, speed, parity checks (NFR-01, NFR-04) -> tickets/09-quality.md
 
 ## Out Of Scope

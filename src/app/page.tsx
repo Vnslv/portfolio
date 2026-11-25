@@ -1,4 +1,3 @@
-import { About } from '@/components/About';
 import { Awards } from '@/components/Awards';
 import { Footer } from '@/components/Footer';
 import { Intro } from '@/components/Intro';
@@ -21,10 +20,7 @@ export default function Home() {
             <Intro />
             <Awards awards={awards} />
             <Work projects={projects} />
-            <div className={styles.two}>
-              <About />
-              <Links />
-            </div>
+            <Links />
           </main>
           <Footer />
         </div>

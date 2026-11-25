@@ -24,8 +24,7 @@
 }
 
 .column,
-.main,
-.two {
+.main {
   display: grid;
   gap: 16px;
   align-content: start;
@@ -54,9 +53,5 @@
   .column,
   .main {
     gap: 20px;
-  }
-
-  .two {
-    grid-template-columns: 1.4fr 1fr;
   }
 }

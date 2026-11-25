@@ -1,15 +1,28 @@
 import { describe, expect, it } from 'vitest';
 import { projects } from '../content/projects';
 import type { Project } from '../content/types';
-import { filterProjects, projectIdFromHash, roleLabel, teamLabel } from './projects';
+import { filterProjects, projectIdFromHash, teamLabel } from './projects';
 
 const fixture: readonly Project[] = [
-  { id: 'dev-only', name: 'Dev Only', roles: ['software-development'], ready: false },
-  { id: 'pm-only', name: 'PM Only', roles: ['project-management'], ready: false },
+  {
+    id: 'dev-only',
+    name: 'Dev Only',
+    roles: ['software-development'],
+    roleLabel: 'Fixture development',
+    ready: false,
+  },
+  {
+    id: 'pm-only',
+    name: 'PM Only',
+    roles: ['project-management'],
+    roleLabel: 'Fixture management',
+    ready: false,
+  },
   {
     id: 'both',
     name: 'Both',
     roles: ['software-development', 'project-management'],
+    roleLabel: 'Fixture both',
     ready: false,
   },
 ];
@@ -34,6 +47,16 @@ describe('project content (CONT-01, WORK-01, WORK-03, WORK-05)', () => {
       eHanda: pm,
       Idiya: both,
       'UMak Kalinga': both,
+    });
+  });
+
+  it('holds the role label of each project (WORK-01, CONT-01, T12 ticket)', () => {
+    expect(Object.fromEntries(projects.map((p) => [p.name, p.roleLabel]))).toEqual({
+      Alunsina: 'Project management',
+      HeronPay: 'Project management',
+      eHanda: 'Project management',
+      Idiya: 'Full-stack development and project management',
+      'UMak Kalinga': 'Frontend development and project management',
     });
   });
 
@@ -157,18 +180,7 @@ describe('filterProjects (WORK-02, WORK-04)', () => {
   });
 });
 
-describe('labels (WORK-01, WORK-05)', () => {
-  it('gives the PRD role labels', () => {
-    expect(roleLabel(['project-management'])).toBe('Project management');
-    expect(roleLabel(['software-development'])).toBe('Software development');
-    expect(roleLabel(['software-development', 'project-management'])).toBe(
-      'Software development and project management',
-    );
-    expect(roleLabel(['project-management', 'software-development'])).toBe(
-      'Software development and project management',
-    );
-  });
-
+describe('labels (WORK-05)', () => {
   it('shows solo for one person, a team size otherwise, and nothing when unknown', () => {
     expect(teamLabel(1)).toBe('Solo project');
     expect(teamLabel(4)).toBe('Team of 4');

@@ -45,6 +45,14 @@ Flow and wireframes before styling. Requirements: `docs/PRD.md` 0.5.0. Text in `
 - From 900 px the folder tree is removed and its links move into the taskbar, with icons (owner).
 - The Copy link button is removed (owner).
 
+### Change After Lock (2026-11-25, T12)
+
+- The intro strip reads "Full-stack developer, project manager"; Work is shown as Projects, and the button reads "See my projects" (owner). The wireframes below keep the earlier words.
+
+### Change After Lock (2026-11-26, T13)
+
+- The About text is in Welcome; the About window and the intro strip are removed, and Links takes the full width (owner, PRD 0.5.2). The palette and background are the sky theme, mock A2 (owner); tokens are in the design brief. The wireframes below keep the earlier layout.
+
 ### For The Plan Gate
 
 - Pixel parity (owner chose it): Playwright screenshots of `docs/design/board-b.html` and the build at 390, 768, and 1280 px, both themes, structure matching within 8 px.

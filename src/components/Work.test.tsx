@@ -9,6 +9,8 @@ const fixture: readonly Project[] = [
     id: 'ready-one',
     name: 'Ready One',
     roles: ['software-development', 'project-management'],
+    // Wording that `roles` could not produce, so it can only come from the content (CONT-01).
+    roleLabel: 'Fixture robotics and project management',
     teamSize: 1,
     ownerRole: 'Solo builder',
     ready: true,
@@ -18,7 +20,13 @@ const fixture: readonly Project[] = [
     links: [{ label: 'Live', url: 'https://example.com/live' }],
     images: [{ src: '/images/x.png', alt: 'An image description' }],
   },
-  { id: 'soon-one', name: 'Soon One', roles: ['project-management'], ready: false },
+  {
+    id: 'soon-one',
+    name: 'Soon One',
+    roles: ['project-management'],
+    roleLabel: 'Fixture coordination',
+    ready: false,
+  },
 ];
 
 const html = renderToStaticMarkup(<Work projects={fixture} />);
@@ -32,11 +40,20 @@ function item(id: string): string {
   return chunk;
 }
 
+describe('the Projects window (SITE-01, T12 ticket)', () => {
+  it('is titled Projects and keeps the id work', () => {
+    expect(html).toMatch(/^<section[^>]*id="work"/);
+    // The title follows the window icon inside the heading.
+    expect(html).toContain('</svg>Projects</h2>');
+    expect(html).not.toContain('</svg>Work</h2>');
+  });
+});
+
 describe('Work with a project that is not ready (WORK-06)', () => {
   it('shows its name, role label and "Coming soon"', () => {
     const soon = item('soon-one');
     expect(soon).toContain('Soon One');
-    expect(soon).toContain('Project management');
+    expect(soon).toContain('>Fixture coordination</span>');
     expect(soon).toContain('Coming soon');
   });
 
@@ -75,7 +92,8 @@ describe('Work with a ready project (WORK-01, WORK-03, WORK-05)', () => {
 
   it('shows its role label and team label, and opening one section closes the others', () => {
     const ready = item('ready-one');
-    expect(ready).toContain('Software development and project management');
+    expect(ready).toContain('>Fixture robotics and project management</span>');
+    expect(ready).not.toContain('Software development and project management');
     expect(ready).toContain('Solo project');
     expect(ready).toContain('name="projects"');
   });

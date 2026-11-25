@@ -6,6 +6,7 @@ export const projects: readonly Project[] = [
     id: 'alunsina',
     name: 'Alunsina',
     roles: ['project-management'],
+    roleLabel: 'Project management',
     teamSize: 4,
     ready: true,
     problem:
@@ -31,6 +32,7 @@ export const projects: readonly Project[] = [
     id: 'heronpay',
     name: 'HeronPay',
     roles: ['project-management'],
+    roleLabel: 'Project management',
     teamSize: 3,
     ready: true,
     problem:
@@ -50,6 +52,7 @@ export const projects: readonly Project[] = [
     id: 'ehanda',
     name: 'eHanda',
     roles: ['project-management'],
+    roleLabel: 'Project management',
     teamSize: 5,
     ready: true,
     problem:
@@ -68,6 +71,7 @@ export const projects: readonly Project[] = [
     id: 'idiya',
     name: 'Idiya',
     roles: ['software-development', 'project-management'],
+    roleLabel: 'Full-stack development and project management',
     teamSize: 1,
     ownerRole: 'Full-stack developer and project manager',
     ready: true,
@@ -92,6 +96,7 @@ export const projects: readonly Project[] = [
     id: 'umak-kalinga',
     name: 'UMak Kalinga',
     roles: ['software-development', 'project-management'],
+    roleLabel: 'Frontend development and project management',
     teamSize: 4,
     ready: true,
     problem:
