@@ -84,6 +84,7 @@
 - The About text moves into Welcome; the About section and the intro strip are removed (owner, PRD 0.5.2).
 - Sky by day and starry night backgrounds, with blue headers and windows to match (owner, mock A2).
 - The tab icon is a dev sprite (owner).
+- Fonts are no longer preloaded, after CI `lighthouse` comparisons; a failed `lighthouse` job may be rerun once per commit, recorded (owner).
 
 ## Design Spec
 

@@ -10,6 +10,7 @@ const pixelify = Pixelify_Sans({
   weight: ['500', '700'],
   variable: '--font-pixelify',
   display: 'swap',
+  preload: false,
 });
 
 const plex = IBM_Plex_Sans({
@@ -17,6 +18,7 @@ const plex = IBM_Plex_Sans({
   weight: ['400', '700'],
   variable: '--font-plex',
   display: 'swap',
+  preload: false,
 });
 
 export const metadata: Metadata = {

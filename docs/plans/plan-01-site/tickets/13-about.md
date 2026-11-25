@@ -20,6 +20,7 @@
 - `src/components/Links.tsx`, `src/components/Taskbar.tsx`, `src/components/Taskbar.module.css`
 - `src/app/page.tsx`, `src/app/page.module.css`, `src/app/tokens.css`
 - `src/app/icon.svg` (supplied)
+- `src/app/layout.tsx` (font preload only; owner, 2026-11-26)
 - Component CSS modules, only where a color no longer reads well
 - `src/lib/site.ts`, `src/content/types.ts`
 - Test-only files
@@ -38,6 +39,7 @@
 - The About section, its bar and Menu entry and its code are removed. Links takes the full width.
 - An old `#about` address shows the page normally at the top. Nothing on the site links to it.
 - The design brief's new tokens and background in both themes, exactly. The sky or night covers the whole page at any height and width with no seam or band while scrolling; it is drawn in CSS with no image request and at most 3 KB more compressed CSS. Theme switching, the stored choice and the first visit work as before (THEME-01). Every text and control color meets NFR-04 on its background, focus outlines included.
+- The two web fonts are still self-hosted and used, but not preloaded (owner, 2026-11-26, NFR-01).
 - The browser tab shows `src/app/icon.svg`, the dev sprite, unedited, on home and not-found, and no favicon request fails (owner, 2026-11-26).
 - The bar fits on one row inside the screen at every width from 320 px, with room to spare for wider fallback fonts (CI on Linux put the theme button 9 px outside at 640 px in T12), and will again when a fifth section, Tools, is added. T12 and T13 share one PR (lead).
 - The text is readable at 320 px with no sideways scroll, and the photo still is not the largest paint on phones. NFR-01 and NFR-04 hold.
