@@ -38,6 +38,8 @@ Flow and wireframes before styling. Requirements: `docs/PRD.md` 0.5.0. Text in `
 - Award and project names use the bold text font (owner).
 - On phones, award photos sit small beside their text and the profile photo is 108 by 120 px, to keep NFR-01; award photos open full size (owner). The phone wireframe below shows the earlier full width.
 
+- A failed profile photo shows its description (owner, 2026-11-25).
+
 ### For The Plan Gate
 
 - Pixel parity (owner chose it): Playwright screenshots of `docs/design/board-b.html` and the build at 390, 768, and 1280 px, both themes, structure matching within 8 px.

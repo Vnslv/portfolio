@@ -1,0 +1,23 @@
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* A link the owner has not supplied: labeled text in a sunken box, not a button. */
+.placeholder {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 16px;
+  background: var(--field);
+  color: var(--muted);
+  border: 2px solid;
+  border-color: var(--lo) var(--hi) var(--hi) var(--lo);
+  overflow-wrap: anywhere;
+}
+
+.placeholder svg {
+  flex: none;
+}

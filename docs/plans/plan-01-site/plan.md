@@ -65,6 +65,11 @@
 
 - Award photos show small WebP copies; the profile photo does too, in T08 (owner, after CI `lighthouse` measurements).
 
+### T08 (2026-11-25)
+
+- `Intro.module.css` and the small profile photo allowed; a failed photo shows its description (owner).
+- The LinkedIn address in `profile.ts` is the owner's (grill, 2026-11-24).
+
 ## Design Spec
 
 Locked: [design brief](../../standards/design-brief.md), [board](../../design/board-b.html), [flow, wireframes, states](../../design/first-look.md).
