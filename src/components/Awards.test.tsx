@@ -56,6 +56,18 @@ describe('Awards (AWARD-01, AWARD-03)', () => {
     expect(one).toContain('alt="A fixture image description"');
   });
 
+  it('links the photo to its full image in a new tab, with a name that says so', () => {
+    const one = item(html, 'award-fixture-hack-one');
+    expect(one).toContain('href="/images/fixture.jpg"');
+    expect(one).toContain('target="_blank"');
+    expect(one).toContain('rel="noopener noreferrer"');
+    expect(one).toContain(
+      'aria-label="A fixture image description (opens the full image in a new tab)"',
+    );
+    // An award with no image has no photo and so no link.
+    expect(item(html, 'award-fixture-hack-two')).not.toContain('<a ');
+  });
+
   it('leaves out missing facts and still shows an award with no image', () => {
     const two = item(html, 'award-fixture-hack-two');
     expect(two).toContain('Top 10, Fixture Hack Two');

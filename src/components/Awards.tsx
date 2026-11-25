@@ -27,21 +27,30 @@ function AwardPicture({ image }: { image: ProjectImage }) {
     if (el?.complete && el.naturalWidth === 0) fail();
   }, [fail]);
   return (
-    <figure className={styles.picture}>
-      {failed ? (
-        <p className={styles.broken}>{image.alt}</p>
-      ) : (
-        <Image
-          ref={ref}
-          src={image.src}
-          alt={image.alt}
-          fill
-          unoptimized
-          sizes="(min-width: 640px) 260px, 100vw"
-          className={styles.img}
-          onError={fail}
-        />
-      )}
+    <figure className={failed ? `${styles.picture} ${styles.failed}` : styles.picture}>
+      {/* The photo opens its full image in a new tab; the name says so. */}
+      <a
+        className={styles.link}
+        href={image.src}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`${image.alt} (opens the full image in a new tab)`}
+      >
+        {failed ? (
+          <p className={styles.broken}>{image.alt}</p>
+        ) : (
+          <Image
+            ref={ref}
+            src={image.src}
+            alt={image.alt}
+            fill
+            unoptimized
+            sizes="(min-width: 640px) 260px, 120px"
+            className={styles.img}
+            onError={fail}
+          />
+        )}
+      </a>
     </figure>
   );
 }

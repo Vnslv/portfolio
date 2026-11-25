@@ -57,6 +57,10 @@
 - Up to three fix and re-review rounds per ticket for small fixes inside it (owner).
 - The not-found taskbar keeps the Awards link; it matters only with no awards (lead).
 
+### Phone photos (2026-11-25)
+
+- Small photos on phones and full-size award photos in a new tab, because large ones break NFR-01 (owner).
+
 ## Design Spec
 
 Locked: [design brief](../../standards/design-brief.md), [board](../../design/board-b.html), [flow, wireframes, states](../../design/first-look.md).

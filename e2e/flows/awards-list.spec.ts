@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Locator, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 const phone = { width: 390, height: 844 };
@@ -9,6 +9,17 @@ const EGOVPH = 'award-egovph-hackathon-2026';
 const BCC_ALT = 'Six people on stage under a screen that reads Your hackathon champion, HeronPay';
 const INFOTECH_ALT =
   'Three teammates wearing champion medals, one holding an Infotechnolympics 2026 envelope';
+
+// Presses Tab from the top of the page until the element has focus, or gives up after 40 presses.
+async function tabTo(page: Page, target: Locator): Promise<boolean> {
+  const handle = await target.elementHandle();
+  if (!handle) return false;
+  for (let i = 0; i < 40; i += 1) {
+    await page.keyboard.press('Tab');
+    if (await handle.evaluate((el) => el === document.activeElement)) return true;
+  }
+  return false;
+}
 
 const award = (page: Page, id: string) => page.locator(`#awards li[id="${id}"]`);
 const card = (page: Page, id: string) => page.locator(`li[data-project="${id}"]`);
@@ -116,30 +127,131 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
     });
   });
 
-  for (const width of [768, 1280]) {
+  const box = async (locator: Locator) => {
+    const b = await locator.boundingBox();
+    if (!b) throw new Error('no box');
+    return b;
+  };
+
+  for (const width of [390, 768, 1280]) {
     test(`layout at ${width} px: an award with no image uses the full width`, async ({ page }) => {
       await page.setViewportSize({ width, height: 800 });
       await page.goto('/');
-      const text = async (id: string) => (await award(page, id).locator('h3').boundingBox())?.width;
-      const withImage = (await text(BCC)) ?? 0;
-      const without = (await text(EGOVPH)) ?? 0;
-      expect(withImage).toBeGreaterThan(0);
-      expect(without).toBeGreaterThanOrEqual(withImage);
+      const text = async (id: string) => (await box(award(page, id).locator('h3'))).width;
+      expect(await text(EGOVPH)).toBeGreaterThanOrEqual(await text(BCC));
+      const li = await box(award(page, EGOVPH));
+      expect((await box(award(page, EGOVPH).locator('h3'))).x).toBeCloseTo(li.x, 0);
     });
   }
 
-  test('phone: Menu lists Awards, image above the text, no overflow', async ({ page }) => {
+  test('phone, below 640 px: the photo is 120 px wide, about 80 high, beside the text', async ({
+    page,
+  }) => {
+    await page.setViewportSize(phone);
+    await page.goto('/');
+    for (const id of [BCC, INFOTECH]) {
+      const fig = await box(award(page, id).locator('figure'));
+      const text = await box(award(page, id).locator('h3'));
+      expect(Math.round(fig.width)).toBe(120);
+      expect(Math.abs(fig.height - 80)).toBeLessThanOrEqual(2);
+      expect(text.x).toBeGreaterThanOrEqual(fig.x + fig.width);
+      expect(text.y).toBeLessThan(fig.y + fig.height);
+      const style = await award(page, id)
+        .locator('figure')
+        .evaluate((el) => ({ min: getComputedStyle(el).minHeight }));
+      expect(parseFloat(style.min) || 0).toBeLessThanOrEqual(80);
+      const fit = await award(page, id)
+        .getByRole('img')
+        .evaluate((el) => getComputedStyle(el).objectFit);
+      expect(fit).toBe('contain');
+    }
+  });
+
+  for (const width of [768, 1280]) {
+    test(`from 640 px the photo stays 260 px beside the text, at ${width} px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto('/');
+      const fig = await box(award(page, BCC).locator('figure'));
+      const text = await box(award(page, BCC).locator('h3'));
+      expect(Math.round(fig.width)).toBe(260);
+      expect(text.x).toBeGreaterThanOrEqual(fig.x + fig.width);
+    });
+  }
+
+  test('phone: Menu lists Awards, and nothing overflows sideways', async ({ page }) => {
     await page.setViewportSize(phone);
     await page.goto('/');
     await page.locator('summary', { hasText: 'Menu' }).click();
     await page.locator('nav[aria-label="Taskbar"] a[href="#awards"]:visible').click();
     await expect(page.locator('#awards')).toBeInViewport();
-    const img = (await award(page, BCC).locator('figure').boundingBox())?.y ?? 0;
-    const text = (await award(page, BCC).locator('h3').boundingBox())?.y ?? 0;
-    expect(img).toBeLessThan(text);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       390,
     );
+  });
+
+  test('320 px: nothing overflows, with the photos and with both failed', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 });
+    const sideways = () => page.evaluate(() => document.documentElement.scrollWidth);
+    await page.goto('/');
+    expect(await sideways()).toBeLessThanOrEqual(320);
+    await page.route('**/images/*.jpg', (route) => route.abort());
+    await page.goto('/');
+    await expect(award(page, BCC).getByText(BCC_ALT)).toBeVisible();
+    await expect(award(page, INFOTECH).getByText(INFOTECH_ALT)).toBeVisible();
+    expect(await sideways()).toBeLessThanOrEqual(320);
+  });
+
+  test('the photo opens its full image in a new tab, and the keyboard reaches it', async ({
+    page,
+    context,
+  }) => {
+    await page.setViewportSize(phone);
+    await page.goto('/');
+    for (const [id, file, alt] of [
+      [BCC, '/images/bcc.jpg', BCC_ALT],
+      [INFOTECH, '/images/infotech.jpg', INFOTECH_ALT],
+    ] as const) {
+      const link = award(page, id).getByRole('link', {
+        name: /opens the full image in a new tab/i,
+      });
+      await expect(link).toHaveAttribute('href', file);
+      await expect(link).toHaveAttribute('target', '_blank');
+      await expect(link).toHaveAttribute('rel', /noopener/);
+      await expect(link).toHaveAttribute('rel', /noreferrer/);
+      expect(await link.getAttribute('aria-label')).toContain(alt);
+    }
+    await expect(award(page, EGOVPH).getByRole('link')).toHaveCount(0);
+
+    const link = award(page, BCC).getByRole('link', { name: /opens the full image/i });
+    expect(await tabTo(page, link)).toBe(true);
+    expect(await link.evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe('none');
+    const opened = context.waitForEvent('page');
+    await page.keyboard.press('Enter');
+    expect(new URL((await opened).url()).pathname).toBe('/images/bcc.jpg');
+  });
+
+  test('phone: a failed photo keeps its description in the small space, readable', async ({
+    page,
+  }) => {
+    await page.setViewportSize(phone);
+    await page.route('**/images/bcc.jpg', (route) => route.abort());
+    await page.goto('/');
+    const fig = award(page, BCC).locator('figure');
+    const text = fig.getByText(BCC_ALT);
+    await expect(text).toBeVisible();
+    expect(Math.round((await box(fig)).width)).toBe(120);
+    const fits = await text.evaluate((el) => ({
+      across: el.scrollWidth <= el.clientWidth,
+      down: el.scrollHeight <= el.clientHeight,
+    }));
+    expect(fits).toEqual({ across: true, down: true });
+    const [t, f] = [await box(text), await box(fig)];
+    expect(t.x).toBeGreaterThanOrEqual(f.x);
+    expect(t.x + t.width).toBeLessThanOrEqual(f.x + f.width + 1);
+    expect(t.y + t.height).toBeLessThanOrEqual(f.y + f.height + 1);
+    await expect(
+      award(page, BCC).getByRole('link', { name: /opens the full image in a new tab/i }),
+    ).toHaveAttribute('href', '/images/bcc.jpg');
   });
 
   test('error: a failed image shows its description, logged once with its path', async ({
@@ -166,8 +278,9 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
       const img = award(page, INFOTECH).getByRole('img', { name: INFOTECH_ALT });
       await expect(img).toBeVisible();
       const box = await img.boundingBox();
+      // The reserved space is the small phone photo, 120 by 80 px.
       expect(box?.width).toBeGreaterThan(100);
-      expect(box?.height).toBeGreaterThan(100);
+      expect(box?.height).toBeGreaterThan(60);
       // next/image sets color: transparent, which hides the alt text a broken image draws.
       expect(await img.evaluate((el) => getComputedStyle(el).color)).not.toMatch(
         /^rgba\(0, 0, 0, 0\)$|^transparent$/,

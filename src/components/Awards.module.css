@@ -18,10 +18,19 @@
   padding: 0;
 }
 
+/* Below 640 px the photo is a small 120 px column beside the text (board, NFR-01). The column
+   exists only for an award with an image; one without uses the full width. */
+.withImage {
+  grid-template-columns: 120px minmax(0, 1fr);
+  align-items: start;
+}
+
 .text {
   display: grid;
   gap: 4px;
   min-width: 0;
+  /* At 320 px the text column is about 120 px, narrower than a long word like Infotechnolympics. */
+  overflow-wrap: anywhere;
 }
 
 .name {
@@ -32,10 +41,18 @@
   position: relative;
   margin: 0;
   aspect-ratio: 3 / 2;
-  min-height: 120px;
+  min-height: 80px;
   background: var(--field);
   border: 2px solid;
   border-color: var(--lo) var(--hi) var(--hi) var(--lo);
+}
+
+.link {
+  position: absolute;
+  inset: 0;
+  display: block;
+  color: inherit;
+  text-decoration: none;
 }
 
 .img {
@@ -53,10 +70,26 @@
   text-align: center;
   color: var(--muted);
   font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+/* A failed photo shows its description in the same column, and grows to fit it rather than
+   clipping it. */
+.failed {
+  aspect-ratio: auto;
+}
+
+.failed .link {
+  position: static;
+}
+
+.failed .broken {
+  height: auto;
+  min-height: 76px;
 }
 
 @media (min-width: 640px) {
-  /* The image column exists only for an award with an image; one without uses the full width. */
+  /* From 640 px the photo keeps the board's 260 px column. */
   .withImage {
     grid-template-columns: 260px 1fr;
     align-items: center;
@@ -64,5 +97,9 @@
 
   .picture {
     min-height: 160px;
+  }
+
+  .failed .broken {
+    min-height: 156px;
   }
 }
