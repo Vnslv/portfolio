@@ -49,7 +49,8 @@ export type Profile = {
   intro: string;
   about: string;
   github: string;
-  linkedin: string;
+  // A link the owner has not supplied is a labeled placeholder, never an invented address.
+  linkedin?: string;
   photo?: ProjectImage;
   cvUrl?: string;
 };
