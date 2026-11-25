@@ -393,32 +393,147 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
     });
   });
 
-  test('a loaded photo keeps its reserved space: nothing moves when it arrives', async ({
-    page,
-  }) => {
-    await page.setViewportSize(phone);
-    let release: () => void = () => undefined;
-    const held = new Promise<void>((resolve) => {
-      release = resolve;
+  for (const size of [phone, desktop]) {
+    test(`a loaded photo keeps its reserved space at ${size.width} px: nothing moves when it arrives`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(size);
+      let release: () => void = () => undefined;
+      const held = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      await page.route('**/images/bcc-small.webp', async (route) => {
+        await held;
+        await route.continue();
+      });
+      await page.goto('/');
+      const fig = award(page, BCC).locator('figure');
+      const before = await box(fig);
+      const below = await box(award(page, INFOTECH));
+      const work = await box(page.locator('#work'));
+      release();
+      await expect
+        .poll(() =>
+          award(page, BCC)
+            .getByRole('img')
+            .evaluate((el: HTMLImageElement) => el.naturalWidth),
+        )
+        .toBeGreaterThan(0);
+      expect((await box(fig)).height).toBeCloseTo(before.height, 1);
+      expect((await box(award(page, INFOTECH))).y).toBeCloseTo(below.y, 1);
+      expect((await box(page.locator('#work'))).y).toBeCloseTo(work.y, 1);
     });
-    await page.route('**/images/bcc-small.webp', async (route) => {
-      await held;
-      await route.continue();
+  }
+
+  for (const [width, column] of [
+    [639, 120],
+    [640, 260],
+  ] as const) {
+    test(`the photo column is ${column} px beside the text at ${width} px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto('/');
+      for (const id of [BCC, INFOTECH]) {
+        const fig = await box(award(page, id).locator('figure'));
+        const text = await box(award(page, id).locator('h3'));
+        expect(Math.round(fig.width)).toBe(column);
+        expect(text.x).toBeGreaterThanOrEqual(fig.x + fig.width);
+        // Beside, not below: the two share some of the same height.
+        expect(text.y).toBeLessThan(fig.y + fig.height);
+        expect(text.y + text.height).toBeGreaterThan(fig.y);
+      }
     });
-    await page.goto('/');
-    const fig = award(page, BCC).locator('figure');
-    const before = await box(fig);
-    const below = await box(award(page, INFOTECH));
-    release();
-    await expect
-      .poll(() =>
-        award(page, BCC)
-          .getByRole('img')
-          .evaluate((el: HTMLImageElement) => el.naturalWidth),
-      )
-      .toBeGreaterThan(0);
-    expect((await box(fig)).height).toBeCloseTo(before.height, 1);
-    expect((await box(award(page, INFOTECH))).y).toBeCloseTo(below.y, 1);
+  }
+
+  test.describe('a card with a badge: Close, switching, filter, link, accessibility', () => {
+    const panelOf = (c: Locator) => c.locator('xpath=.//div[contains(@class,"panel")]');
+    const isOpen = (id: string, page: Page) =>
+      card(page, id)
+        .locator('details')
+        .evaluate((el: HTMLDetailsElement) => el.open);
+    const work = (page: Page) => page.locator('#work');
+    // The controls that need script are off until the page has hydrated.
+    const ready = async (page: Page, path = '/') => {
+      await page.goto(path);
+      await expect(work(page).getByRole('radio', { name: 'All' })).toBeEnabled();
+    };
+
+    test('Close hides the panel and returns focus to the row, by mouse and keyboard', async ({
+      page,
+    }) => {
+      await ready(page);
+      const c = card(page, 'heronpay');
+      await c.locator('summary').click();
+      await expect(panelOf(c)).toBeVisible();
+      await c.getByRole('button', { name: 'Close' }).click();
+      await expect(panelOf(c)).toBeHidden();
+      await expect(c.locator('details')).toHaveJSProperty('open', false);
+      await expect(c.locator('summary')).toBeFocused();
+      await expect(c.getByRole('link', { name: /Champion/ })).toBeVisible();
+
+      await c.locator('summary').focus();
+      await page.keyboard.press('Enter');
+      await expect(panelOf(c)).toBeVisible();
+      await c.getByRole('button', { name: 'Close' }).focus();
+      await page.keyboard.press('Enter');
+      await expect(panelOf(c)).toBeHidden();
+      await expect(c.locator('summary')).toBeFocused();
+    });
+
+    test('opening another project hides the panel itself, not only the details', async ({
+      page,
+    }) => {
+      await ready(page);
+      const [heron, ehanda] = [card(page, 'heronpay'), card(page, 'ehanda')];
+      await heron.locator('summary').click();
+      await expect(panelOf(heron)).toBeVisible();
+      await ehanda.locator('summary').click();
+      await expect(panelOf(heron)).toBeHidden();
+      expect(await panelOf(heron).evaluate((el) => getComputedStyle(el).display)).toBe('none');
+      expect(await isOpen('heronpay', page)).toBe(false);
+      await expect(panelOf(ehanda)).toBeVisible();
+      await expect(page.locator('#work details[open]')).toHaveCount(1);
+    });
+
+    test('choosing a filter that hides the card ends its link and shows it closed again', async ({
+      page,
+    }) => {
+      await ready(page, '/#heronpay');
+      await expect.poll(() => isOpen('heronpay', page)).toBe(true);
+      await expect(panelOf(card(page, 'heronpay'))).toBeVisible();
+
+      await work(page).getByRole('radio', { name: 'Software development' }).check();
+      await expect(card(page, 'heronpay')).toHaveCount(0);
+      await expect(work(page).locator('details[open]')).toHaveCount(0);
+      await expect(work(page).locator('dl:visible')).toHaveCount(0);
+      expect(new URL(page.url()).hash).toBe('');
+
+      await work(page).getByRole('radio', { name: 'Project management' }).check();
+      await expect(work(page).locator('li[data-project]')).toHaveCount(5);
+      await expect(card(page, 'heronpay').locator('details')).toHaveJSProperty('open', false);
+      await expect(panelOf(card(page, 'heronpay'))).toBeHidden();
+      await expect(work(page).locator('dl:visible')).toHaveCount(0);
+    });
+
+    test('its #link shows the panel, even when a filter hides the card', async ({ page }) => {
+      await ready(page, '/#ehanda');
+      await expect.poll(() => isOpen('ehanda', page)).toBe(true);
+      await expect(panelOf(card(page, 'ehanda'))).toBeVisible();
+      await expect(card(page, 'ehanda').getByText('Problem')).toBeInViewport();
+
+      await work(page).getByRole('radio', { name: 'Software development' }).check();
+      await expect(card(page, 'heronpay')).toHaveCount(0);
+      await page.evaluate(() => (location.hash = '#heronpay'));
+      await expect(card(page, 'heronpay')).toBeVisible();
+      await expect.poll(() => isOpen('heronpay', page)).toBe(true);
+      await expect(panelOf(card(page, 'heronpay'))).toBeVisible();
+    });
+
+    test('accessibility: no axe violations with the card open', async ({ page }) => {
+      await ready(page);
+      await card(page, 'ehanda').locator('summary').click();
+      await expect(panelOf(card(page, 'ehanda'))).toBeVisible();
+      expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+    });
   });
 
   test.describe('without JavaScript, image blocked', () => {
