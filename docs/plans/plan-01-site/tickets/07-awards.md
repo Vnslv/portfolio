@@ -41,6 +41,7 @@
 - AWARD-01, AWARD-02, AWARD-03 acceptance, except AWARD-03 acceptance 2-3, which the owner confirms per image.
 - Dates (owner, 2026-11-25): Blockchain Campus Conference 2026, November 2026; UMak CCIS Infotechnolympics Hackathon, October 2026; eGovPH Hackathon 2026, July 2026.
 - Images (owner approved, consent confirmed, private details hidden): Blockchain Campus Conference `/images/bcc.jpg`, "Six people on stage under a screen that reads Your hackathon champion, HeronPay"; Infotechnolympics `/images/infotech.jpg`, "Three teammates wearing champion medals, one holding an Infotechnolympics 2026 envelope". eGovPH has no image.
+- Award names use the bold text font, not the pixel font (owner, 2026-11-25; design brief).
 - Navigation leaves out Awards while the section is hidden.
 - Production content is the owner-supplied awards in `src/content/awards.ts`. Fixtures are used only in tests and never reach a production build.
 

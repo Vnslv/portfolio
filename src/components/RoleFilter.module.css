@@ -1,0 +1,55 @@
+.radios {
+  display: none;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.legend {
+  float: left;
+  margin-right: 14px;
+  font-weight: 700;
+  line-height: 32px;
+  padding: 0;
+}
+
+.option {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 32px;
+  cursor: pointer;
+}
+
+.option input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--title);
+}
+
+.select {
+  display: grid;
+  gap: 4px;
+}
+
+.select select {
+  font: inherit;
+  min-height: 44px;
+  padding: 6px;
+  background: var(--field);
+  color: var(--text);
+  border: 2px solid;
+  border-color: var(--lo) var(--hi) var(--hi) var(--lo);
+}
+
+@media (min-width: 640px) {
+  .radios {
+    display: flex;
+  }
+
+  .select {
+    display: none;
+  }
+}

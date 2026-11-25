@@ -1,0 +1,6 @@
+.list {
+  list-style: none;
+  background: var(--field);
+  border: 2px solid;
+  border-color: var(--lo) var(--hi) var(--hi) var(--lo);
+}

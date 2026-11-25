@@ -40,6 +40,11 @@
 - Five edited images in `public/images/`: the owner approved each, confirmed everyone pictured agreed, and chose copies in the repo over Drive embeds. Badges, an ID card, a phone, papers, bystanders, and a license plate were cropped out or blurred; no camera data.
 - CV through the owner's Drive link (LINK-02). Award dates from the owner; the July 2026 eGovPH date is the awarding, not the September prize release.
 
+### T06 and fonts (2026-11-25)
+
+- T06 may add `src/components/Work.test.tsx`; native open and close sections; bold text font for award and project names (owner).
+- Motion becomes its own ticket after T08 and before T09, once the owner approves the PRD and design update (owner).
+
 ## Design Spec
 
 Locked: [design brief](../../standards/design-brief.md), [board](../../design/board-b.html), [flow, wireframes, states](../../design/first-look.md).

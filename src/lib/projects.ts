@@ -1,4 +1,18 @@
-import type { Project, RoleFilter } from '../content/types';
+import type { Project, Role, RoleFilter } from '../content/types';
+
+// The PRD role labels (WORK-01), software development first, whatever the order in the content.
+export function roleLabel(roles: readonly Role[]): string {
+  const software = roles.includes('software-development');
+  const management = roles.includes('project-management');
+  if (software && management) return 'Software development and project management';
+  return software ? 'Software development' : 'Project management';
+}
+
+// Solo for one person, "Team of n" otherwise, nothing when the owner gave no size (WORK-05).
+export function teamLabel(teamSize: number | undefined): string | null {
+  if (teamSize === undefined) return null;
+  return teamSize === 1 ? 'Solo project' : `Team of ${teamSize}`;
+}
 
 // Keeps the list order. A linked project stays visible even when the filter hides it.
 export function filterProjects(

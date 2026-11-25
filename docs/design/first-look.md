@@ -35,6 +35,7 @@ Flow and wireframes before styling. Requirements: `docs/PRD.md` 0.5.0. Text in `
 - Projects show no outcome; an opened card shows the stack where supplied (owner, PRD 0.5.0).
 - Taskvane is now Idiya (owner). The wireframes below are updated.
 - The intro strip reads "Frontend developer, project manager" (owner).
+- Award and project names use the bold text font (owner).
 
 ### For The Plan Gate
 

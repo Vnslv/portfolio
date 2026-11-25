@@ -28,7 +28,7 @@ async function openMenu(page: Page) {
 // False until the page has hydrated, so callers poll it.
 function fastEscapeCloses(page: Page) {
   return page.evaluate(() => {
-    const details = document.querySelector('details');
+    const details = document.querySelector<HTMLDetailsElement>('nav[aria-label="Taskbar"] details');
     const summary = details?.querySelector('summary');
     if (!details || !summary) return false;
     details.open = false;
@@ -44,7 +44,9 @@ test.describe('SITE-01, SITE-02, SITE-03 page shell', () => {
     await page.goto('/');
     await expect.poll(() => fastEscapeCloses(page)).toBe(true);
     const openAfterLinkClick = await page.evaluate(() => {
-      const details = document.querySelector('details');
+      const details = document.querySelector<HTMLDetailsElement>(
+        'nav[aria-label="Taskbar"] details',
+      );
       details?.querySelector('summary')?.click();
       details?.querySelector<HTMLElement>('a[href="#about"]')?.click();
       return details?.open;
