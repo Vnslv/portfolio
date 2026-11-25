@@ -164,6 +164,31 @@ describe('award badge on a card (AWARD-02)', () => {
     expect(html).toContain('href="#award-fixture-hack-one"');
   });
 
+  it('sits between the row and the details panel, as on the board', () => {
+    const ready: Project = {
+      id: 'fixture-project',
+      name: 'Fixture Project',
+      roles: ['project-management'],
+      ready: true,
+      problem: 'A problem sentence.',
+      work: { points: ['W'] },
+    };
+    const html = renderToStaticMarkup(
+      <ul>
+        <ProjectCard project={ready} enhanced awards={[full]} onClose={() => undefined} />
+      </ul>,
+    );
+    const row = html.indexOf('</summary>');
+    const badge = html.indexOf('href="#award-fixture-hack-one"');
+    const panel = html.indexOf('A problem sentence.');
+    expect(row).toBeGreaterThan(0);
+    expect(badge).toBeGreaterThan(row);
+    expect(panel).toBeGreaterThan(badge);
+    // The badge is not inside the native details element, so it shows on a closed card too.
+    const details = html.slice(html.indexOf('<details'), html.indexOf('</details>'));
+    expect(details).not.toContain('href="#award-');
+  });
+
   it('defaults to the content awards: HeronPay has a badge, Idiya has none', () => {
     const named = (name: string): Project => ({ ...project, id: name, name });
     const render = (p: Project) =>

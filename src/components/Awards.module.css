@@ -37,28 +37,38 @@
   font: 700 19px/1.25 var(--body);
 }
 
+/* The picture space is the 3 by 2 box of the content area, so a loaded photo fills it and nothing
+   moves when it arrives. The photo is in the page flow, not absolutely placed: a failed one is
+   then drawn by the browser as ordinary text, and the box has no minimum height, so it grows to
+   fit that text (only then) instead of clipping it. This works without JavaScript. */
 .picture {
-  position: relative;
   margin: 0;
+  box-sizing: content-box;
   aspect-ratio: 3 / 2;
-  min-height: 80px;
   background: var(--field);
   border: 2px solid;
   border-color: var(--lo) var(--hi) var(--hi) var(--lo);
 }
 
 .link {
-  position: absolute;
-  inset: 0;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
   color: inherit;
   text-decoration: none;
 }
 
+/* next/image `fill` places the image absolutely at full size and sets color: transparent inline.
+   Those inline values are overridden here: the image is in the flow, never wider than the box,
+   in its own ratio, and a failed one keeps a visible, wrapping description. */
 .img {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: 100%;
   object-fit: contain;
-  /* next/image sets color: transparent inline, which hides the description a failed image draws
-     when no script can swap in the fallback. */
+  overflow-wrap: anywhere;
   color: var(--muted) !important;
 }
 
@@ -79,10 +89,6 @@
   aspect-ratio: auto;
 }
 
-.failed .link {
-  position: static;
-}
-
 .failed .broken {
   height: auto;
   min-height: 76px;
@@ -93,10 +99,6 @@
   .withImage {
     grid-template-columns: 260px 1fr;
     align-items: center;
-  }
-
-  .picture {
-    min-height: 160px;
   }
 
   .failed .broken {

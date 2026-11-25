@@ -269,6 +269,131 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
       .toEqual(['awards: image failed to load /images/bcc.jpg']);
   });
 
+  test('open card: the badge is between the row and the panel, in the same keyboard order', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    const c = card(page, 'ehanda');
+    const badge = c.getByRole('link', { name: /Top 10/ });
+
+    await test.step('closed: the badge is visible and usable, the panel is not shown', async () => {
+      await expect(badge).toBeVisible();
+      await expect(c.locator('dl')).toBeHidden();
+    });
+
+    await c.locator('summary').click();
+    await expect(c.locator('dl')).toBeVisible();
+
+    await test.step('the badge sits below the row and above the panel, outside the summary', async () => {
+      const [row, b, panel] = [
+        await box(c.locator('summary')),
+        await box(badge),
+        await box(c.locator('dl')),
+      ];
+      expect(b.y).toBeGreaterThanOrEqual(row.y + row.height - 1);
+      expect(panel.y).toBeGreaterThanOrEqual(b.y + b.height - 1);
+      await expect(c.locator('summary a')).toHaveCount(0);
+    });
+
+    await test.step('the keyboard goes row, badge, then the panel', async () => {
+      await c.locator('summary').focus();
+      await page.keyboard.press('Tab');
+      await expect(badge).toBeFocused();
+      await page.keyboard.press('Tab');
+      await expect(c.getByRole('link', { name: 'Live' })).toBeFocused();
+    });
+  });
+
+  test.describe('without JavaScript, open and closed card', () => {
+    test.use({ javaScriptEnabled: false, viewport: phone });
+
+    test('the badge shows closed, sits between row and panel open, and works', async ({ page }) => {
+      await page.setViewportSize(phone);
+      await page.goto('/');
+      const c = card(page, 'heronpay');
+      const badge = c.getByRole('link', { name: /Champion/ });
+      await expect(badge).toBeVisible();
+      await c.locator('summary').click();
+      await expect(c.locator('dl')).toBeVisible();
+      const [row, b, panel] = [
+        await box(c.locator('summary')),
+        await box(badge),
+        await box(c.locator('dl')),
+      ];
+      expect(b.y).toBeGreaterThanOrEqual(row.y + row.height - 1);
+      expect(panel.y).toBeGreaterThanOrEqual(b.y + b.height - 1);
+      await badge.click();
+      await expect(page).toHaveURL(new RegExp(`#${BCC}$`));
+    });
+  });
+
+  test.describe('without JavaScript, 390 px, images blocked', () => {
+    test.use({ javaScriptEnabled: false, viewport: phone });
+
+    test('the whole description of each photo is shown, nothing is cut off', async ({ page }) => {
+      await page.setViewportSize(phone);
+      await page.route('**/images/*.jpg', (route) => route.abort());
+      await page.goto('/');
+      for (const [id, alt] of [
+        [BCC, BCC_ALT],
+        [INFOTECH, INFOTECH_ALT],
+      ] as const) {
+        const img = award(page, id).getByRole('img', { name: alt });
+        await expect(img).toBeVisible();
+        const m = await img.evaluate((el: HTMLImageElement, text: string) => {
+          // The same words, font and width as ordinary text: the least height they need.
+          const style = getComputedStyle(el);
+          const ref = document.createElement('div');
+          ref.textContent = text;
+          ref.style.cssText = `position:absolute;visibility:hidden;width:${el.clientWidth}px;font:${style.font};overflow-wrap:anywhere`;
+          document.body.append(ref);
+          const need = ref.getBoundingClientRect().height;
+          ref.remove();
+          return {
+            height: el.getBoundingClientRect().height,
+            need,
+            across: el.scrollWidth <= el.clientWidth + 1,
+          };
+        }, alt);
+        expect(m.height).toBeGreaterThanOrEqual(m.need);
+        expect(m.across).toBe(true);
+        // The picture grew past the 120 by 80 box only because it failed.
+        expect((await box(award(page, id).locator('figure'))).height).toBeGreaterThan(90);
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+        390,
+      );
+    });
+  });
+
+  test('a loaded photo keeps its reserved space: nothing moves when it arrives', async ({
+    page,
+  }) => {
+    await page.setViewportSize(phone);
+    let release: () => void = () => undefined;
+    const held = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    await page.route('**/images/bcc.jpg', async (route) => {
+      await held;
+      await route.continue();
+    });
+    await page.goto('/');
+    const fig = award(page, BCC).locator('figure');
+    const before = await box(fig);
+    const below = await box(award(page, INFOTECH));
+    release();
+    await expect
+      .poll(() =>
+        award(page, BCC)
+          .getByRole('img')
+          .evaluate((el: HTMLImageElement) => el.naturalWidth),
+      )
+      .toBeGreaterThan(0);
+    expect((await box(fig)).height).toBeCloseTo(before.height, 1);
+    expect((await box(award(page, INFOTECH))).y).toBeCloseTo(below.y, 1);
+  });
+
   test.describe('without JavaScript, image blocked', () => {
     test.use({ javaScriptEnabled: false, viewport: phone });
 

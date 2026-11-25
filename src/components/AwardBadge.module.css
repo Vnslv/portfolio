@@ -12,6 +12,16 @@
   font-weight: 700;
 }
 
+/* The details panel of a card with a badge sits after the badge, beside the card's native details
+   element. It shows only while that element is open. */
+.panel {
+  display: none;
+}
+
+details[open] ~ .panel {
+  display: block;
+}
+
 /* The badge looks 32 px high as on the board; this keeps its touch target at 44 px. */
 .badge::after {
   content: '';
