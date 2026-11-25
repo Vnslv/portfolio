@@ -35,9 +35,10 @@ function subscribeToHash(listener: () => void) {
 // link, as in the board. The browser's own method is used: the Next router replaces
 // `history.replaceState` on the history object and, when told, applies its own address a moment
 // later, which erased a hash set right after the close. The router keeps no state for a hash
-// that only this page reads.
-function dropLink() {
-  if (!location.hash) return;
+// that only this page reads. Only a known project's hash is dropped: a section hash such as
+// #work or #about, or an unknown one, is not this page's link and is left alone.
+function dropLink(projects: readonly Project[]) {
+  if (!projectIdFromHash(location.hash, projects)) return;
   History.prototype.replaceState.call(
     history,
     history.state as unknown,
@@ -71,7 +72,7 @@ export function Work({ projects }: { projects: readonly Project[] }) {
     list.current?.querySelectorAll('details[open]').forEach((d) => {
       (d as HTMLDetailsElement).open = false;
     });
-    dropLink();
+    dropLink(projects);
     setFilter(next);
   }
 
@@ -82,7 +83,7 @@ export function Work({ projects }: { projects: readonly Project[] }) {
     const summary = event.target instanceof Element ? event.target.closest('summary') : null;
     const details = summary?.parentElement;
     if (!(details instanceof HTMLDetailsElement)) return;
-    if (details.open || details.closest('li')?.id !== linkedId) dropLink();
+    if (details.open || details.closest('li')?.id !== linkedId) dropLink(projects);
   }
 
   // WORK-04: a known #link opens its project, which stays listed even when the filter hides it.
@@ -104,7 +105,12 @@ export function Work({ projects }: { projects: readonly Project[] }) {
       <RoleFilter value={filter} onChange={chooseFilter} disabled={!enhanced} />
       <ul ref={list} className={styles.list} onClick={onSummaryClick}>
         {shown.map((project) => (
-          <ProjectCard key={project.id} project={project} enhanced={enhanced} onClose={dropLink} />
+          <ProjectCard
+            key={project.id}
+            project={project}
+            enhanced={enhanced}
+            onClose={() => dropLink(projects)}
+          />
         ))}
       </ul>
     </Window>

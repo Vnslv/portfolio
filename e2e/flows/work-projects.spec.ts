@@ -225,6 +225,44 @@ test.describe('WORK-01 to WORK-06 work list, filter, details', () => {
     expect(hash()).toBe('');
   });
 
+  test('WORK-04: only a known project link is dropped, not a section or unknown hash', async ({
+    page,
+  }) => {
+    const hash = () => new URL(page.url()).hash;
+    const ready = () =>
+      expect(page.locator('#work').getByRole('radio', { name: 'All' })).toBeEnabled();
+
+    for (const start of ['#work', '#about', '#nope']) {
+      await test.step(`from ${start}: opening a project and choosing a filter keep it`, async () => {
+        await page.goto('about:blank');
+        await page.goto(`/${start}`);
+        await ready();
+        await summary(page, 'ehanda').click();
+        await expect.poll(() => isOpen(page, 'ehanda')).toBe(true);
+        expect(hash()).toBe(start);
+        await summary(page, 'ehanda').click();
+        expect(hash()).toBe(start);
+        await page.locator('#work').getByRole('radio', { name: SOFTWARE }).check();
+        await expect(page.locator('#work li[data-project]')).toHaveCount(2);
+        expect(hash()).toBe(start);
+      });
+    }
+
+    await test.step('a project hash is still dropped by both', async () => {
+      await page.goto('about:blank');
+      await page.goto('/#alunsina');
+      await ready();
+      await expect.poll(() => isOpen(page, 'alunsina')).toBe(true);
+      await summary(page, 'ehanda').click();
+      expect(hash()).toBe('');
+      await page.goto('about:blank');
+      await page.goto('/#alunsina');
+      await ready();
+      await page.locator('#work').getByRole('radio', { name: SOFTWARE }).check();
+      expect(hash()).toBe('');
+    });
+  });
+
   test('WORK-02: choosing a filter closes the open project and lists only matching ones', async ({
     page,
   }) => {
