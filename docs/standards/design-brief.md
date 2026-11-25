@@ -31,6 +31,16 @@ This file holds *how* the product looks: tokens and visual rules. It never adds 
 - **Spacing:** 16 px page edge and gaps on phone; 28 px page edge and 20 px column gap on desktop. 16 px inside windows.
 - **Controls:** at least 44 px high.
 
+## Motion (owner, locked 2026-11-26)
+
+Approved in [motion-board.html](../design/motion-board.html) and [tools-board.html](../design/tools-board.html), with these changes from the boards:
+- No "Pause motion" control anywhere (owner; PRD NFR-04 exception).
+- The sky: drifting clouds by day, drifting stars by night (owner).
+- The cursor is an original retro pixel arrow with no sparkles; hover effects are short; the filter types a terminal line.
+- Movement is noticeable and quick: at most 0.5 s, except the sky, idle bobbing, typing and the cursor blink. Pixel-style steps, no smooth easing.
+- Tools: a winding pixel path from Start to Finish; each tool a pixel redraw of its logo with its name as text, colored by group; pieces bob and hop on hover, tap and focus; arrow keys move between pieces.
+- Nothing moves with reduced motion set. Motion never delays reading or the first paint.
+
 ## Rules
 
 - Design values come only from these tokens. No ad-hoc colors, radii, or shadows.
