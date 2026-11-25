@@ -143,9 +143,8 @@ describe('Intro: the photo', () => {
 describe('Intro: the owner words (SITE-02, T12 ticket)', () => {
   const html = renderToStaticMarkup(<Intro />);
 
-  it('shows the intro line and the strip', () => {
+  it('shows the intro line', () => {
     expect(html).toContain('>Full-stack developer and project manager</p>');
-    expect(html).toContain('Full-stack developer, project manager');
     expect(html).not.toContain('Frontend developer');
   });
 

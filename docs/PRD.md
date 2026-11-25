@@ -1,6 +1,6 @@
 # portfolio Product Requirements (PRD)
 
-**Version:** 0.5.1
+**Version:** 0.5.2
 **Owner:** @Vnslv
 
 ## Rules (read first)
@@ -33,9 +33,9 @@ Each requirement is a level-3 heading `ID: title`, followed by a statement, acce
 
 ### SITE-01: Single page
 
-**Statement:** The site is one English page, with these sections in order: intro, awards, work, about, links.
+**Statement:** The site is one English page, with these sections in order: intro, awards, work, links.
 **Acceptance:**
-- The five sections appear in that order on phone and desktop.
+- The four sections appear in that order on phone and desktop.
 - Every section can be reached by its own link.
 **Status:** Approved
 
@@ -45,6 +45,7 @@ Each requirement is a level-3 heading `ID: title`, followed by a statement, acce
 **Acceptance:**
 - It is the first content a visitor sees.
 - It shows the owner's name and a one-line intro supplied by the owner.
+- It shows the about text supplied by the owner; missing text is a labeled placeholder until launch.
 **Status:** Approved
 
 ### SITE-03: About
@@ -52,7 +53,7 @@ Each requirement is a level-3 heading `ID: title`, followed by a statement, acce
 **Statement:** The about section shows text supplied by the owner.
 **Acceptance:**
 - Only owner-supplied text is shown; missing text is a labeled placeholder until launch.
-**Status:** Approved
+**Status:** Removed
 
 ### THEME-01: Light and dark
 
@@ -234,6 +235,7 @@ Version 1 does not include: freelance services, a contact form, a blog, a databa
 
 | Version | Date | Change | Approved by |
 | --- | --- | --- | --- |
+| 0.5.2 | 2026-11-26 | About text moved to the intro: SITE-01, SITE-02; SITE-03 removed | @Vnslv |
 | 0.5.1 | 2026-11-26 | WORK-01: role labels for Idiya and UMak Kalinga | @Vnslv |
 | 0.5.0 | 2026-11-25 | Taskvane renamed Idiya; WORK-03: outcome removed, stack added | @Vnslv |
 | 0.4.0 | 2026-11-24 | WORK-01: UMak Kalinga role; AWARD-01: placements | @Vnslv |

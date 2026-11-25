@@ -50,7 +50,8 @@ export type Award = {
 export type Profile = {
   name: string;
   intro: string;
-  about: string;
+  // Text the owner has not supplied is a labeled placeholder (SITE-02).
+  about?: string;
   github: string;
   // A link the owner has not supplied is a labeled placeholder, never an invented address.
   linkedin?: string;

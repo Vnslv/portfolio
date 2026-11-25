@@ -26,7 +26,9 @@
 .option input {
   width: 18px;
   height: 18px;
-  accent-color: var(--title);
+  /* --link, not --title: in the dark theme --title is too faint on the window (NFR-04). In the
+     light theme the two are the same color. */
+  accent-color: var(--link);
 }
 
 .select {

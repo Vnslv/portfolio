@@ -158,16 +158,15 @@ describe('awardsForProject (AWARD-02)', () => {
 describe('sectionsFor (AWARD-01 acceptance 4, navigation)', () => {
   const ids = (list: readonly { id: string }[]) => list.map((s) => s.id);
 
-  it('keeps all five sections while an award shows', () => {
-    expect(ids(sectionsFor(awards))).toEqual(['welcome', 'awards', 'work', 'about', 'links']);
+  it('keeps all four sections while an award shows', () => {
+    expect(ids(sectionsFor(awards))).toEqual(['welcome', 'awards', 'work', 'links']);
   });
 
   it('leaves out Awards with no award to show', () => {
-    expect(ids(sectionsFor([]))).toEqual(['welcome', 'work', 'about', 'links']);
+    expect(ids(sectionsFor([]))).toEqual(['welcome', 'work', 'links']);
     expect(ids(sectionsFor([{ hackathon: 'Hack', placement: '' }]))).toEqual([
       'welcome',
       'work',
-      'about',
       'links',
     ]);
   });

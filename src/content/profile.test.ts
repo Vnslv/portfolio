@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { profile } from './profile';
 
-describe('profile text (SITE-02, SITE-03, T12 ticket)', () => {
+describe('profile text (SITE-02, T12 ticket)', () => {
   it('has the owner intro line', () => {
     expect(profile.intro).toBe('Full-stack developer and project manager');
   });

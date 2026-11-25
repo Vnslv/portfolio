@@ -247,13 +247,13 @@ test.describe('WORK-01 to WORK-06 work list, filter, details', () => {
 
     await page
       .getByRole('navigation', { name: 'Taskbar' })
-      .getByRole('link', { name: 'About', exact: true })
+      .getByRole('link', { name: 'Links', exact: true })
       .click();
-    await expect(page).toHaveURL('/#about');
+    await expect(page).toHaveURL('/#links');
     await page.goBack();
     await expect.poll(hash).toBe('');
     await page.goForward();
-    await expect.poll(hash).toBe('#about');
+    await expect.poll(hash).toBe('#links');
     await page.goBack();
     await expect.poll(hash).toBe('');
     expect(await isOpen(page, 'idiya')).toBe(false);
@@ -270,7 +270,7 @@ test.describe('WORK-01 to WORK-06 work list, filter, details', () => {
     const ready = () =>
       expect(page.locator('#work').getByRole('radio', { name: 'All' })).toBeEnabled();
 
-    for (const start of ['#work', '#about', '#nope']) {
+    for (const start of ['#work', '#links', '#nope']) {
       await test.step(`from ${start}: opening a project and choosing a filter keep it`, async () => {
         await page.goto('about:blank');
         await page.goto(`/${start}`);

@@ -163,10 +163,10 @@ describe('the taskbar sections (SITE-01)', () => {
 
   it('gives every section button its icon and its label, in page order', () => {
     const links = sectionLinks(renderToStaticMarkup(<Taskbar />));
-    expect(links).toHaveLength(5);
+    expect(links).toHaveLength(4);
     const hrefs = links.map((l) => l.match(/href="([^"]*)"/)?.[1]);
-    expect(hrefs).toEqual(['#welcome', '#awards', '#work', '#about', '#links']);
-    const labels = ['Welcome', 'Awards', 'Projects', 'About', 'Links'];
+    expect(hrefs).toEqual(['#welcome', '#awards', '#work', '#links']);
+    const labels = ['Welcome', 'Awards', 'Projects', 'Links'];
     links.forEach((link, i) => {
       expect(link).toContain('<svg');
       expect(link).toContain(`</svg>${labels[i]}</a>`);
@@ -194,7 +194,6 @@ describe('the taskbar sections (SITE-01)', () => {
       '/#welcome',
       '/#awards',
       '/#work',
-      '/#about',
       '/#links',
     ]);
   });

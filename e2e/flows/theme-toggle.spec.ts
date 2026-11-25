@@ -3,8 +3,8 @@ import AxeBuilder from '@axe-core/playwright';
 
 // Token values from docs/standards/design-brief.md.
 const TOKENS = {
-  light: { face: '#d8d4e0', text: '#1d1826', desk: 'rgb(90, 74, 120)' },
-  dark: { face: '#322b42', text: '#f3effa', desk: 'rgb(29, 22, 48)' },
+  light: { face: '#d6dfec', text: '#141c2b', desk: 'rgb(143, 184, 238)' },
+  dark: { face: '#222a47', text: '#eef2ff', desk: 'rgb(12, 16, 48)' },
 };
 const BLOCKED = 'warning: theme: device storage is blocked, so the site follows the device setting';
 const toggle = (page: Page) => page.getByRole('button', { name: /^(Dark|Light) theme$/ });

@@ -8,22 +8,23 @@ This file holds *how* the product looks: tokens and visual rules. It never adds 
 
 | Token | Use | Light | Dark |
 | --- | --- | --- | --- |
-| `--desk` | desktop background | `#5a4a78` | `#1d1630` |
-| `--desk2` | desktop pattern | `#514170` | `#251c3c` |
-| `--face` | window and button face | `#d8d4e0` | `#322b42` |
-| `--field` | sunken lists and fields | `#fbfaff` | `#221c30` |
-| `--text` | main text | `#1d1826` | `#f3effa` |
-| `--muted` | secondary text | `#4a4358` | `#c5bcd6` |
-| `--hi` | bevel highlight | `#ffffff` | `#5f5578` |
-| `--lo` | bevel shadow, rules | `#8a8299` | `#7d7199` |
-| `--edge` | outer edge | `#2a2338` | `#0a0712` |
-| `--title` | title bar start, selected tree item | `#4b2a7b` | `#5a3596` |
-| `--title2` | title bar end | `#7a2f74` | `#86387f` |
+| `--desk` | desktop background, top of the sky | `#8fb8ee` | `#0c1030` |
+| `--desk2` | desktop background, bottom of the sky | `#c9dcf7` | `#1b1440` |
+| `--face` | window and button face | `#d6dfec` | `#222a47` |
+| `--field` | sunken lists and fields | `#fafcff` | `#161c33` |
+| `--text` | main text | `#141c2b` | `#eef2ff` |
+| `--muted` | secondary text | `#3d4a61` | `#b9c3de` |
+| `--hi` | bevel highlight | `#ffffff` | `#4a5680` |
+| `--lo` | bevel shadow, rules | `#7f8ea8` | `#6c7aa8` |
+| `--edge` | outer edge | `#1c2a44` | `#060917` |
+| `--title` | title bar start, current section | `#1c4587` | `#26337d` |
+| `--title2` | title bar end | `#2b69b0` | `#3b4ba3` |
 | `--titleText` | title bar text | `#ffffff` | `#ffffff` |
-| `--link` | links | `#4b2a7b` | `#cdb4ff` |
+| `--link` | links | `#1c4587` | `#b9c9ff` |
 | `--badge` | award badge | `#b7f0d0` | `#7fe0b0` |
 | `--badgeText` | award badge text | `#08351f` | `#08351f` |
 
+- **Background:** light, a sky gradient with a few pixel clouds (`#ffffff`, `#f4f8ff`); dark, a night gradient with pixel stars (`#ffffff`, `#cdb4ff`, `#7f8cc9`). Drawn in CSS, no image file (owner, 2026-11-26).
 - **Type:** the owner's name and window titles Pixelify Sans (500, 700) with IBM Plex Sans as fallback; award and project names IBM Plex Sans 700, because the pixel "C" reads as "O" (owner, 2026-11-25); text IBM Plex Sans (400, 700). Sizes: 14 status and tags, 15 card details, 16 text, 18 lead and title bars, 19 item headings, 30 to 52 name (fluid).
 - **Radius:** 0 everywhere.
 - **Bevel:** 2 px, `--hi` top and left, `--edge` bottom and right, with a 1 px `--lo` inner shadow. Pressed and sunken elements reverse it.

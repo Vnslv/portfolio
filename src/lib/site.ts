@@ -9,14 +9,10 @@ export const SECTIONS = [
   { id: 'welcome', label: 'Welcome', icon: 'home' },
   { id: 'awards', label: 'Awards', icon: 'trophy' },
   { id: 'work', label: 'Projects', icon: 'folder' },
-  { id: 'about', label: 'About', icon: 'person' },
   { id: 'links', label: 'Links', icon: 'link' },
 ] as const;
 
 export type SectionId = (typeof SECTIONS)[number]['id'];
-
-// The status strip under the intro window, as locked in the design board.
-export const INTRO_STRIP = 'Full-stack developer, project manager';
 
 export function copyrightLine(name: string): string {
   return `© 2026 ${name}`;

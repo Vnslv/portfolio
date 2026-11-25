@@ -79,6 +79,12 @@
 
 - Full-stack intro and About text; Work is shown as Projects (address `#work`); Idiya full-stack, UMak Kalinga frontend; the Software development filter stays (owner, PRD 0.5.1).
 
+### T13 (2026-11-26)
+
+- The About text moves into Welcome; the About section and the intro strip are removed (owner, PRD 0.5.2).
+- Sky by day and starry night backgrounds, with blue headers and windows to match (owner, mock A2).
+- The tab icon is a dev sprite (owner).
+
 ## Design Spec
 
 Locked: [design brief](../../standards/design-brief.md), [board](../../design/board-b.html), [flow, wireframes, states](../../design/first-look.md).
@@ -98,6 +104,7 @@ Tickets run in order; several change the same files. One ticket per session and 
 - [x] T08 Profile links and CV (LINK-01, LINK-02) -> tickets/08-links.md
 - [x] T11 Owner changes: eGovPH, taskbar, Idiya logo, Copy link (AWARD-01, AWARD-02, AWARD-03, SITE-01, WORK-03, WORK-04, NFR-01, NFR-04) -> tickets/11-egovph.md
 - [ ] T12 Full-stack, Projects and role labels (SITE-01, SITE-02, SITE-03, WORK-01, WORK-02, WORK-05, CONT-01) -> tickets/12-wording.md
+- [ ] T13 About text in the intro, sky theme, tab icon (SITE-01, SITE-02, THEME-01, NFR-01, NFR-04) -> tickets/13-about.md
 - [ ] T09 Accessibility, speed, parity checks (NFR-01, NFR-04) -> tickets/09-quality.md
 
 ## Out Of Scope
