@@ -35,6 +35,7 @@
 
 - When `profile.photo` is supplied, the intro shows it with its description in the reserved space; until then the labeled placeholder stays (owner, 2026-11-25).
 - LINK-01 and LINK-02 acceptance. CV link (owner): https://drive.google.com/uc?export=download&id=1Ocqt2HoIjLeVMKR24qlCmPaDSc8vUUyj. Tests check the address; they do not download the file.
+- Below 640 px the photo is 108 by 120 px, so it is not the largest element on phones; from 640 px it keeps the board's space (owner, 2026-11-25, NFR-01).
 - Photo (owner): `/images/profile.jpg`, "Vonn Salve wearing glasses and a tan polo shirt, looking down".
 - A link the owner has not supplied is a labeled placeholder, never a dead or invented address.
 

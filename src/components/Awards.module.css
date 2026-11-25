@@ -1,0 +1,108 @@
+.list {
+  list-style: none;
+  display: grid;
+  gap: 14px;
+}
+
+.award {
+  display: grid;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 2px groove var(--lo);
+  min-width: 0;
+  scroll-margin-top: 12px;
+}
+
+.award:last-child {
+  border: 0;
+  padding: 0;
+}
+
+/* Below 640 px the photo is a small 120 px column beside the text (board, NFR-01). The column
+   exists only for an award with an image; one without uses the full width. */
+.withImage {
+  grid-template-columns: 120px minmax(0, 1fr);
+  align-items: start;
+}
+
+.text {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  /* At 320 px the text column is about 120 px, narrower than a long word like Infotechnolympics. */
+  overflow-wrap: anywhere;
+}
+
+.name {
+  font: 700 19px/1.25 var(--body);
+}
+
+/* The picture space is the 3 by 2 box of the content area, so a loaded photo fills it and nothing
+   moves when it arrives. The photo is in the page flow, not absolutely placed: a failed one is
+   then drawn by the browser as ordinary text, and the box has no minimum height, so it grows to
+   fit that text (only then) instead of clipping it. This works without JavaScript. */
+.picture {
+  margin: 0;
+  box-sizing: content-box;
+  aspect-ratio: 3 / 2;
+  background: var(--field);
+  border: 2px solid;
+  border-color: var(--lo) var(--hi) var(--hi) var(--lo);
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* next/image `fill` places the image absolutely at full size and sets color: transparent inline.
+   Those inline values are overridden here: the image is in the flow, never wider than the box,
+   in its own ratio, and a failed one keeps a visible, wrapping description. */
+.img {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: contain;
+  overflow-wrap: anywhere;
+  color: var(--muted) !important;
+}
+
+.broken {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  padding: 8px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+/* A failed photo shows its description in the same column, and grows to fit it rather than
+   clipping it. */
+.failed {
+  aspect-ratio: auto;
+}
+
+.failed .broken {
+  height: auto;
+  min-height: 76px;
+}
+
+@media (min-width: 640px) {
+  /* From 640 px the photo keeps the board's 260 px column. */
+  .withImage {
+    grid-template-columns: 260px 1fr;
+    align-items: center;
+  }
+
+  .failed .broken {
+    min-height: 156px;
+  }
+}

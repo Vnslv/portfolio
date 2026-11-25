@@ -51,6 +51,20 @@
 - Choosing a filter closes the open project and drops its link, as the locked board does (lead).
 - `site-shell.spec.ts` may select the Menu inside the taskbar only (owner).
 
+### T07 (2026-11-25)
+
+- `Awards.test.tsx` allowed; from here on, test-only files may be added to a ticket without asking (owner).
+- Up to three fix and re-review rounds per ticket for small fixes inside it (owner).
+- The not-found taskbar keeps the Awards link; it matters only with no awards (lead).
+
+### Phone photos (2026-11-25)
+
+- Small photos on phones and full-size award photos in a new tab, because large ones break NFR-01 (owner).
+
+### Small photo files (2026-11-25)
+
+- Award photos show small WebP copies; the profile photo does too, in T08 (owner, after CI `lighthouse` measurements).
+
 ## Design Spec
 
 Locked: [design brief](../../standards/design-brief.md), [board](../../design/board-b.html), [flow, wireframes, states](../../design/first-look.md).
@@ -66,7 +80,7 @@ Tickets run in order; several change the same files. One ticket per session and 
 - [x] T10 Project content and Idiya rename, before T05 (CONT-01, WORK-01, WORK-03, WORK-05) -> tickets/10-project-content.md
 - [x] T05 Light and dark themes with a toggle (THEME-01) -> tickets/05-theme.md
 - [x] T06 Work list, filter, details, links (WORK-01 to WORK-06) -> tickets/06-work.md
-- [ ] T07 Awards section and badges (AWARD-01, AWARD-02, AWARD-03) -> tickets/07-awards.md
+- [x] T07 Awards section and badges (AWARD-01, AWARD-02, AWARD-03) -> tickets/07-awards.md
 - [ ] T08 Profile links and CV (LINK-01, LINK-02) -> tickets/08-links.md
 - [ ] T09 Accessibility, speed, parity checks (NFR-01, NFR-04) -> tickets/09-quality.md
 

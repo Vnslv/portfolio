@@ -2,8 +2,12 @@
 
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { Project, ProjectImage, ReadyProject } from '../content/types';
+import { awards as ownerAwards } from '../content/awards';
+import type { Award, Project, ProjectImage, ReadyProject } from '../content/types';
+import { awardId, awardsForProject } from '../lib/awards';
 import { roleLabel, teamLabel } from '../lib/projects';
+import { AwardBadge } from './AwardBadge';
+import badgeStyles from './AwardBadge.module.css';
 import { Icon } from './Icon';
 import styles from './ProjectCard.module.css';
 
@@ -66,7 +70,8 @@ function Details({ project, enhanced, onClose }: DetailsProps) {
   }
 
   function close(button: HTMLButtonElement) {
-    const details = button.closest('details');
+    // The panel is inside the card's details element, or beside it on a card with a badge.
+    const details = button.closest('li')?.querySelector('details');
     if (!details) return;
     details.open = false;
     details.querySelector('summary')?.focus();
@@ -150,9 +155,22 @@ function Details({ project, enhanced, onClose }: DetailsProps) {
 // A ready project is a native details section, so it opens and closes without script and its
 // text is in the page. All sections share one name, so opening one closes the others, as the
 // board does. A project that is not ready has no section and cannot be opened (WORK-06).
-type ProjectCardProps = { project: Project; enhanced: boolean; onClose: () => void };
+//
+// A badge for each award the project won sits under the row, outside the summary, and links to
+// that award in the awards section (AWARD-02). The awards default to the owner's content.
+type ProjectCardProps = {
+  project: Project;
+  enhanced: boolean;
+  onClose: () => void;
+  awards?: readonly Award[];
+};
 
-export function ProjectCard({ project, enhanced, onClose }: ProjectCardProps) {
+export function ProjectCard({
+  project,
+  enhanced,
+  onClose,
+  awards = ownerAwards,
+}: ProjectCardProps) {
   const team = teamLabel(project.teamSize);
   const head = (
     <>
@@ -170,16 +188,45 @@ export function ProjectCard({ project, enhanced, onClose }: ProjectCardProps) {
       )}
     </>
   );
-  return (
-    <li className={styles.project} id={project.id} data-project={project.id}>
-      {project.ready ? (
+  const badges = awardsForProject(project, awards).map((award) => (
+    <AwardBadge key={awardId(award)} award={award} />
+  ));
+  let body;
+  if (!project.ready) {
+    body = (
+      <>
+        <div className={styles.head}>{head}</div>
+        {badges}
+      </>
+    );
+  } else if (badges.length === 0) {
+    body = (
+      <details name="projects">
+        <summary className={styles.head}>{head}</summary>
+        <Details project={project} enhanced={enhanced} onClose={onClose} />
+      </details>
+    );
+  } else {
+    // As on the board, the badge sits between the row and the panel. A native details element
+    // hides everything but its summary when closed, so here the details element holds only the
+    // row, and the panel beside it is shown by CSS while the details element is open. That keeps
+    // the badge in view on a closed card, the order row, badge, panel for the keyboard, and the
+    // card opening without JavaScript.
+    body = (
+      <>
         <details name="projects">
           <summary className={styles.head}>{head}</summary>
-          <Details project={project} enhanced={enhanced} onClose={onClose} />
         </details>
-      ) : (
-        <div className={styles.head}>{head}</div>
-      )}
+        {badges}
+        <div className={badgeStyles.panel}>
+          <Details project={project} enhanced={enhanced} onClose={onClose} />
+        </div>
+      </>
+    );
+  }
+  return (
+    <li className={styles.project} id={project.id} data-project={project.id}>
+      {body}
     </li>
   );
 }

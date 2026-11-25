@@ -1,14 +1,22 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { SECTIONS } from '@/lib/site';
+import type { Section } from '../lib/awards';
+import { SECTIONS } from '../lib/site';
 import { Icon } from './Icon';
 import { useCurrentSection } from './SectionNav';
 import styles from './Taskbar.module.css';
 import { ThemeToggle } from './ThemeToggle';
 
-// hrefBase is "/" on pages that have no sections, so the links go to the home page.
-export function Taskbar({ hrefBase = '' }: { hrefBase?: string }) {
+// hrefBase is "/" on pages that have no sections, so the links go to the home page. The sections
+// default to all of them; the page leaves out Awards while it is hidden.
+export function Taskbar({
+  hrefBase = '',
+  sections = SECTIONS,
+}: {
+  hrefBase?: string;
+  sections?: readonly Section[];
+}) {
   const current = useCurrentSection();
   const details = useRef<HTMLDetailsElement>(null);
   const summary = useRef<HTMLElement>(null);
@@ -41,7 +49,7 @@ export function Taskbar({ hrefBase = '' }: { hrefBase?: string }) {
             if (details.current) details.current.open = false;
           }}
         >
-          {SECTIONS.map((section) => (
+          {sections.map((section) => (
             <a key={section.id} className="button" href={`${hrefBase}#${section.id}`}>
               <Icon name={section.icon} />
               {section.label}
@@ -49,7 +57,7 @@ export function Taskbar({ hrefBase = '' }: { hrefBase?: string }) {
           ))}
         </div>
       </details>
-      {SECTIONS.map((section) => (
+      {sections.map((section) => (
         <a
           key={section.id}
           className={`button ${styles.section}`}

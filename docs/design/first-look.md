@@ -36,6 +36,7 @@ Flow and wireframes before styling. Requirements: `docs/PRD.md` 0.5.0. Text in `
 - Taskvane is now Idiya (owner). The wireframes below are updated.
 - The intro strip reads "Frontend developer, project manager" (owner).
 - Award and project names use the bold text font (owner).
+- On phones, award photos sit small beside their text and the profile photo is 108 by 120 px, to keep NFR-01; award photos open full size (owner). The phone wireframe below shows the earlier full width.
 
 ### For The Plan Gate
 

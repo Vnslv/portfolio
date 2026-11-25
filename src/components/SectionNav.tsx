@@ -1,7 +1,8 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
-import { SECTIONS, type SectionId } from '@/lib/site';
+import type { Section } from '../lib/awards';
+import { SECTIONS, type SectionId } from '../lib/site';
 import { Icon } from './Icon';
 import styles from './SectionNav.module.css';
 
@@ -40,7 +41,8 @@ export function useCurrentSection(): SectionId | null {
   return useSyncExternalStore(subscribe, currentSnapshot, () => null);
 }
 
-export function SectionNav() {
+// The sections to list default to all of them; the page leaves out Awards while it is hidden.
+export function SectionNav({ sections = SECTIONS }: { sections?: readonly Section[] }) {
   const current = useCurrentSection();
   return (
     <nav className={styles.tree} aria-label="Sections">
@@ -49,7 +51,7 @@ export function SectionNav() {
         Contents
       </p>
       <div className={styles.body}>
-        {SECTIONS.map((section) => (
+        {sections.map((section) => (
           <a
             key={section.id}
             className={`button ${styles.link}`}
