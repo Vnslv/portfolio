@@ -2,7 +2,7 @@
 
 ## Scope
 
-**PRD IDs:** SITE-01, SITE-02, SITE-03, THEME-01, WORK-01, WORK-02, WORK-03, WORK-04, WORK-05, WORK-06, AWARD-01, AWARD-02, AWARD-03, LINK-01, LINK-02, CONT-01, NFR-01, NFR-04
+**PRD IDs:** SITE-01, SITE-02, SITE-03, THEME-01, WORK-01, WORK-02, WORK-03, WORK-04, WORK-05, WORK-06, AWARD-01, AWARD-02, AWARD-03, LINK-01, LINK-02, CONT-01, MOTION-01, MOTION-02, MOTION-03, TOOL-01, NFR-01, NFR-04, NFR-08
 
 **Outcome:** the complete page in the locked design, with labeled placeholders where the owner has not supplied content. Nothing is launched.
 
@@ -86,6 +86,10 @@
 - The tab icon is a dev sprite (owner).
 - Fonts are no longer preloaded, after CI `lighthouse` comparisons; a failed `lighthouse` job may be rerun once per commit, recorded (owner).
 
+### PRD 0.6.0 (2026-11-26)
+
+- Motion (MOTION-01 to MOTION-03, NFR-08) and the Tools board (TOOL-01) approved; no pause control, with an NFR-04 exception for background and Tools motion (owner, informed of the WCAG 2.2.2 trade-off). Built in T14.
+
 ## Design Spec
 
 Locked: [design brief](../../standards/design-brief.md), [board](../../design/board-b.html), [flow, wireframes, states](../../design/first-look.md).
@@ -106,6 +110,8 @@ Tickets run in order; several change the same files. One ticket per session and 
 - [x] T11 Owner changes: eGovPH, taskbar, Idiya logo, Copy link (AWARD-01, AWARD-02, AWARD-03, SITE-01, WORK-03, WORK-04, NFR-01, NFR-04) -> tickets/11-egovph.md
 - [x] T12 Full-stack, Projects and role labels (SITE-01, SITE-02, SITE-03, WORK-01, WORK-02, WORK-05, CONT-01) -> tickets/12-wording.md
 - [x] T13 About text in the intro, sky theme, tab icon (SITE-01, SITE-02, THEME-01, NFR-01, NFR-04) -> tickets/13-about.md
+- [ ] T14 Motion (MOTION-01, MOTION-02, MOTION-03, NFR-08, NFR-01, NFR-04) -> tickets/14-motion.md
+- [ ] T15 Tools board (TOOL-01, SITE-01, CONT-01, NFR-01, NFR-04, NFR-08) -> tickets/15-tools.md
 - [ ] T09 Accessibility, speed, parity checks (NFR-01, NFR-04) -> tickets/09-quality.md
 
 ## Out Of Scope

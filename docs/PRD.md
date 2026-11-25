@@ -1,6 +1,6 @@
 # portfolio Product Requirements (PRD)
 
-**Version:** 0.5.2
+**Version:** 0.6.0
 **Owner:** @Vnslv
 
 ## Rules (read first)
@@ -33,9 +33,9 @@ Each requirement is a level-3 heading `ID: title`, followed by a statement, acce
 
 ### SITE-01: Single page
 
-**Statement:** The site is one English page, with these sections in order: intro, awards, work, links.
+**Statement:** The site is one English page, with these sections in order: intro, awards, work, tools, links.
 **Acceptance:**
-- The four sections appear in that order on phone and desktop.
+- The five sections appear in that order on phone and desktop.
 - Every section can be reached by its own link.
 **Status:** Approved
 
@@ -157,6 +157,41 @@ Each requirement is a level-3 heading `ID: title`, followed by a statement, acce
 - The link can be changed by editing one content file.
 **Status:** Approved
 
+### MOTION-01: Opening
+
+**Statement:** Once per visit, windows open in sequence and a small startup box appears while the site stays visible.
+**Acceptance:**
+- The intro can be read and used from the start (SITE-02), and nothing has to be skipped.
+- The opening finishes within 2 seconds.
+**Status:** Approved
+
+### MOTION-02: Background and awards
+
+**Statement:** A pixel sky drifts behind the windows, and pixel confetti appears once per visit when the awards are first seen.
+**Acceptance:**
+- The sky keeps moving; with reduced motion set, it is still.
+**Status:** Approved
+
+### MOTION-03: Interaction
+
+**Statement:** Windows and rows slide in on scroll, projects and filters move, hovering gives feedback, mouse users see a retro cursor, and choosing a filter types a terminal line.
+**Acceptance:**
+- Each movement lasts at most half a second, except the sky, idle bobbing, typing and the cursor blink.
+- Filter results appear at once; assistive technology gets one plain announcement.
+- Nothing depends on hover or the cursor.
+**Status:** Approved
+
+### TOOL-01: Tools board
+
+**Statement:** A tools section shows the owner's languages and tools as pieces on a playful pixel board.
+**Acceptance:**
+- Each tool shows its name as text and its group.
+- A piece reacts to hover, tap and keyboard focus; nothing depends on hover.
+- Only tools the owner supplied are shown, and the owner can change them in one content file.
+- Pieces keep bobbing; with reduced motion set, they are still.
+- It meets NFR-01, NFR-04 and NFR-08.
+**Status:** Approved
+
 ### CONT-01: File-based content
 
 **Statement:** The owner updates all text, projects, and links by editing files in the repository.
@@ -198,7 +233,7 @@ Each requirement is a level-3 heading `ID: title`, followed by a statement, acce
 
 ### NFR-04: Accessibility
 
-**Statement:** The site meets WCAG 2.2 AA.
+**Statement:** The site meets WCAG 2.2 AA, except 2.2.2 (Pause, Stop, Hide) for background and Tools motion.
 **Acceptance:**
 - Automated checks report no violations.
 - A manual keyboard pass reaches and operates every control.
@@ -227,6 +262,15 @@ Each requirement is a level-3 heading `ID: title`, followed by a statement, acce
 - The site offers no services for sale.
 **Status:** Approved
 
+### NFR-08: Motion limits
+
+**Statement:** Motion never gets in the way of reading, speed, or accessibility.
+**Acceptance:**
+- With reduced motion set on the device, nothing moves by default.
+- All content is visible without JavaScript and before any animation.
+- NFR-01 and NFR-04 still hold with motion on.
+**Status:** Approved
+
 ## Out Of Scope
 
 Version 1 does not include: freelance services, a contact form, a blog, a database, sign-in, an admin page, other languages, or a paid domain.
@@ -235,6 +279,7 @@ Version 1 does not include: freelance services, a contact form, a blog, a databa
 
 | Version | Date | Change | Approved by |
 | --- | --- | --- | --- |
+| 0.6.0 | 2026-11-26 | Added MOTION-01 to MOTION-03, TOOL-01 and NFR-08; SITE-01 adds tools; NFR-04 motion exception | @Vnslv |
 | 0.5.2 | 2026-11-26 | About text moved to the intro: SITE-01, SITE-02; SITE-03 removed | @Vnslv |
 | 0.5.1 | 2026-11-26 | WORK-01: role labels for Idiya and UMak Kalinga | @Vnslv |
 | 0.5.0 | 2026-11-25 | Taskvane renamed Idiya; WORK-03: outcome removed, stack added | @Vnslv |
