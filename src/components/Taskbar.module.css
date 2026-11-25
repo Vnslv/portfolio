@@ -1,3 +1,12 @@
+/* The bar sticks over the bottom of the page, so the page keeps that much room below whatever the
+   browser scrolls to, a focused control above all (NFR-04, WCAG 2.2 AA 2.4.11). The bar's height
+   is its button (44 px, or more when one line of larger text needs it: 1.5 line height and 12 px
+   of padding and border) plus 10 px of its own padding and border. 4 px more keep the focus
+   outline clear. */
+html:has(.bar) {
+  scroll-padding-bottom: calc(max(44px, 1.5em + 12px) + 14px);
+}
+
 .bar {
   position: sticky;
   bottom: 0;
