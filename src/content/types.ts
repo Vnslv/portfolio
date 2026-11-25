@@ -38,6 +38,8 @@ export type Award = {
   project?: string;
   role?: string;
   teamSize?: number;
+  // Owner-supplied proof image with its text description (AWARD-03).
+  image?: ProjectImage;
 };
 
 export type Profile = {

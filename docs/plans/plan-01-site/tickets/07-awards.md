@@ -29,6 +29,7 @@
 - `src/content/awards.ts` (dates and images only)
 - `src/content/types.ts`, `src/lib/awards.ts`, `src/lib/awards.test.ts`
 - `e2e/flows/awards-list.spec.ts`, `e2e/support/award-fixtures.ts`
+- `src/components/Awards.test.tsx` (empty and fixture cases; owner, 2026-11-25)
 
 ## Rules
 

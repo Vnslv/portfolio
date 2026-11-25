@@ -51,6 +51,12 @@
 - Choosing a filter closes the open project and drops its link, as the locked board does (lead).
 - `site-shell.spec.ts` may select the Menu inside the taskbar only (owner).
 
+### T07 (2026-11-25)
+
+- `Awards.test.tsx` allowed; from here on, test-only files may be added to a ticket without asking (owner).
+- Up to three fix and re-review rounds per ticket for small fixes inside it (owner).
+- The not-found taskbar keeps the Awards link; it matters only with no awards (lead).
+
 ## Design Spec
 
 Locked: [design brief](../../standards/design-brief.md), [board](../../design/board-b.html), [flow, wireframes, states](../../design/first-look.md).

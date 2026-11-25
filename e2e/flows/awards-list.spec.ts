@@ -1,0 +1,184 @@
+import { test, expect, type Page } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+
+const phone = { width: 390, height: 844 };
+const desktop = { width: 1280, height: 800 };
+const BCC = 'award-blockchain-campus-conference-2026';
+const INFOTECH = 'award-umak-ccis-infotechnolympics-hackathon';
+const EGOVPH = 'award-egovph-hackathon-2026';
+const BCC_ALT = 'Six people on stage under a screen that reads Your hackathon champion, HeronPay';
+const INFOTECH_ALT =
+  'Three teammates wearing champion medals, one holding an Infotechnolympics 2026 envelope';
+
+const award = (page: Page, id: string) => page.locator(`#awards li[id="${id}"]`);
+const card = (page: Page, id: string) => page.locator(`li[data-project="${id}"]`);
+const openCards = (page: Page) => page.locator('#work details[open]');
+
+// Empty state: with no award to show there is no section, no badge and no navigation entry. The
+// built site always holds the owner's awards, so that case is proven by render tests with
+// fixtures in src/components/Awards.test.tsx and src/lib/awards.test.ts.
+test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.setViewportSize(desktop);
+  });
+
+  test('happy: facts, images, an award with no image, navigation', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('#awards li[id^="award-"]')).toHaveCount(3);
+    await expect(page.locator('#awards').getByRole('heading', { level: 2 })).toHaveText('Awards');
+    await expect(page.locator('#awards')).toContainText('3 awards');
+
+    await test.step('AWARD-01: every supplied fact, once, in the owner wording', async () => {
+      await expect(award(page, BCC)).toContainText('Champion, Blockchain Campus Conference 2026');
+      await expect(award(page, BCC)).toContainText('Binance Academy, November 2026');
+      await expect(award(page, BCC)).toContainText(
+        'Project: HeronPay. My role: Project manager. Team of 3.',
+      );
+      await expect(award(page, INFOTECH)).toContainText('Champion, UMak CCIS Infotechnolympics');
+      await expect(award(page, INFOTECH)).toContainText('University of Makati, October 2026');
+      await expect(award(page, INFOTECH)).toContainText('Project: HeronHub. My role: Project');
+      await expect(award(page, EGOVPH)).toContainText('Top 10, eGovPH Hackathon 2026');
+      await expect(award(page, EGOVPH)).toContainText('eGovPH, July 2026');
+      await expect(page.getByText('Binance Academy')).toHaveCount(1);
+    });
+
+    await test.step('AWARD-03: two images with descriptions; eGovPH still appears without one', async () => {
+      for (const [id, alt] of [
+        [BCC, BCC_ALT],
+        [INFOTECH, INFOTECH_ALT],
+      ] as const) {
+        const img = award(page, id).getByRole('img', { name: alt });
+        await img.scrollIntoViewIfNeeded();
+        await expect
+          .poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth))
+          .toBeGreaterThan(0);
+      }
+      await expect(award(page, EGOVPH).getByRole('img')).toHaveCount(0);
+    });
+
+    await test.step('SITE-01: Awards is in the sidebar and the taskbar, between Welcome and Work', async () => {
+      await page.locator('nav[aria-label="Sections"] a[href="#awards"]').click();
+      await expect(page).toHaveURL(/#awards$/);
+      await expect(page.locator('#awards')).toBeInViewport();
+      // From 900 px the sidebar lists the sections; at 768 px the taskbar buttons do.
+      await page.setViewportSize({ width: 768, height: 800 });
+      await page.goto('/');
+      await page.locator('nav[aria-label="Taskbar"] a[href="#awards"]:visible').click();
+      await expect(page.locator('#awards')).toBeInViewport();
+    });
+
+    await test.step('anchors: no award id clashes with a section or project id', async () => {
+      const ids = await page.locator('[id]').evaluateAll((els) => els.map((el) => el.id));
+      expect(new Set(ids).size).toBe(ids.length);
+    });
+  });
+
+  test('badges: on HeronPay and eHanda, link to the award, touch no project link', async ({
+    page,
+  }) => {
+    await page.goto('/#idiya');
+    await expect(openCards(page)).toHaveCount(1);
+
+    await test.step('AWARD-02: the badge shows hackathon and placement', async () => {
+      const badge = card(page, 'heronpay').getByRole('link', {
+        name: 'Champion, Blockchain Campus Conference 2026',
+      });
+      await expect(badge).toHaveAttribute('href', `#${BCC}`);
+      await expect(card(page, 'ehanda').getByRole('link')).toHaveAttribute('href', `#${EGOVPH}`);
+      for (const id of ['idiya', 'alunsina', 'umak-kalinga']) {
+        await expect(card(page, id).getByRole('link', { name: /Champion|Top 10/ })).toHaveCount(0);
+      }
+    });
+
+    await test.step('a badge click moves to the award and leaves the open project open', async () => {
+      await card(page, 'ehanda')
+        .getByRole('link', { name: /Top 10/ })
+        .click();
+      await expect(page).toHaveURL(new RegExp(`#${EGOVPH}$`));
+      await expect(award(page, EGOVPH)).toBeInViewport();
+      await expect(openCards(page)).toHaveCount(1);
+      await expect(card(page, 'idiya').locator('details')).toHaveJSProperty('open', true);
+      await page.goBack();
+      await expect(page).toHaveURL(/#idiya$/);
+      await expect(openCards(page)).toHaveCount(1);
+    });
+
+    await test.step('an award anchor opens no project and an unknown one shows the page', async () => {
+      // A fresh load: from the same page a hash change keeps the open project open.
+      await page.goto('about:blank');
+      await page.goto(`/#${BCC}`);
+      await expect(award(page, BCC)).toBeInViewport();
+      await expect(openCards(page)).toHaveCount(0);
+      await expect(page.locator('#work li[data-project]')).toHaveCount(5);
+      await page.goto('/#award-nope');
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText('Vonn Salve');
+      await expect(openCards(page)).toHaveCount(0);
+    });
+  });
+
+  for (const width of [768, 1280]) {
+    test(`layout at ${width} px: an award with no image uses the full width`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto('/');
+      const text = async (id: string) => (await award(page, id).locator('h3').boundingBox())?.width;
+      const withImage = (await text(BCC)) ?? 0;
+      const without = (await text(EGOVPH)) ?? 0;
+      expect(withImage).toBeGreaterThan(0);
+      expect(without).toBeGreaterThanOrEqual(withImage);
+    });
+  }
+
+  test('phone: Menu lists Awards, image above the text, no overflow', async ({ page }) => {
+    await page.setViewportSize(phone);
+    await page.goto('/');
+    await page.locator('summary', { hasText: 'Menu' }).click();
+    await page.locator('nav[aria-label="Taskbar"] a[href="#awards"]:visible').click();
+    await expect(page.locator('#awards')).toBeInViewport();
+    const img = (await award(page, BCC).locator('figure').boundingBox())?.y ?? 0;
+    const text = (await award(page, BCC).locator('h3').boundingBox())?.y ?? 0;
+    expect(img).toBeLessThan(text);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+      390,
+    );
+  });
+
+  test('error: a failed image shows its description, logged once with its path', async ({
+    page,
+  }) => {
+    const warnings: string[] = [];
+    page.on('console', (m) => m.type() === 'warning' && warnings.push(m.text()));
+    await page.route('**/images/bcc.jpg', (route) => route.abort());
+    await page.goto('/');
+    await expect(award(page, BCC).getByText(BCC_ALT)).toBeVisible();
+    await expect(award(page, BCC).getByRole('img')).toHaveCount(0);
+    await expect(award(page, INFOTECH).getByRole('img', { name: INFOTECH_ALT })).toBeVisible();
+    await expect
+      .poll(() => warnings.filter((w) => w.includes('image')))
+      .toEqual(['awards: image failed to load /images/bcc.jpg']);
+  });
+
+  test.describe('without JavaScript, image blocked', () => {
+    test.use({ javaScriptEnabled: false, viewport: phone });
+
+    test('a failed image keeps its space and its description can be seen', async ({ page }) => {
+      await page.route('**/images/infotech.jpg', (route) => route.abort());
+      await page.goto('/');
+      const img = award(page, INFOTECH).getByRole('img', { name: INFOTECH_ALT });
+      await expect(img).toBeVisible();
+      const box = await img.boundingBox();
+      expect(box?.width).toBeGreaterThan(100);
+      expect(box?.height).toBeGreaterThan(100);
+      // next/image sets color: transparent, which hides the alt text a broken image draws.
+      expect(await img.evaluate((el) => getComputedStyle(el).color)).not.toMatch(
+        /^rgba\(0, 0, 0, 0\)$|^transparent$/,
+      );
+      await expect(award(page, EGOVPH)).toContainText('Top 10, eGovPH Hackathon 2026');
+    });
+  });
+
+  test('accessibility: no axe violations on the page with awards', async ({ page }) => {
+    await page.goto('/');
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations).toEqual([]);
+  });
+});

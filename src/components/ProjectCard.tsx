@@ -2,8 +2,11 @@
 
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { Project, ProjectImage, ReadyProject } from '../content/types';
+import { awards as ownerAwards } from '../content/awards';
+import type { Award, Project, ProjectImage, ReadyProject } from '../content/types';
+import { awardId, awardsForProject } from '../lib/awards';
 import { roleLabel, teamLabel } from '../lib/projects';
+import { AwardBadge } from './AwardBadge';
 import { Icon } from './Icon';
 import styles from './ProjectCard.module.css';
 
@@ -150,9 +153,22 @@ function Details({ project, enhanced, onClose }: DetailsProps) {
 // A ready project is a native details section, so it opens and closes without script and its
 // text is in the page. All sections share one name, so opening one closes the others, as the
 // board does. A project that is not ready has no section and cannot be opened (WORK-06).
-type ProjectCardProps = { project: Project; enhanced: boolean; onClose: () => void };
+//
+// A badge for each award the project won sits under the row, outside the summary, and links to
+// that award in the awards section (AWARD-02). The awards default to the owner's content.
+type ProjectCardProps = {
+  project: Project;
+  enhanced: boolean;
+  onClose: () => void;
+  awards?: readonly Award[];
+};
 
-export function ProjectCard({ project, enhanced, onClose }: ProjectCardProps) {
+export function ProjectCard({
+  project,
+  enhanced,
+  onClose,
+  awards = ownerAwards,
+}: ProjectCardProps) {
   const team = teamLabel(project.teamSize);
   const head = (
     <>
@@ -180,6 +196,9 @@ export function ProjectCard({ project, enhanced, onClose }: ProjectCardProps) {
       ) : (
         <div className={styles.head}>{head}</div>
       )}
+      {awardsForProject(project, awards).map((award) => (
+        <AwardBadge key={awardId(award)} award={award} />
+      ))}
     </li>
   );
 }
