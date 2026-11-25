@@ -127,6 +127,7 @@ describe('awardsForProject (AWARD-02)', () => {
     id: 'p',
     name,
     roles: ['project-management'],
+    roleLabel: 'Fixture role label',
     ready: false,
   });
   const byName = (name: string) => awardsForProject(project(name), awards).map((a) => a.hackathon);

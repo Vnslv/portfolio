@@ -186,7 +186,7 @@ for (const width of [390, 1280]) {
     const bar = page.getByRole('navigation', { name: 'Taskbar' });
     for (const [label, id] of [
       ['Awards', 'awards'],
-      ['Work', 'work'],
+      ['Projects', 'work'],
     ] as const) {
       // Below 640 px the section links are in the Menu; open it (it does nothing from 900 px).
       await page.evaluate(() => {

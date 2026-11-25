@@ -2,9 +2,14 @@ import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 const IDS = ['welcome', 'awards', 'work', 'about', 'links'];
-const LABELS = ['Welcome', 'Awards', 'Work', 'About', 'Links'];
+const LABELS = ['Welcome', 'Awards', 'Projects', 'About', 'Links'];
 const phone = { width: 390, height: 844 };
 const desktop = { width: 1280, height: 800 };
+// The owner's words (T12 ticket).
+const LEAD = 'Full-stack developer and project manager';
+const STRIP = 'Full-stack developer, project manager';
+const ABOUT =
+  'BS Computer Science, University of Makati (UMak), College of Computing and Information Sciences. I build full-stack web apps and lead teams from idea to shipped product as project manager. Member of the UMak SIC Research and Development Committee.';
 
 async function sectionOrder(page: Page, strict: boolean) {
   const ids = await page.locator('main section').evaluateAll((els) => els.map((el) => el.id));
@@ -75,8 +80,8 @@ test.describe('SITE-01, SITE-02, SITE-03 page shell', () => {
       const intro = page.locator('#welcome');
       await expect(page.getByRole('heading', { level: 1 })).toHaveText('Vonn Salve');
       await expect(page.getByRole('heading', { level: 1 })).toBeInViewport();
-      await expect(intro.getByText('Frontend developer and project manager')).toBeVisible();
-      await expect(intro.getByText('Frontend developer, project manager')).toBeVisible();
+      await expect(intro.getByText(LEAD)).toBeVisible();
+      await expect(intro.getByText(STRIP)).toBeVisible();
       const firstTop = await intro.boundingBox();
       expect(firstTop?.y).toBeLessThan(40);
     });
@@ -97,7 +102,7 @@ test.describe('SITE-01, SITE-02, SITE-03 page shell', () => {
         await expect(page).toHaveURL(new RegExp(`#${id}$`));
         await expect(page.locator(`#${id}`)).toBeInViewport();
         await expect(
-          page.getByRole('navigation', { name: 'Taskbar' }).getByRole('link', { name: 'Work' }),
+          page.getByRole('navigation', { name: 'Taskbar' }).getByRole('link', { name: 'Projects' }),
         ).toBeHidden();
       }
     });
@@ -392,4 +397,123 @@ test.describe('SITE-01, SITE-02, SITE-03 page shell', () => {
     await page.goto('/');
     await expect(page).toHaveTitle('Vonn Salve');
   });
+});
+
+// Below 640 px the section links are in the Menu; from 900 px they are in the bar.
+const NAV = [
+  { size: phone, place: 'Menu', reveal: openMenu },
+  { size: desktop, place: 'bar', reveal: () => Promise.resolve() },
+];
+
+test.describe('SITE-01, SITE-02, SITE-03 the owner words and the name Projects', () => {
+  for (const { size, place, reveal } of NAV) {
+    test(`the intro, the Projects names and the About text at ${size.width} px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(size);
+      await page.goto('/');
+      const intro = page.locator('#welcome');
+      await expect(intro.getByText(LEAD, { exact: true })).toBeVisible();
+      await expect(intro.getByText(STRIP, { exact: true })).toBeVisible();
+      await expect(
+        intro.getByRole('link', { name: 'See my projects', exact: true }),
+      ).toHaveAttribute('href', '#work');
+      await expect(page.locator('#work').getByRole('heading', { level: 2 })).toHaveText('Projects');
+      await expect(page.locator('#about').getByText(ABOUT, { exact: true })).toBeVisible();
+      await reveal(page);
+      await expect(barLink(page, 'Projects')).toBeVisible();
+      await expect(barLink(page, 'Projects')).toHaveAttribute('href', '#work');
+      await expect(
+        bar(page).getByRole('link', { name: 'Work', exact: true, includeHidden: true }),
+      ).toHaveCount(0);
+    });
+
+    test(`the intro button, #work and the current mark at ${size.width} px (${place})`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(size);
+      await page.goto('/');
+      await page.getByRole('link', { name: 'See my projects', exact: true }).click();
+      await expect(page).toHaveURL('/#work');
+      await expect(page.locator('#work')).toBeInViewport();
+      await page.goto('about:blank');
+      await page.goto('/#work');
+      await expect(page.locator('#work')).toBeInViewport();
+      // The link in the Menu and the button in the bar are the same section; one is marked.
+      await expect(bar(page).locator('[aria-current="true"]')).toHaveAttribute('href', '#work');
+      // The bar names the section: in its text below 640 px, on its button from 900 px.
+      await expect(
+        bar(page).getByText('Projects', { exact: true }).filter({ visible: true }),
+      ).toHaveCount(1);
+      await reveal(page);
+      await barLink(page, 'Projects').click();
+      await expect(page).toHaveURL('/#work');
+      await expect(page.locator('#work')).toBeInViewport();
+    });
+
+    test(`error state: the not-found Projects link goes to #work at ${size.width} px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(size);
+      await page.goto('/no-such-page');
+      await reveal(page);
+      await expect(barLink(page, 'Projects')).toHaveAttribute('href', '/#work');
+      await barLink(page, 'Projects').click();
+      await expect(page).toHaveURL('/#work');
+      await expect(page.locator('#work')).toBeInViewport();
+      await expect(page.locator('#work').getByRole('heading', { level: 2 })).toHaveText('Projects');
+    });
+  }
+
+  // The narrowest and widest width of each bar layout. "Projects" is longer than the old name.
+  const NARROW = ['Menu', 'Projects', 'Dark theme'];
+  const MIDDLE = ['Menu', ...LABELS, 'Dark theme'];
+  const WIDE = [...LABELS, 'Dark theme'];
+  for (const [width, shown] of [
+    [320, NARROW],
+    [390, NARROW],
+    [639, NARROW],
+    [640, MIDDLE],
+    [899, MIDDLE],
+    [900, WIDE],
+    [1280, WIDE],
+  ] as const) {
+    test(`the bar fits on one row, inside the screen, at ${width} px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto('/#work');
+      await expect(bar(page).locator('button')).toBeVisible();
+      await expect(bar(page).locator('a[href="#work"][aria-current="true"]')).toHaveCount(1);
+      const items = await bar(page).evaluate((nav) =>
+        [
+          ...nav.querySelectorAll<HTMLElement>(
+            ':scope > details > summary, :scope > a, :scope > span',
+          ),
+        ]
+          .filter((el) => el.checkVisibility())
+          .map((el) => {
+            const box = el.getBoundingClientRect();
+            return {
+              // Only the text that is shown: the toggle also holds hidden text that sizes it.
+              text: el.innerText.trim(),
+              left: box.left,
+              right: box.right,
+              top: box.top,
+              bottom: box.bottom,
+              clipped: el.scrollWidth > el.clientWidth && el.clientWidth > 0,
+            };
+          }),
+      );
+      expect(items.map((i) => i.text)).toEqual(shown);
+      expect(items.filter((i) => i.left < 0 || i.right > width)).toEqual([]);
+      expect(items.filter((i) => i.clipped)).toEqual([]);
+      // Left to right without overlap, and all sharing one row.
+      expect(items.filter((i, n) => i.left < (items[n - 1]?.right ?? 0) - 0.5)).toEqual([]);
+      expect(Math.max(...items.map((i) => i.top))).toBeLessThan(
+        Math.min(...items.map((i) => i.bottom)),
+      );
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+        width,
+      );
+    });
+  }
 });

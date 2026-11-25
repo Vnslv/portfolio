@@ -18,14 +18,14 @@ describe('site', () => {
     expect(SECTIONS.map((section) => section.label)).toEqual([
       'Welcome',
       'Awards',
-      'Work',
+      'Projects',
       'About',
       'Links',
     ]);
   });
 
-  it('words the intro strip as the owner chose (T10 ticket)', () => {
-    expect(INTRO_STRIP).toBe('Frontend developer, project manager');
+  it('words the intro strip as the owner chose (SITE-02, T12 ticket)', () => {
+    expect(INTRO_STRIP).toBe('Full-stack developer, project manager');
   });
 
   it('writes the copyright line as in the design board', () => {

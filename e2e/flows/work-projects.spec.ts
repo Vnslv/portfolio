@@ -16,6 +16,19 @@ const isOpen = (page: Page, id: string) =>
 
 const IDIYA_ALT = 'Idiya logo: three lines and an arrow';
 const NAMES = ['alunsina', 'heronpay', 'ehanda', 'idiya', 'umak-kalinga'];
+// WORK-01 role labels, as the T12 ticket writes them.
+const ROLE_LABELS = [
+  ['alunsina', 'Project management'],
+  ['heronpay', 'Project management'],
+  ['ehanda', 'Project management'],
+  ['idiya', 'Full-stack development and project management'],
+  ['umak-kalinga', 'Frontend development and project management'],
+] as const;
+
+const shownIds = (page: Page) =>
+  page
+    .locator('#work li[data-project]')
+    .evaluateAll((els) => els.map((el) => el.getAttribute('data-project')));
 
 test.describe('WORK-01 to WORK-06 work list, filter, details', () => {
   test.beforeEach(async ({ page }) => {
@@ -29,10 +42,9 @@ test.describe('WORK-01 to WORK-06 work list, filter, details', () => {
     await test.step('WORK-01: five projects once each, with role and team labels', async () => {
       await expect(card(page, 'idiya')).toHaveCount(1);
       await expect(work.locator('li[data-project]')).toHaveCount(5);
-      await expect(card(page, 'heronpay')).toContainText('Project management');
-      await expect(card(page, 'idiya')).toContainText(
-        'Software development and project management',
-      );
+      for (const [id, label] of ROLE_LABELS) {
+        await expect(card(page, id).getByText(label, { exact: true })).toBeVisible();
+      }
       await expect(card(page, 'idiya')).toContainText('Solo project');
       await expect(card(page, 'idiya')).toContainText('Full-stack developer and project manager');
       await expect(card(page, 'ehanda')).toContainText('Team of 5');
@@ -92,6 +104,49 @@ test.describe('WORK-01 to WORK-06 work list, filter, details', () => {
       expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
     });
   });
+
+  for (const { size, choose } of [
+    {
+      size: phone,
+      choose: async (page: Page, label: string) => {
+        await page.locator('#work').getByRole('combobox', { name: 'Show' }).selectOption({ label });
+      },
+    },
+    {
+      size: desktop,
+      choose: (page: Page, label: string) =>
+        page.locator('#work').getByRole('radio', { name: label }).check(),
+    },
+  ]) {
+    test(`WORK-01, WORK-02: the role labels and both filters at ${size.width} px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(size);
+      await page.goto('/');
+      for (const [id, label] of ROLE_LABELS) {
+        await expect(card(page, id).getByText(label, { exact: true })).toBeVisible();
+      }
+      await choose(page, SOFTWARE);
+      await expect.poll(() => shownIds(page)).toEqual(['idiya', 'umak-kalinga']);
+      await choose(page, 'Project management');
+      await expect.poll(() => shownIds(page)).toEqual(NAMES);
+    });
+
+    test(`WORK-04: every shared project link opens its project at ${size.width} px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(size);
+      for (const id of NAMES) {
+        await page.goto('about:blank');
+        await page.goto(`/#${id}`);
+        await expect.poll(() => isOpen(page, id)).toBe(true);
+        await expect(card(page, id).getByText('Problem')).toBeVisible();
+        await expect(page.locator('#work').getByRole('heading', { level: 2 })).toHaveText(
+          'Projects',
+        );
+      }
+    });
+  }
 
   test('WORK-04: a shared link opens its project even when a filter hides it', async ({ page }) => {
     await page.goto('/');
@@ -404,7 +459,7 @@ test.describe('WORK-01 to WORK-06 work list, filter, details', () => {
     const sameRow = async () => {
       const name = await card(page, 'idiya').locator('h3').boundingBox();
       const role = await card(page, 'idiya')
-        .getByText('Software development and project')
+        .getByText('Full-stack development and project')
         .boundingBox();
       return Math.abs((name?.y ?? 0) - (role?.y ?? 99)) < 16;
     };

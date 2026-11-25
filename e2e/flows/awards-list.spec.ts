@@ -75,7 +75,7 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
       }
     });
 
-    await test.step('SITE-01: Awards is in the taskbar, between Welcome and Work, and there is no sidebar', async () => {
+    await test.step('SITE-01: Awards is in the taskbar, between Welcome and Projects, and there is no sidebar', async () => {
       await expect(page.locator('nav[aria-label="Sections"]')).toHaveCount(0);
       await page.locator('nav[aria-label="Taskbar"] a[href="#awards"]:visible').click();
       await expect(page).toHaveURL(/#awards$/);

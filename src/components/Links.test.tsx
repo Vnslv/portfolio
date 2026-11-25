@@ -102,13 +102,13 @@ describe('Intro: the Download CV button (LINK-02)', () => {
     expect(anchorFor(html, '#work')).toContain('class="button"');
   });
 
-  it('shows a labeled placeholder and keeps See my work when the CV is missing', () => {
+  it('shows a labeled placeholder and keeps See my projects when the CV is missing', () => {
     for (const cvUrl of [undefined, '', '  ']) {
       const html = renderToStaticMarkup(<Intro profile={{ ...full, cvUrl }} />);
       expect(html).toContain('&lt;your CV link&gt;');
       expect(html).not.toContain('Download CV');
       expect(anchors(html)).toHaveLength(1);
-      expect(html).toContain('See my work');
+      expect(html).toContain('>See my projects</a>');
     }
   });
 });
@@ -121,7 +121,7 @@ describe('Intro: the photo', () => {
     expect(img).toContain('src="/images/fixture-small.webp"');
     expect(img).toContain('alt="A fixture photo description"');
     expect(html).not.toContain('fixture.jpg');
-    // The only links in the intro are See my work and Download CV.
+    // The only links in the intro are See my projects and Download CV.
     expect(anchors(html)).toHaveLength(2);
     expect(html).not.toContain('&lt;your photo&gt;');
   });
@@ -137,6 +137,20 @@ describe('Intro: the photo', () => {
     const html = renderToStaticMarkup(<Intro profile={{ ...full, photo: undefined }} />);
     expect(html).toContain('&lt;your photo&gt;');
     expect(html).not.toContain('<img');
+  });
+});
+
+describe('Intro: the owner words (SITE-02, T12 ticket)', () => {
+  const html = renderToStaticMarkup(<Intro />);
+
+  it('shows the intro line and the strip', () => {
+    expect(html).toContain('>Full-stack developer and project manager</p>');
+    expect(html).toContain('Full-stack developer, project manager');
+    expect(html).not.toContain('Frontend developer');
+  });
+
+  it('names the button See my projects and keeps its #work address', () => {
+    expect(html).toMatch(/<a [^>]*href="#work"[^>]*>See my projects<\/a>/);
   });
 });
 

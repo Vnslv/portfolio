@@ -27,6 +27,7 @@ const project: Project = {
   id: 'fixture-project',
   name: 'Fixture Project',
   roles: ['project-management'],
+  roleLabel: 'Fixture role label',
   ready: false,
 };
 
@@ -165,11 +166,20 @@ describe('the taskbar sections (SITE-01)', () => {
     expect(links).toHaveLength(5);
     const hrefs = links.map((l) => l.match(/href="([^"]*)"/)?.[1]);
     expect(hrefs).toEqual(['#welcome', '#awards', '#work', '#about', '#links']);
-    const labels = ['Welcome', 'Awards', 'Work', 'About', 'Links'];
+    const labels = ['Welcome', 'Awards', 'Projects', 'About', 'Links'];
     links.forEach((link, i) => {
       expect(link).toContain('<svg');
       expect(link).toContain(`</svg>${labels[i]}</a>`);
     });
+  });
+
+  // The Menu panel and the section buttons both name the section.
+  it('names the #work link Projects in the Menu and the bar (T12 ticket)', () => {
+    const html = renderToStaticMarkup(<Taskbar />);
+    expect(html.match(/<a [^>]*href="#work"[^>]*>.*?<\/a>/g)).toEqual([
+      expect.stringContaining('</svg>Projects</a>'),
+      expect.stringContaining('</svg>Projects</a>'),
+    ]);
   });
 
   it('marks no section current before script runs, and keeps the Menu for small screens', () => {
@@ -196,6 +206,7 @@ describe('an opened project (WORK-03, owner 2026-11-25)', () => {
       id: 'fixture-project',
       name: 'Fixture Project',
       roles: ['project-management'],
+      roleLabel: 'Fixture role label',
       ready: true,
       problem: 'P',
       work: { points: ['W'] },
@@ -236,6 +247,7 @@ describe('award badge on a card (AWARD-02)', () => {
       id: 'fixture-project',
       name: 'Fixture Project',
       roles: ['project-management'],
+      roleLabel: 'Fixture role label',
       ready: true,
       problem: 'P',
       work: { points: ['W'] },
@@ -255,6 +267,7 @@ describe('award badge on a card (AWARD-02)', () => {
       id: 'fixture-project',
       name: 'Fixture Project',
       roles: ['project-management'],
+      roleLabel: 'Fixture role label',
       ready: true,
       problem: 'A problem sentence.',
       work: { points: ['W'] },

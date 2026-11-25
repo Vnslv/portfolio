@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { awards as ownerAwards } from '../content/awards';
 import type { Award, Project, ProjectImage, ReadyProject } from '../content/types';
 import { awardId, awardsForProject } from '../lib/awards';
-import { roleLabel, teamLabel } from '../lib/projects';
+import { teamLabel } from '../lib/projects';
 import { AwardBadge } from './AwardBadge';
 import badgeStyles from './AwardBadge.module.css';
 import { Icon } from './Icon';
@@ -146,7 +146,7 @@ export function ProjectCard({
         <Icon name="folder" size={32} />
       </span>
       <h3 className={styles.name}>{project.name}</h3>
-      <span className={styles.meta}>{roleLabel(project.roles)}</span>
+      <span className={styles.meta}>{project.roleLabel}</span>
       {project.ready ? (
         team ? (
           <span className={styles.meta}>{team}</span>

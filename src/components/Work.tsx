@@ -98,7 +98,7 @@ export function Work({ projects }: { projects: readonly Project[] }) {
   return (
     <Window
       id="work"
-      title="Work"
+      title="Projects"
       icon="folder"
       status={`${shown.length} of ${projects.length} projects`}
     >

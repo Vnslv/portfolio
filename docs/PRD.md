@@ -1,6 +1,6 @@
 # portfolio Product Requirements (PRD)
 
-**Version:** 0.5.0
+**Version:** 0.5.1
 **Owner:** @Vnslv
 
 ## Rules (read first)
@@ -69,7 +69,7 @@ Each requirement is a level-3 heading `ID: title`, followed by a statement, acce
 **Statement:** The work section lists Alunsina, HeronPay, eHanda, Idiya, and UMak Kalinga in one list.
 **Acceptance:**
 - Each project appears once.
-- Each shows its role label: project management for Alunsina, HeronPay, and eHanda; software development and project management for UMak Kalinga and Idiya.
+- Each shows its role label: project management for Alunsina, HeronPay, and eHanda; full-stack development and project management for Idiya; frontend development and project management for UMak Kalinga.
 **Status:** Approved
 
 ### WORK-02: Role filter
@@ -234,6 +234,7 @@ Version 1 does not include: freelance services, a contact form, a blog, a databa
 
 | Version | Date | Change | Approved by |
 | --- | --- | --- | --- |
+| 0.5.1 | 2026-11-26 | WORK-01: role labels for Idiya and UMak Kalinga | @Vnslv |
 | 0.5.0 | 2026-11-25 | Taskvane renamed Idiya; WORK-03: outcome removed, stack added | @Vnslv |
 | 0.4.0 | 2026-11-24 | WORK-01: UMak Kalinga role; AWARD-01: placements | @Vnslv |
 | 0.3.0 | 2026-11-24 | Added THEME-01 | @Vnslv |

@@ -9,7 +9,10 @@ export type ProjectImage = { src: string; small?: string; alt: string };
 type ProjectBase = {
   id: string;
   name: string;
+  // Which filters list the project (WORK-02).
   roles: readonly Role[];
+  // The role label the project shows (WORK-01).
+  roleLabel: string;
   teamSize?: number;
   // The owner's own role wording, only where the owner supplied it (WORK-05).
   ownerRole?: string;

@@ -58,7 +58,7 @@ export function Intro({ profile = content }: { profile?: Profile }) {
           <p className={styles.lead}>{profile.intro}</p>
           <div className={styles.row}>
             <a className="button" href="#work">
-              See my work
+              See my projects
             </a>
             <LinkItem label="CV" icon="doc" url={profile.cvUrl} newTab={false} />
           </div>
