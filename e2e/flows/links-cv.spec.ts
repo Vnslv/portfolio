@@ -15,7 +15,10 @@ const intro = (page: Page) => page.locator('#welcome');
 const links = (page: Page) => page.locator('#links');
 const figure = (page: Page) => intro(page).locator('figure');
 const photo = (page: Page) => intro(page).getByRole('img', { name: ALT });
-const cvIn = (area: Locator) => area.getByRole('link', { name: 'Download CV' });
+const cvIn = (area: Locator) => area.getByRole('link', { name: 'Download CV', exact: true });
+// The exact accessible name, so no pattern is built from a name.
+const profileLink = (page: Page, name: 'GitHub' | 'LinkedIn') =>
+  links(page).getByRole('link', { name: `${name} (opens in a new tab)`, exact: true });
 
 const box = async (locator: Locator) => {
   const b = await locator.boundingBox();
@@ -36,11 +39,11 @@ async function tabTo(page: Page, target: Locator): Promise<boolean> {
 
 // The three outside addresses answer from here, so no test reaches the real sites.
 async function answerOutside(page: Page) {
-  await page
-    .context()
-    .route(/^https:\/\/(github\.com|www\.linkedin\.com|drive\.google\.com)\//, (r) =>
-      r.fulfill({ status: 200, contentType: 'text/html', body: '<title>outside</title>' }),
-    );
+  const hosts = ['github.com', 'www.linkedin.com', 'drive.google.com'];
+  await page.context().route(
+    (url) => url.protocol === 'https:' && hosts.includes(url.hostname),
+    (r) => r.fulfill({ status: 200, contentType: 'text/html', body: '<title>outside</title>' }),
+  );
 }
 
 // The page is hydrated once the work filter, which needs script, is on.
@@ -65,7 +68,7 @@ test.describe('LINK-01, LINK-02 profile links and CV', () => {
         ['GitHub', GITHUB],
         ['LinkedIn', LINKEDIN],
       ] as const) {
-        const link = links(page).getByRole('link', { name: `${name} (opens in a new tab)` });
+        const link = profileLink(page, name);
         await expect(link).toHaveAttribute('href', href);
         await expect(link).toHaveAttribute('target', '_blank');
         await expect(link).toHaveAttribute('rel', /noopener/);
@@ -114,8 +117,8 @@ test.describe('LINK-01, LINK-02 profile links and CV', () => {
 
     for (const link of [
       cvIn(intro(page)),
-      links(page).getByRole('link', { name: /^GitHub/ }),
-      links(page).getByRole('link', { name: /^LinkedIn/ }),
+      profileLink(page, 'GitHub'),
+      profileLink(page, 'LinkedIn'),
       cvIn(links(page)),
     ]) {
       await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
@@ -129,7 +132,7 @@ test.describe('LINK-01, LINK-02 profile links and CV', () => {
         ['GitHub', GITHUB],
         ['LinkedIn', LINKEDIN],
       ] as const) {
-        const link = links(page).getByRole('link', { name: new RegExp(`^${name}`) });
+        const link = profileLink(page, name);
         await link.focus();
         const opened = context.waitForEvent('page');
         await page.keyboard.press('Enter');
@@ -165,14 +168,8 @@ test.describe('LINK-01, LINK-02 profile links and CV', () => {
       await page.goto('/');
       await expect(cvIn(intro(page))).toHaveAttribute('href', CV);
       await expect(cvIn(links(page))).toHaveAttribute('href', CV);
-      await expect(links(page).getByRole('link', { name: /^GitHub/ })).toHaveAttribute(
-        'href',
-        GITHUB,
-      );
-      await expect(links(page).getByRole('link', { name: /^LinkedIn/ })).toHaveAttribute(
-        'href',
-        LINKEDIN,
-      );
+      await expect(profileLink(page, 'GitHub')).toHaveAttribute('href', GITHUB);
+      await expect(profileLink(page, 'LinkedIn')).toHaveAttribute('href', LINKEDIN);
       await expect
         .poll(() => photo(page).evaluate((el: HTMLImageElement) => el.naturalWidth))
         .toBeGreaterThan(0);
