@@ -40,6 +40,17 @@
 - Five edited images in `public/images/`: the owner approved each, confirmed everyone pictured agreed, and chose copies in the repo over Drive embeds. Badges, an ID card, a phone, papers, bystanders, and a license plate were cropped out or blurred; no camera data.
 - CV through the owner's Drive link (LINK-02). Award dates from the owner; the July 2026 eGovPH date is the awarding, not the September prize release.
 
+### T06 and fonts (2026-11-25)
+
+- T06 may add `src/components/Work.test.tsx`; native open and close sections; bold text font for award and project names (owner).
+- Motion becomes its own ticket after T08 and before T09, once the owner approves the PRD and design update (owner).
+
+### T06 review (2026-11-25)
+
+- Idiya's closed row shows the WORK-01 role label; the owner role is inside (lead's reading of WORK-01, not an owner answer).
+- Choosing a filter closes the open project and drops its link, as the locked board does (lead).
+- `site-shell.spec.ts` may select the Menu inside the taskbar only (owner).
+
 ## Design Spec
 
 Locked: [design brief](../../standards/design-brief.md), [board](../../design/board-b.html), [flow, wireframes, states](../../design/first-look.md).
@@ -54,7 +65,7 @@ Tickets run in order; several change the same files. One ticket per session and 
 - [x] T04 Page shell, sections, navigation (SITE-01, SITE-02, SITE-03) -> tickets/04-shell.md
 - [x] T10 Project content and Idiya rename, before T05 (CONT-01, WORK-01, WORK-03, WORK-05) -> tickets/10-project-content.md
 - [x] T05 Light and dark themes with a toggle (THEME-01) -> tickets/05-theme.md
-- [ ] T06 Work list, filter, details, links (WORK-01 to WORK-06) -> tickets/06-work.md
+- [x] T06 Work list, filter, details, links (WORK-01 to WORK-06) -> tickets/06-work.md
 - [ ] T07 Awards section and badges (AWARD-01, AWARD-02, AWARD-03) -> tickets/07-awards.md
 - [ ] T08 Profile links and CV (LINK-01, LINK-02) -> tickets/08-links.md
 - [ ] T09 Accessibility, speed, parity checks (NFR-01, NFR-04) -> tickets/09-quality.md

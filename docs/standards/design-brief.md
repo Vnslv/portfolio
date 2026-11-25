@@ -24,7 +24,7 @@ This file holds *how* the product looks: tokens and visual rules. It never adds 
 | `--badge` | award badge | `#b7f0d0` | `#7fe0b0` |
 | `--badgeText` | award badge text | `#08351f` | `#08351f` |
 
-- **Type:** headings Pixelify Sans (500, 700) with IBM Plex Sans as fallback; text IBM Plex Sans (400, 700). Sizes: 14 status and tags, 15 card details, 16 text, 18 lead and title bars, 19 item headings, 30 to 52 name (fluid).
+- **Type:** the owner's name and window titles Pixelify Sans (500, 700) with IBM Plex Sans as fallback; award and project names IBM Plex Sans 700, because the pixel "C" reads as "O" (owner, 2026-11-25); text IBM Plex Sans (400, 700). Sizes: 14 status and tags, 15 card details, 16 text, 18 lead and title bars, 19 item headings, 30 to 52 name (fluid).
 - **Radius:** 0 everywhere.
 - **Bevel:** 2 px, `--hi` top and left, `--edge` bottom and right, with a 1 px `--lo` inner shadow. Pressed and sunken elements reverse it.
 - **Spacing:** 16 px page edge and gaps on phone; 28 px page edge and 20 px column gap on desktop. 16 px inside windows.

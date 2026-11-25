@@ -25,6 +25,8 @@
 - `src/components/Work.tsx`, `src/components/ProjectCard.tsx`, `src/components/RoleFilter.tsx`, and one `.module.css` for each
 - `src/lib/projects.ts`, `src/lib/projects.test.ts` (only for gaps the tests show, and the project images)
 - `src/content/projects.ts` (project images only)
+- `src/components/Work.test.tsx` (the "Coming soon" fixture; owner, 2026-11-25)
+- `e2e/flows/site-shell.spec.ts` (select the Menu's `details` inside the taskbar only; no assertion weakened; owner, 2026-11-25)
 - `e2e/flows/work-projects.spec.ts`
 
 ## Rules
@@ -39,8 +41,10 @@
 - An opened project shows Problem, What I did (a line and its points), Stack where supplied, and links. There is no outcome.
 - All five projects are now ready. "Coming soon" stays supported; test it with a fixture that never reaches a production build.
 - Images (owner, 2026-11-25): HeronPay `/images/heronpay-logo.png`, "HeronPay logo: a heron with signal waves"; Alunsina `/images/alunsina-logo.png`, "Alunsina logo: a cat, a dog and a rabbit around a cross". No other project has an image.
+- Each ready project is a native open and close section (`details`), so nothing shifts on load and its text can be opened without JavaScript (owner, 2026-11-25). Opening one closes none of the others unless the board does.
+- Project names use the bold text font, not the pixel font (owner, 2026-11-25; design brief).
 - Matches `board-b.html`: rows from 900 px, cards below; radios from 640 px, a select below.
-- Project text is readable without JavaScript. Copy link reports success, and failure with the address shown.
+- Project text can be opened and read without JavaScript. Copy link reports success, and failure with the address shown.
 
 ## Tests First
 

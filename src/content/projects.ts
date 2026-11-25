@@ -1,6 +1,6 @@
 import type { Project } from './types';
 
-// Owner-supplied text (2026-11-25). No outcome, no images, no private links.
+// Owner-supplied text and images (2026-11-25). No outcome, no private links.
 export const projects: readonly Project[] = [
   {
     id: 'alunsina',
@@ -20,6 +20,12 @@ export const projects: readonly Project[] = [
       ],
     },
     links: [{ label: 'Landing page', url: 'https://alunsina-landing.vercel.app/' }],
+    images: [
+      {
+        src: '/images/alunsina-logo.png',
+        alt: 'Alunsina logo: a cat, a dog and a rabbit around a cross',
+      },
+    ],
   },
   {
     id: 'heronpay',
@@ -38,6 +44,7 @@ export const projects: readonly Project[] = [
         'Isolation Forest anomaly detection flags suspicious payments',
       ],
     },
+    images: [{ src: '/images/heronpay-logo.png', alt: 'HeronPay logo: a heron with signal waves' }],
   },
   {
     id: 'ehanda',

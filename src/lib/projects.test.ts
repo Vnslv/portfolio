@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { projects } from '../content/projects';
 import type { Project } from '../content/types';
-import { filterProjects, projectIdFromHash } from './projects';
+import { filterProjects, projectIdFromHash, roleLabel, teamLabel } from './projects';
 
 const fixture: readonly Project[] = [
   { id: 'dev-only', name: 'Dev Only', roles: ['software-development'], ready: false },
@@ -61,7 +61,6 @@ describe('project content (CONT-01, WORK-01, WORK-03, WORK-05)', () => {
     for (const p of projects) {
       expect(p.ready).toBe(true);
       expect(p).not.toHaveProperty('outcome');
-      expect(p).not.toHaveProperty('images');
       if (!p.ready) throw new Error(`${p.id} is not ready`);
       expect(p.problem.length).toBeGreaterThan(0);
       expect(p.work.points.length).toBeGreaterThan(0);
@@ -81,6 +80,25 @@ describe('project content (CONT-01, WORK-01, WORK-03, WORK-05)', () => {
       ['alunsina', [{ label: 'Landing page', url: 'https://alunsina-landing.vercel.app/' }]],
       ['ehanda', [{ label: 'Live', url: 'https://e-handa.vercel.app/' }]],
       ['idiya', [{ label: 'Live', url: 'https://idiya.vercel.app/' }]],
+    ]);
+  });
+
+  it('has the two owner images and no other (ticket 06, owner 2026-11-25)', () => {
+    const images = projects.flatMap((p) => (p.ready && p.images ? [[p.id, p.images]] : []));
+    expect(images).toEqual([
+      [
+        'alunsina',
+        [
+          {
+            src: '/images/alunsina-logo.png',
+            alt: 'Alunsina logo: a cat, a dog and a rabbit around a cross',
+          },
+        ],
+      ],
+      [
+        'heronpay',
+        [{ src: '/images/heronpay-logo.png', alt: 'HeronPay logo: a heron with signal waves' }],
+      ],
     ]);
   });
 
@@ -135,6 +153,25 @@ describe('filterProjects (WORK-02, WORK-04)', () => {
       'dev-only',
       'both',
     ]);
+  });
+});
+
+describe('labels (WORK-01, WORK-05)', () => {
+  it('gives the PRD role labels', () => {
+    expect(roleLabel(['project-management'])).toBe('Project management');
+    expect(roleLabel(['software-development'])).toBe('Software development');
+    expect(roleLabel(['software-development', 'project-management'])).toBe(
+      'Software development and project management',
+    );
+    expect(roleLabel(['project-management', 'software-development'])).toBe(
+      'Software development and project management',
+    );
+  });
+
+  it('shows solo for one person, a team size otherwise, and nothing when unknown', () => {
+    expect(teamLabel(1)).toBe('Solo project');
+    expect(teamLabel(4)).toBe('Team of 4');
+    expect(teamLabel(undefined)).toBeNull();
   });
 });
 

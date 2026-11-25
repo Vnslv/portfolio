@@ -4,9 +4,11 @@ import { Intro } from '@/components/Intro';
 import { SectionNav } from '@/components/SectionNav';
 import { Taskbar } from '@/components/Taskbar';
 import { Window } from '@/components/Window';
+import { Work } from '@/components/Work';
+import { projects } from '@/content/projects';
 import styles from './page.module.css';
 
-// Awards, Work and Links are empty windows until their own tickets (T07, T06, T08).
+// Awards and Links are empty windows until their own tickets (T07, T08).
 export default function Home() {
   return (
     <div className={styles.desk}>
@@ -16,7 +18,7 @@ export default function Home() {
           <main className={styles.main}>
             <Intro />
             <Window id="awards" title="Awards" icon="trophy" />
-            <Window id="work" title="Work" icon="folder" />
+            <Work projects={projects} />
             <div className={styles.two}>
               <About />
               <Window id="links" title="Links" icon="link" />
