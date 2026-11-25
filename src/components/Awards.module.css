@@ -67,6 +67,7 @@
   width: auto !important;
   height: auto !important;
   max-width: 100%;
+  aspect-ratio: 3 / 2;
   object-fit: contain;
   overflow-wrap: anywhere;
   color: var(--muted) !important;

@@ -68,6 +68,28 @@ describe('Awards (AWARD-01, AWARD-03)', () => {
     expect(item(html, 'award-fixture-hack-two')).not.toContain('<a ');
   });
 
+  it('shows the small copy as the picture and links to the full image', () => {
+    const withSmall: Award = {
+      ...full,
+      hackathon: 'Fixture Hack Small',
+      image: { ...full.image!, small: '/images/fixture-small.webp' },
+    };
+    const out = item(
+      renderToStaticMarkup(<Awards awards={[withSmall]} />),
+      'award-fixture-hack-small',
+    );
+    const img = out.slice(out.indexOf('<img'), out.indexOf('>', out.indexOf('<img')));
+    expect(img).toContain('src="/images/fixture-small.webp"');
+    expect(img).not.toContain('fixture.jpg');
+    expect(out).toContain('href="/images/fixture.jpg"');
+  });
+
+  it('shows the full image as the picture when there is no small copy', () => {
+    const one = item(html, 'award-fixture-hack-one');
+    const img = one.slice(one.indexOf('<img'), one.indexOf('>', one.indexOf('<img')));
+    expect(img).toContain('src="/images/fixture.jpg"');
+  });
+
   it('leaves out missing facts and still shows an award with no image', () => {
     const two = item(html, 'award-fixture-hack-two');
     expect(two).toContain('Top 10, Fixture Hack Two');

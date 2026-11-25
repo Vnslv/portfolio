@@ -12,6 +12,7 @@ export const awards: readonly Award[] = [
     teamSize: 3,
     image: {
       src: '/images/bcc.jpg',
+      small: '/images/bcc-small.webp',
       alt: 'Six people on stage under a screen that reads Your hackathon champion, HeronPay',
     },
   },
@@ -25,6 +26,7 @@ export const awards: readonly Award[] = [
     teamSize: 3,
     image: {
       src: '/images/infotech.jpg',
+      small: '/images/infotech-small.webp',
       alt: 'Three teammates wearing champion medals, one holding an Infotechnolympics 2026 envelope',
     },
   },

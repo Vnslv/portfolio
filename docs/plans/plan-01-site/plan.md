@@ -61,6 +61,10 @@
 
 - Small photos on phones and full-size award photos in a new tab, because large ones break NFR-01 (owner).
 
+### Small photo files (2026-11-25)
+
+- Award photos show small WebP copies; the profile photo does too, in T08 (owner, after CI `lighthouse` measurements).
+
 ## Design Spec
 
 Locked: [design brief](../../standards/design-brief.md), [board](../../design/board-b.html), [flow, wireframes, states](../../design/first-look.md).

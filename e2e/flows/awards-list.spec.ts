@@ -194,11 +194,38 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
     const sideways = () => page.evaluate(() => document.documentElement.scrollWidth);
     await page.goto('/');
     expect(await sideways()).toBeLessThanOrEqual(320);
-    await page.route('**/images/*.jpg', (route) => route.abort());
+    await page.route('**/images/*-small.webp', (route) => route.abort());
     await page.goto('/');
     await expect(award(page, BCC).getByText(BCC_ALT)).toBeVisible();
     await expect(award(page, INFOTECH).getByText(INFOTECH_ALT)).toBeVisible();
     expect(await sideways()).toBeLessThanOrEqual(320);
+  });
+
+  test('NFR-01: the pictures load the small copies, never the full JPEGs, on load', async ({
+    page,
+  }) => {
+    await page.setViewportSize(phone);
+    const requested: string[] = [];
+    page.on('request', (r) => {
+      const { pathname } = new URL(r.url());
+      if (pathname.startsWith('/images/')) requested.push(pathname);
+    });
+    await page.goto('/');
+    for (const id of [BCC, INFOTECH]) {
+      const img = award(page, id).getByRole('img');
+      await img.scrollIntoViewIfNeeded();
+      await expect
+        .poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth))
+        .toBeGreaterThan(0);
+    }
+    expect(requested).toContain('/images/bcc-small.webp');
+    expect(requested).toContain('/images/infotech-small.webp');
+    expect(requested).not.toContain('/images/bcc.jpg');
+    expect(requested).not.toContain('/images/infotech.jpg');
+    // The link still opens the full JPEG.
+    await expect(
+      award(page, BCC).getByRole('link', { name: /opens the full image/i }),
+    ).toHaveAttribute('href', '/images/bcc.jpg');
   });
 
   test('the photo opens its full image in a new tab, and the keyboard reaches it', async ({
@@ -234,7 +261,7 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
     page,
   }) => {
     await page.setViewportSize(phone);
-    await page.route('**/images/bcc.jpg', (route) => route.abort());
+    await page.route('**/images/bcc-small.webp', (route) => route.abort());
     await page.goto('/');
     const fig = award(page, BCC).locator('figure');
     const text = fig.getByText(BCC_ALT);
@@ -259,14 +286,14 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
   }) => {
     const warnings: string[] = [];
     page.on('console', (m) => m.type() === 'warning' && warnings.push(m.text()));
-    await page.route('**/images/bcc.jpg', (route) => route.abort());
+    await page.route('**/images/bcc-small.webp', (route) => route.abort());
     await page.goto('/');
     await expect(award(page, BCC).getByText(BCC_ALT)).toBeVisible();
     await expect(award(page, BCC).getByRole('img')).toHaveCount(0);
     await expect(award(page, INFOTECH).getByRole('img', { name: INFOTECH_ALT })).toBeVisible();
     await expect
       .poll(() => warnings.filter((w) => w.includes('image')))
-      .toEqual(['awards: image failed to load /images/bcc.jpg']);
+      .toEqual(['awards: image failed to load /images/bcc-small.webp']);
   });
 
   test('open card: the badge is between the row and the panel, in the same keyboard order', async ({
@@ -332,7 +359,7 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
 
     test('the whole description of each photo is shown, nothing is cut off', async ({ page }) => {
       await page.setViewportSize(phone);
-      await page.route('**/images/*.jpg', (route) => route.abort());
+      await page.route('**/images/*-small.webp', (route) => route.abort());
       await page.goto('/');
       for (const [id, alt] of [
         [BCC, BCC_ALT],
@@ -374,7 +401,7 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
     const held = new Promise<void>((resolve) => {
       release = resolve;
     });
-    await page.route('**/images/bcc.jpg', async (route) => {
+    await page.route('**/images/bcc-small.webp', async (route) => {
       await held;
       await route.continue();
     });
@@ -398,7 +425,7 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
     test.use({ javaScriptEnabled: false, viewport: phone });
 
     test('a failed image keeps its space and its description can be seen', async ({ page }) => {
-      await page.route('**/images/infotech.jpg', (route) => route.abort());
+      await page.route('**/images/infotech-small.webp', (route) => route.abort());
       await page.goto('/');
       const img = award(page, INFOTECH).getByRole('img', { name: INFOTECH_ALT });
       await expect(img).toBeVisible();

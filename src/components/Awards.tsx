@@ -9,18 +9,20 @@ import { Window } from './Window';
 
 // The image space is reserved by CSS (aspect ratio) before the image loads. A failed image shows
 // its description in the same space (AWARD-03).
+// The picture shows the small copy when there is one, and its link opens the full image (src).
 function AwardPicture({ image }: { image: ProjectImage }) {
+  const shown = image.small ?? image.src;
   const [failed, setFailed] = useState(false);
   const ref = useRef<HTMLImageElement>(null);
   const logged = useRef(false);
   const fail = useCallback(() => {
-    // Once per image. The message is the image path only: no visitor data.
+    // Once per image. The message is the path that was requested, nothing else: no visitor data.
     if (!logged.current) {
       logged.current = true;
-      console.warn(`awards: image failed to load ${image.src}`);
+      console.warn(`awards: image failed to load ${shown}`);
     }
     setFailed(true);
-  }, [image.src]);
+  }, [shown]);
   // An image can fail before the page hydrates, so the handler alone would miss it.
   useEffect(() => {
     const el = ref.current;
@@ -41,7 +43,7 @@ function AwardPicture({ image }: { image: ProjectImage }) {
         ) : (
           <Image
             ref={ref}
-            src={image.src}
+            src={shown}
             alt={image.alt}
             fill
             unoptimized

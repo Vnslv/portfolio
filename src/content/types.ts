@@ -2,7 +2,9 @@ export type Role = 'software-development' | 'project-management';
 export type RoleFilter = 'all' | Role;
 
 export type ProjectLink = { label: string; url: string };
-export type ProjectImage = { src: string; alt: string };
+// `small` is an optional smaller copy of the same picture (same ratio) for the visible picture;
+// `src` stays the full image that a link opens, and the picture's fallback when `small` is absent.
+export type ProjectImage = { src: string; small?: string; alt: string };
 
 type ProjectBase = {
   id: string;
