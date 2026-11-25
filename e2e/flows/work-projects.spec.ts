@@ -125,7 +125,8 @@ test.describe('WORK-01 to WORK-06 work list, filter, details', () => {
   test('WORK-04: the same link opens its project again after it was closed', async ({ page }) => {
     await page.goto('/');
     // Wait for the page to run script: Next rewrites the address while it hydrates, which can
-    // erase a hash set before then (seen with a scratch test, 3 of 6 runs).
+    // erase a hash set before then (seen with a scratch test, 3 of 6 runs; without this wait the
+    // test failed 10 of 10 after the router fix).
     await expect(page.locator('#work').getByRole('radio', { name: 'All' })).toBeEnabled();
     const hash = () => new URL(page.url()).hash;
     const link = async (id: string) => {
@@ -156,6 +157,72 @@ test.describe('WORK-01 to WORK-06 work list, filter, details', () => {
       await link('idiya');
       await expect.poll(() => isOpen(page, 'ehanda')).toBe(false);
     });
+  });
+
+  test('WORK-04: the same link works when set in the same instant as the close', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await expect(page.locator('#work').getByRole('radio', { name: 'All' })).toBeEnabled();
+    const link = async () => {
+      await page.evaluate(() => (location.hash = '#idiya'));
+      await expect.poll(() => isOpen(page, 'idiya')).toBe(true);
+    };
+    // Closes the project and sets the same hash in one page task, so nothing can run between.
+    const closeAndLink = (how: string) =>
+      page.evaluate((how) => {
+        const q = <T extends Element>(s: string) => document.querySelector<T>(s);
+        if (how === 'summary') q<HTMLElement>('#idiya summary')?.click();
+        if (how === 'close') {
+          const buttons = [...document.querySelectorAll<HTMLElement>('#idiya button')];
+          buttons.find((b) => b.textContent === 'Close')?.click();
+        }
+        if (how === 'filter') q<HTMLInputElement>('#work input[type=radio]:not(:checked)')?.click();
+        if (how === 'another') q<HTMLElement>('#ehanda summary')?.click();
+        location.hash = '#idiya';
+      }, how);
+
+    for (const how of ['summary', 'close', 'filter', 'another']) {
+      await test.step(`closed by ${how}, then the link in the same task, five times`, async () => {
+        for (let i = 0; i < 5; i++) {
+          await link();
+          await closeAndLink(how);
+          await expect.poll(() => isOpen(page, 'idiya')).toBe(true);
+          expect(new URL(page.url()).hash).toBe('#idiya');
+        }
+      });
+    }
+  });
+
+  test('WORK-04: dropping the link keeps Back, Forward, section links and Copy link working', async ({
+    page,
+  }) => {
+    await stubClipboard(page, 'ok');
+    await page.goto('/');
+    await expect(page.locator('#work').getByRole('radio', { name: 'All' })).toBeEnabled();
+    const hash = () => new URL(page.url()).hash;
+    await page.evaluate(() => (location.hash = '#idiya'));
+    await expect.poll(() => isOpen(page, 'idiya')).toBe(true);
+    await summary(page, 'idiya').click();
+    expect(hash()).toBe('');
+
+    await page
+      .getByRole('navigation', { name: 'Sections' })
+      .getByRole('link', { name: 'About' })
+      .click();
+    await expect(page).toHaveURL(/#about$/);
+    await page.goBack();
+    await expect.poll(hash).toBe('');
+    await page.goForward();
+    await expect.poll(hash).toBe('#about');
+    await page.goBack();
+    await expect.poll(hash).toBe('');
+    expect(await isOpen(page, 'idiya')).toBe(false);
+
+    await summary(page, 'idiya').click();
+    await card(page, 'idiya').getByRole('button', { name: 'Copy link' }).click();
+    await expect(card(page, 'idiya').getByRole('status')).toHaveText('Link copied');
+    expect(hash()).toBe('');
   });
 
   test('WORK-02: choosing a filter closes the open project and lists only matching ones', async ({
