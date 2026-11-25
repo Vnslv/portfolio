@@ -40,6 +40,11 @@ Flow and wireframes before styling. Requirements: `docs/PRD.md` 0.5.0. Text in `
 
 - A failed profile photo shows its description (owner, 2026-11-25).
 
+### Change After Lock (2026-11-25, T11)
+
+- From 900 px the folder tree is removed and its links move into the taskbar, with icons (owner).
+- The Copy link button is removed (owner).
+
 ### For The Plan Gate
 
 - Pixel parity (owner chose it): Playwright screenshots of `docs/design/board-b.html` and the build at 390, 768, and 1280 px, both themes, structure matching within 8 px.
@@ -118,7 +123,7 @@ Open project (pushes the cards below it down, full width of the window):
 
 ```text
 |  +--------------------------------------------------------------------------------------------+  |
-|  | [-] Idiya                                                          [ Copy link ]            |  |
+|  | [-] Idiya                                                                                   |  |
 |  |     Full-stack developer and project manager, solo project                                 |  |
 |  |     Problem:  <owner-checked text>                                                          |  |
 |  |     What I did: <owner-checked text>                                                        |  |
@@ -183,7 +188,7 @@ The page is built ahead of time, so sections have no loading state of their own;
 | --- | --- | --- | --- | --- |
 | Intro | Title bar, name, one-line intro, two buttons | Space kept for the portrait | Labeled placeholder until launch | Missing image shows the icon |
 | Awards | Award rows, images | Space kept per image | Section hidden (AWARD-01) | Failed image shows its text description |
-| Work | Role filter, cards, badge, Copy link | Space kept per image | Not expected; both roles have a project | Unknown #link shows the page normally (WORK-04) |
+| Work | Role filter, cards, badge | Space kept per image | Not expected; both roles have a project | Unknown #link shows the page normally (WORK-04) |
 | Project | Problem, what I did, stack where supplied, links, images | As above | "Coming soon" (WORK-06) | Failed image shows its text description |
 | About | Text | None | Labeled placeholder until launch | None |
 | Links | GitHub, LinkedIn, CV | None | Labeled placeholder until launch | A broken Drive link is Google's page, outside the site |

@@ -3,7 +3,6 @@ import { Awards } from '@/components/Awards';
 import { Footer } from '@/components/Footer';
 import { Intro } from '@/components/Intro';
 import { Links } from '@/components/Links';
-import { SectionNav } from '@/components/SectionNav';
 import { Taskbar } from '@/components/Taskbar';
 import { Work } from '@/components/Work';
 import { awards } from '@/content/awards';
@@ -17,7 +16,6 @@ export default function Home() {
   return (
     <div className={styles.desk}>
       <div className={styles.page}>
-        <SectionNav sections={sections} />
         <div className={styles.column}>
           <main className={styles.main}>
             <Intro />

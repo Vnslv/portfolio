@@ -83,7 +83,7 @@ describe('project content (CONT-01, WORK-01, WORK-03, WORK-05)', () => {
     ]);
   });
 
-  it('has the two owner images and no other (ticket 06, owner 2026-11-25)', () => {
+  it('has the three owner images and no other (tickets 06 and 11, owner 2026-11-25)', () => {
     const images = projects.flatMap((p) => (p.ready && p.images ? [[p.id, p.images]] : []));
     expect(images).toEqual([
       [
@@ -99,6 +99,7 @@ describe('project content (CONT-01, WORK-01, WORK-03, WORK-05)', () => {
         'heronpay',
         [{ src: '/images/heronpay-logo.png', alt: 'HeronPay logo: a heron with signal waves' }],
       ],
+      ['idiya', [{ src: '/images/idiya-logo.png', alt: 'Idiya logo: three lines and an arrow' }]],
     ]);
   });
 

@@ -14,23 +14,8 @@ const isOpen = (page: Page, id: string) =>
     .locator('details')
     .evaluate((el: HTMLDetailsElement) => el.open);
 
-// Replaces the clipboard before the page runs, so a test controls success and failure.
-async function stubClipboard(page: Page, outcome: 'ok' | 'fail') {
-  await page.addInitScript((o) => {
-    const win = window as unknown as { copied: string[] };
-    win.copied = [];
-    Object.defineProperty(navigator, 'clipboard', {
-      configurable: true,
-      value: {
-        writeText: (text: string) => {
-          if (o === 'fail') return Promise.reject(new Error('denied'));
-          win.copied.push(text);
-          return Promise.resolve();
-        },
-      },
-    });
-  }, outcome);
-}
+const IDIYA_ALT = 'Idiya logo: three lines and an arrow';
+const NAMES = ['alunsina', 'heronpay', 'ehanda', 'idiya', 'umak-kalinga'];
 
 test.describe('WORK-01 to WORK-06 work list, filter, details', () => {
   test.beforeEach(async ({ page }) => {
@@ -194,10 +179,9 @@ test.describe('WORK-01 to WORK-06 work list, filter, details', () => {
     }
   });
 
-  test('WORK-04: dropping the link keeps Back, Forward, section links and Copy link working', async ({
+  test('WORK-04: dropping the link keeps Back, Forward and the section links working', async ({
     page,
   }) => {
-    await stubClipboard(page, 'ok');
     await page.goto('/');
     await expect(page.locator('#work').getByRole('radio', { name: 'All' })).toBeEnabled();
     const hash = () => new URL(page.url()).hash;
@@ -207,10 +191,10 @@ test.describe('WORK-01 to WORK-06 work list, filter, details', () => {
     expect(hash()).toBe('');
 
     await page
-      .getByRole('navigation', { name: 'Sections' })
-      .getByRole('link', { name: 'About' })
+      .getByRole('navigation', { name: 'Taskbar' })
+      .getByRole('link', { name: 'About', exact: true })
       .click();
-    await expect(page).toHaveURL(/#about$/);
+    await expect(page).toHaveURL('/#about');
     await page.goBack();
     await expect.poll(hash).toBe('');
     await page.goForward();
@@ -220,8 +204,7 @@ test.describe('WORK-01 to WORK-06 work list, filter, details', () => {
     expect(await isOpen(page, 'idiya')).toBe(false);
 
     await summary(page, 'idiya').click();
-    await card(page, 'idiya').getByRole('button', { name: 'Copy link' }).click();
-    await expect(card(page, 'idiya').getByRole('status')).toHaveText('Link copied');
+    expect(await isOpen(page, 'idiya')).toBe(true);
     expect(hash()).toBe('');
   });
 
@@ -305,7 +288,18 @@ test.describe('WORK-01 to WORK-06 work list, filter, details', () => {
     await expect
       .poll(() => logo.evaluate((el: HTMLImageElement) => el.naturalWidth))
       .toBeGreaterThan(0);
-    await expect(card(page, 'idiya').getByRole('img')).toHaveCount(0);
+    await summary(page, 'idiya').click();
+    const idiyaLogo = card(page, 'idiya').getByRole('img', { name: IDIYA_ALT });
+    await expect(idiyaLogo).toBeVisible();
+    await expect
+      .poll(() => idiyaLogo.evaluate((el: HTMLImageElement) => el.naturalWidth))
+      .toBeGreaterThan(0);
+    // The resolved address, exactly: next/image sets src again after mount (so a failure before
+    // hydration is seen), which can turn the attribute into the absolute form.
+    await expect(idiyaLogo).toHaveJSProperty(
+      'src',
+      new URL('/images/idiya-logo.png', page.url()).href,
+    );
 
     await page.route('**/images/heronpay-logo.png', (route) => route.abort());
     await page.goto('/');
@@ -348,24 +342,59 @@ test.describe('WORK-01 to WORK-06 work list, filter, details', () => {
     });
   });
 
-  test('Copy link reports success, and failure with the address shown', async ({ page }) => {
-    await stubClipboard(page, 'ok');
+  test('error: a failed Idiya logo shows its description and is logged once with its path', async ({
+    page,
+  }) => {
+    const warnings: string[] = [];
+    page.on('console', (m) => m.type() === 'warning' && warnings.push(m.text()));
+    await page.route('**/images/idiya-logo.png', (route) => route.abort());
     await page.goto('/');
     await summary(page, 'idiya').click();
-    await card(page, 'idiya').getByRole('button', { name: 'Copy link' }).click();
-    await expect(card(page, 'idiya').getByRole('status')).toHaveText('Link copied');
-    const copied = await page.evaluate(() => (window as unknown as { copied: string[] }).copied);
-    expect(copied).toEqual([new URL('/#idiya', page.url()).href]);
+    await expect(card(page, 'idiya').getByText(IDIYA_ALT)).toBeVisible();
+    await expect(card(page, 'idiya').getByRole('img')).toHaveCount(0);
+    await expect
+      .poll(() => warnings.filter((w) => w.includes('image')))
+      .toEqual(['work: image failed to load /images/idiya-logo.png']);
+  });
 
-    const failing = await page.context().newPage();
-    await stubClipboard(failing, 'fail');
-    await failing.setViewportSize(desktop);
-    await failing.goto('/');
-    await summary(failing, 'idiya').click();
-    await card(failing, 'idiya').getByRole('button', { name: 'Copy link' }).click();
-    const status = card(failing, 'idiya').getByRole('status');
-    await expect(status).toContainText('Could not copy');
-    await expect(status).toContainText(new URL('/#idiya', failing.url()).href);
+  test('WORK-03: an opened project has no Copy link and no status message, only its links and Close', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await expect(page.getByRole('button', { name: 'Copy link' })).toHaveCount(0);
+    for (const id of NAMES) {
+      await summary(page, id).click();
+      await expect.poll(() => isOpen(page, id)).toBe(true);
+      const c = card(page, id);
+      await expect(c.getByRole('button', { name: 'Close' })).toBeVisible();
+      await expect(c.getByRole('button', { name: 'Copy link' })).toHaveCount(0);
+      await expect(c.getByText('Copy link')).toHaveCount(0);
+      await expect(c.getByText('Link copied')).toHaveCount(0);
+      await expect(c.getByRole('status')).toHaveCount(0);
+    }
+    // The links are still there: Idiya's Live link opens as before.
+    await summary(page, 'idiya').click();
+    await expect(card(page, 'idiya').getByRole('link', { name: 'Live' })).toHaveAttribute(
+      'href',
+      'https://idiya.vercel.app/',
+    );
+  });
+
+  test.describe('without JavaScript, Idiya logo blocked', () => {
+    test.use({ javaScriptEnabled: false, viewport: phone });
+
+    test('the failed logo keeps its space and its description can be seen', async ({ page }) => {
+      await page.route('**/images/idiya-logo.png', (route) => route.abort());
+      await page.goto('/');
+      await summary(page, 'idiya').click();
+      const logo = card(page, 'idiya').getByRole('img', { name: IDIYA_ALT });
+      await expect(logo).toBeVisible();
+      const box = await logo.boundingBox();
+      expect(box?.width).toBeGreaterThan(100);
+      expect(box?.height).toBeGreaterThan(100);
+      const color = await logo.evaluate((el) => getComputedStyle(el).color);
+      expect(color).not.toMatch(/^rgba\(0, 0, 0, 0\)$|^transparent$/);
+    });
   });
 
   test('layout: radios from 640 px, select below; rows from 900 px, cards below', async ({

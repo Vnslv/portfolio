@@ -70,6 +70,11 @@
 - `Intro.module.css` and the small profile photo allowed; a failed photo shows its description (owner).
 - The LinkedIn address in `profile.ts` is the owner's (grill, 2026-11-24).
 
+### eGovPH (2026-11-25)
+
+- Placement is Top 30, not Top 10; the unedited check photo is shown; everyone pictured agreed; July 2026 stays (owner).
+- No sidebar from 900 px: its links are in the bottom bar. The Copy link button is removed and the Idiya logo added. All in T11 (owner).
+
 ## Design Spec
 
 Locked: [design brief](../../standards/design-brief.md), [board](../../design/board-b.html), [flow, wireframes, states](../../design/first-look.md).
@@ -87,6 +92,7 @@ Tickets run in order; several change the same files. One ticket per session and 
 - [x] T06 Work list, filter, details, links (WORK-01 to WORK-06) -> tickets/06-work.md
 - [x] T07 Awards section and badges (AWARD-01, AWARD-02, AWARD-03) -> tickets/07-awards.md
 - [x] T08 Profile links and CV (LINK-01, LINK-02) -> tickets/08-links.md
+- [ ] T11 Owner changes: eGovPH, taskbar, Idiya logo, Copy link (AWARD-01, AWARD-02, AWARD-03, SITE-01, WORK-03, WORK-04, NFR-01, NFR-04) -> tickets/11-egovph.md
 - [ ] T09 Accessibility, speed, parity checks (NFR-01, NFR-04) -> tickets/09-quality.md
 
 ## Out Of Scope

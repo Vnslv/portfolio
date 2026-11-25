@@ -86,6 +86,7 @@ export const projects: readonly Project[] = [
     },
     stack: 'Next.js 15, TypeScript, Tailwind, Prisma, Neon Postgres, Auth.js',
     links: [{ label: 'Live', url: 'https://idiya.vercel.app/' }],
+    images: [{ src: '/images/idiya-logo.png', alt: 'Idiya logo: three lines and an arrow' }],
   },
   {
     id: 'umak-kalinga',

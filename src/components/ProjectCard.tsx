@@ -11,8 +11,6 @@ import badgeStyles from './AwardBadge.module.css';
 import { Icon } from './Icon';
 import styles from './ProjectCard.module.css';
 
-type CopyState = { kind: 'idle' } | { kind: 'ok' } | { kind: 'failed'; url: string };
-
 // The image space is reserved by CSS (aspect ratio) before the image loads. A failed image shows
 // its description in the same space.
 function ProjectPicture({ image }: { image: ProjectImage }) {
@@ -55,20 +53,6 @@ function ProjectPicture({ image }: { image: ProjectImage }) {
 type DetailsProps = { project: ReadyProject; enhanced: boolean; onClose: () => void };
 
 function Details({ project, enhanced, onClose }: DetailsProps) {
-  const [copy, setCopy] = useState<CopyState>({ kind: 'idle' });
-
-  async function copyLink() {
-    const url = `${location.origin}${location.pathname}#${project.id}`;
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopy({ kind: 'ok' });
-    } catch {
-      // The address is not logged: the message is fixed and carries no visitor data.
-      console.warn('work: copy link failed');
-      setCopy({ kind: 'failed', url });
-    }
-  }
-
   function close(button: HTMLButtonElement) {
     // The panel is inside the card's details element, or beside it on a card with a badge.
     const details = button.closest('li')?.querySelector('details');
@@ -127,27 +111,11 @@ function Details({ project, enhanced, onClose }: DetailsProps) {
           type="button"
           className="button"
           disabled={!enhanced}
-          onClick={() => void copyLink()}
-        >
-          Copy link
-        </button>
-        <button
-          type="button"
-          className="button"
-          disabled={!enhanced}
           onClick={(e) => close(e.currentTarget)}
         >
           Close
         </button>
       </div>
-      <p className={styles.status} role="status">
-        {copy.kind === 'ok' ? 'Link copied' : null}
-        {copy.kind === 'failed' ? (
-          <>
-            Could not copy. The address is <span className={styles.address}>{copy.url}</span>
-          </>
-        ) : null}
-      </p>
     </div>
   );
 }

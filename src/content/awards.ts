@@ -1,6 +1,6 @@
 import type { Award } from './types';
 
-// Dates and images from the owner (2026-11-25). eGovPH has no image.
+// Dates, placements and images from the owner (2026-11-25).
 export const awards: readonly Award[] = [
   {
     hackathon: 'Blockchain Campus Conference 2026',
@@ -33,10 +33,15 @@ export const awards: readonly Award[] = [
   {
     hackathon: 'eGovPH Hackathon 2026',
     organizer: 'eGovPH',
-    placement: 'Top 10',
+    placement: 'Top 30',
     date: 'July 2026',
     project: 'eHanda',
     role: 'Project manager',
     teamSize: 5,
+    image: {
+      src: '/images/egovph.jpg',
+      small: '/images/egovph-small.webp',
+      alt: 'Five teammates and three others on stage holding a check for the Top 30 eGovHackathon 2026 finalist teams',
+    },
   },
 ];

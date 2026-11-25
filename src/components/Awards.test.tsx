@@ -4,7 +4,6 @@ import type { Award, Project } from '../content/types';
 import { sectionsFor } from '../lib/awards';
 import { Awards } from './Awards';
 import { ProjectCard } from './ProjectCard';
-import { SectionNav } from './SectionNav';
 import { Taskbar } from './Taskbar';
 
 // The theme toggle is not under test, and it imports through the `@/` alias, which vitest does not
@@ -127,25 +126,90 @@ describe('with no award to show (AWARD-01 acceptance 4)', () => {
     expect(html).not.toContain('href="#award-');
   });
 
-  it('has no navigation entry in the sidebar or the taskbar', () => {
-    const sections = sectionsFor([]);
-    const nav = renderToStaticMarkup(<SectionNav sections={sections} />);
-    const bar = renderToStaticMarkup(<Taskbar sections={sections} />);
-    for (const html of [nav, bar]) {
-      expect(html).not.toContain('href="#awards"');
-      expect(html).not.toContain('Awards');
-      expect(html).toContain('href="#work"');
-    }
+  it('has no navigation entry in the taskbar', () => {
+    const bar = renderToStaticMarkup(<Taskbar sections={sectionsFor([])} />);
+    expect(bar).not.toContain('href="#awards"');
+    expect(bar).not.toContain('Awards');
+    expect(bar).toContain('href="#work"');
   });
 });
 
-describe('navigation with awards (SITE-01)', () => {
+describe('an award without an image (AWARD-03 acceptance 4)', () => {
+  const html = renderToStaticMarkup(<Awards awards={[full, bare]} />);
+
+  it('has no photo column class and no figure, so its text uses the full width', () => {
+    const two = item(html, 'award-fixture-hack-two');
+    expect(two).not.toContain('<figure');
+    expect(two).not.toContain('withImage');
+    // The same list item with an image does carry the column class.
+    const one = item(html, 'award-fixture-hack-one');
+    expect(one).toContain('<figure');
+    expect(one).toContain('withImage');
+  });
+});
+
+describe('the taskbar sections (SITE-01)', () => {
+  // The section buttons, not the Menu panel: they carry the "section" class.
+  const sectionLinks = (html: string) =>
+    [...html.matchAll(/<a [^>]*class="[^"]*section[^"]*"[^>]*>(.*?)<\/a>/g)].map((m) => m[0]);
+
   it('lists Awards by default and when an award shows', () => {
-    expect(renderToStaticMarkup(<SectionNav />)).toContain('href="#awards"');
     expect(renderToStaticMarkup(<Taskbar />)).toContain('href="#awards"');
-    expect(renderToStaticMarkup(<SectionNav sections={sectionsFor([full])} />)).toContain(
+    expect(renderToStaticMarkup(<Taskbar sections={sectionsFor([full])} />)).toContain(
       'href="#awards"',
     );
+  });
+
+  it('gives every section button its icon and its label, in page order', () => {
+    const links = sectionLinks(renderToStaticMarkup(<Taskbar />));
+    expect(links).toHaveLength(5);
+    const hrefs = links.map((l) => l.match(/href="([^"]*)"/)?.[1]);
+    expect(hrefs).toEqual(['#welcome', '#awards', '#work', '#about', '#links']);
+    const labels = ['Welcome', 'Awards', 'Work', 'About', 'Links'];
+    links.forEach((link, i) => {
+      expect(link).toContain('<svg');
+      expect(link).toContain(`</svg>${labels[i]}</a>`);
+    });
+  });
+
+  it('marks no section current before script runs, and keeps the Menu for small screens', () => {
+    const html = renderToStaticMarkup(<Taskbar />);
+    expect(html).not.toContain('aria-current');
+    expect(html).toContain('Menu');
+  });
+
+  it('leaves the home page base on every link when given one', () => {
+    const links = sectionLinks(renderToStaticMarkup(<Taskbar hrefBase="/" />));
+    expect(links.map((l) => l.match(/href="([^"]*)"/)?.[1])).toEqual([
+      '/#welcome',
+      '/#awards',
+      '/#work',
+      '/#about',
+      '/#links',
+    ]);
+  });
+});
+
+describe('an opened project (WORK-03, owner 2026-11-25)', () => {
+  it('has no Copy link button and no status message, only links and Close', () => {
+    const ready: Project = {
+      id: 'fixture-project',
+      name: 'Fixture Project',
+      roles: ['project-management'],
+      ready: true,
+      problem: 'P',
+      work: { points: ['W'] },
+      links: [{ label: 'Live', url: 'https://example.com/' }],
+    };
+    const html = renderToStaticMarkup(
+      <ul>
+        <ProjectCard project={ready} enhanced awards={[]} onClose={() => undefined} />
+      </ul>,
+    );
+    expect(html).not.toContain('Copy link');
+    expect(html).not.toContain('role="status"');
+    expect(html).toContain('>Live</a>');
+    expect(html).toContain('>Close</button>');
   });
 });
 

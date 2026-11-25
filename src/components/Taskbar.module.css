@@ -67,13 +67,22 @@
   }
 }
 
+/* The icons show only from 900 px; below that the buttons are text only, as before. */
+.bar .section svg {
+  display: none;
+}
+
 @media (min-width: 900px) {
-  .bar .section,
   .bar .menu {
     display: none;
   }
 
-  .bar .now {
+  .bar .section svg {
     display: block;
+  }
+
+  .bar .section[aria-current='true'] {
+    background: var(--title);
+    color: var(--titleText);
   }
 }
