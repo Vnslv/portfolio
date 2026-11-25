@@ -673,7 +673,7 @@ test.describe('SITE-01, SITE-02 the about text is in Welcome and there is no Abo
 });
 
 // The bar keeps room: for wider fallback fonts, and for a fifth section, Tools, which only these
-// tests add (T13 ticket; the 32 px is the owner's number, 2026-11-26).
+// tests add (T13 ticket; the 32 px is the lead's number, 2026-11-26).
 test.describe('SITE-01 the room in the bar', () => {
   const measure = (page: Page) =>
     bar(page).evaluate((nav) => {

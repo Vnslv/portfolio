@@ -41,7 +41,7 @@
 - The design brief's new tokens and background in both themes, exactly. The sky or night covers the whole page at any height and width with no seam or band while scrolling; it is drawn in CSS with no image request and at most 3 KB more compressed CSS. Theme switching, the stored choice and the first visit work as before (THEME-01). Every text and control color meets NFR-04 on its background, focus outlines included.
 - The two web fonts are still self-hosted and used, but not preloaded (owner, 2026-11-26, NFR-01).
 - The browser tab shows `src/app/icon.svg`, the dev sprite, unedited, on home and not-found, and no favicon request fails (owner, 2026-11-26).
-- The bar fits on one row inside the screen at every width from 320 px, with room to spare for wider fallback fonts (CI on Linux put the theme button 9 px outside at 640 px in T12), and will again when a fifth section, Tools, is added. T12 and T13 share one PR (lead).
+- The bar fits on one row inside the screen at every width from 320 px, with room to spare for wider fallback fonts (at least 32 px free at 640 px with five sections; the lead's number, 2026-11-26) (CI on Linux put the theme button 9 px outside at 640 px in T12), and will again when a fifth section, Tools, is added. T12 and T13 share one PR (lead).
 - The text is readable at 320 px with no sideways scroll, and the photo still is not the largest paint on phones. NFR-01 and NFR-04 hold.
 
 ## Tests First
