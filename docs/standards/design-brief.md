@@ -34,7 +34,7 @@ This file holds *how* the product looks: tokens and visual rules. It never adds 
 
 - Design values come only from these tokens. No ad-hoc colors, radii, or shadows.
 - One scrolling page of fixed windows. No dragging, and no minimize, maximize, or close buttons.
-- From 900 px wide: the folder tree stays beside the sections, projects are rows, and the taskbar shows the current section and the theme toggle. Below that: no tree, and the taskbar has a Menu button. The section buttons also show from 640 px.
+- From 900 px wide: one centered column of at most 1040 px with no folder tree, projects are rows, and the taskbar shows every section with its icon, the current one in the title colors, and the theme toggle. Below that the taskbar has a Menu button; the section buttons also show from 640 px (owner, 2026-11-25).
 - The theme toggle sits at the right of the taskbar and names the theme it switches to.
 - Below 640 px, award photos are 120 px wide beside their text and the profile photo is 108 by 120 px, to keep NFR-01 (owner, 2026-11-25). An award photo opens its full image.
 - Headings keep real capitalization (eHanda, HeronPay, UMak Kalinga).

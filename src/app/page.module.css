@@ -44,11 +44,11 @@
 }
 
 @media (min-width: 900px) {
+  /* One centered column: 1040 px with its 28 px edges, so the windows are 984 px at most. */
   .page {
     padding: 28px;
-    grid-template-columns: 220px minmax(0, 1fr);
     gap: 20px;
-    max-width: 1200px;
+    max-width: 1040px;
   }
 
   .column,
@@ -58,9 +58,5 @@
 
   .two {
     grid-template-columns: 1.4fr 1fr;
-  }
-
-  .second {
-    grid-column: 2;
   }
 }

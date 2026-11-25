@@ -9,6 +9,14 @@ const EGOVPH = 'award-egovph-hackathon-2026';
 const BCC_ALT = 'Six people on stage under a screen that reads Your hackathon champion, HeronPay';
 const INFOTECH_ALT =
   'Three teammates wearing champion medals, one holding an Infotechnolympics 2026 envelope';
+const EGOVPH_ALT =
+  'Five teammates and three others on stage holding a check for the Top 30 eGovHackathon 2026 finalist teams';
+const EGOVPH_BADGE = 'Top 30, eGovPH Hackathon 2026';
+const PHOTOS = [
+  [BCC, BCC_ALT, 'bcc'],
+  [INFOTECH, INFOTECH_ALT, 'infotech'],
+  [EGOVPH, EGOVPH_ALT, 'egovph'],
+] as const;
 
 // Presses Tab from the top of the page until the element has focus, or gives up after 40 presses.
 async function tabTo(page: Page, target: Locator): Promise<boolean> {
@@ -27,13 +35,15 @@ const openCards = (page: Page) => page.locator('#work details[open]');
 
 // Empty state: with no award to show there is no section, no badge and no navigation entry. The
 // built site always holds the owner's awards, so that case is proven by render tests with
-// fixtures in src/components/Awards.test.tsx and src/lib/awards.test.ts.
+// fixtures in src/components/Awards.test.tsx and src/lib/awards.test.ts. Every real award now has
+// a photo, so the layout of an award without one is proven by an injected copy of a real item
+// (see "an award with no image" below) and by the fixture render test.
 test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize(desktop);
   });
 
-  test('happy: facts, images, an award with no image, navigation', async ({ page }) => {
+  test('happy: facts, images, navigation', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('#awards li[id^="award-"]')).toHaveCount(3);
     await expect(page.locator('#awards').getByRole('heading', { level: 2 })).toHaveText('Awards');
@@ -48,30 +58,28 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
       await expect(award(page, INFOTECH)).toContainText('Champion, UMak CCIS Infotechnolympics');
       await expect(award(page, INFOTECH)).toContainText('University of Makati, October 2026');
       await expect(award(page, INFOTECH)).toContainText('Project: HeronHub. My role: Project');
-      await expect(award(page, EGOVPH)).toContainText('Top 10, eGovPH Hackathon 2026');
+      await expect(award(page, EGOVPH)).toContainText(EGOVPH_BADGE);
       await expect(award(page, EGOVPH)).toContainText('eGovPH, July 2026');
       await expect(page.getByText('Binance Academy')).toHaveCount(1);
+      await expect(page.getByText('Top 10')).toHaveCount(0);
     });
 
-    await test.step('AWARD-03: two images with descriptions; eGovPH still appears without one', async () => {
-      for (const [id, alt] of [
-        [BCC, BCC_ALT],
-        [INFOTECH, INFOTECH_ALT],
-      ] as const) {
+    await test.step('AWARD-03: three images with descriptions, each a lazy small copy', async () => {
+      for (const [id, alt] of PHOTOS) {
         const img = award(page, id).getByRole('img', { name: alt });
+        await expect(img).toHaveAttribute('loading', 'lazy');
         await img.scrollIntoViewIfNeeded();
         await expect
           .poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth))
           .toBeGreaterThan(0);
       }
-      await expect(award(page, EGOVPH).getByRole('img')).toHaveCount(0);
     });
 
-    await test.step('SITE-01: Awards is in the sidebar and the taskbar, between Welcome and Work', async () => {
-      await page.locator('nav[aria-label="Sections"] a[href="#awards"]').click();
+    await test.step('SITE-01: Awards is in the taskbar, between Welcome and Work, and there is no sidebar', async () => {
+      await expect(page.locator('nav[aria-label="Sections"]')).toHaveCount(0);
+      await page.locator('nav[aria-label="Taskbar"] a[href="#awards"]:visible').click();
       await expect(page).toHaveURL(/#awards$/);
       await expect(page.locator('#awards')).toBeInViewport();
-      // From 900 px the sidebar lists the sections; at 768 px the taskbar buttons do.
       await page.setViewportSize({ width: 768, height: 800 });
       await page.goto('/');
       await page.locator('nav[aria-label="Taskbar"] a[href="#awards"]:visible').click();
@@ -95,16 +103,17 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
         name: 'Champion, Blockchain Campus Conference 2026',
       });
       await expect(badge).toHaveAttribute('href', `#${BCC}`);
-      await expect(card(page, 'ehanda').getByRole('link')).toHaveAttribute('href', `#${EGOVPH}`);
+      // The closed card shows exactly one link, the badge.
+      const ehandaLink = card(page, 'ehanda').getByRole('link');
+      await expect(ehandaLink).toHaveAccessibleName(EGOVPH_BADGE);
+      await expect(ehandaLink).toHaveAttribute('href', `#${EGOVPH}`);
       for (const id of ['idiya', 'alunsina', 'umak-kalinga']) {
-        await expect(card(page, id).getByRole('link', { name: /Champion|Top 10/ })).toHaveCount(0);
+        await expect(card(page, id).locator('a[href^="#award-"]')).toHaveCount(0);
       }
     });
 
     await test.step('a badge click moves to the award and leaves the open project open', async () => {
-      await card(page, 'ehanda')
-        .getByRole('link', { name: /Top 10/ })
-        .click();
+      await card(page, 'ehanda').getByRole('link', { name: EGOVPH_BADGE }).click();
       await expect(page).toHaveURL(new RegExp(`#${EGOVPH}$`));
       await expect(award(page, EGOVPH)).toBeInViewport();
       await expect(openCards(page)).toHaveCount(1);
@@ -133,14 +142,35 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
     return b;
   };
 
+  // Every real award has a photo now, so this injects a copy of a real award item with its photo
+  // and its photo-column class taken away, and checks the page's own CSS gives its text the full
+  // width. The copy keeps only the item's first class, the base one. If the CSS gave the base
+  // class a photo column, or the component's class for an image-less award were wrong, it fails.
   for (const width of [390, 768, 1280]) {
     test(`layout at ${width} px: an award with no image uses the full width`, async ({ page }) => {
       await page.setViewportSize({ width, height: 800 });
       await page.goto('/');
-      const text = async (id: string) => (await box(award(page, id).locator('h3'))).width;
-      expect(await text(EGOVPH)).toBeGreaterThanOrEqual(await text(BCC));
-      const li = await box(award(page, EGOVPH));
-      expect((await box(award(page, EGOVPH).locator('h3'))).x).toBeCloseTo(li.x, 0);
+      // React removes nodes it does not know while it hydrates, so inject only after it has: script
+      // enables the filter. Below 640 px the radios are hidden, so they are found by selector.
+      await expect(page.locator('#work input[type="radio"]').first()).toBeEnabled();
+      await page.evaluate((id) => {
+        const source = document.getElementById(id);
+        if (!source?.parentElement) throw new Error('no award to copy');
+        const copy = source.cloneNode(true) as HTMLElement;
+        copy.id = 'injected-no-image';
+        copy.className = source.className.split(' ')[0] ?? '';
+        copy.querySelector('figure')?.remove();
+        source.parentElement.append(copy);
+      }, EGOVPH);
+      const injected = page.locator('#injected-no-image');
+      await expect(injected.locator('figure')).toHaveCount(0);
+      const li = await box(injected);
+      const h3 = await box(injected.locator('h3'));
+      expect(h3.x).toBeCloseTo(li.x, 0);
+      expect(h3.width).toBeGreaterThan(
+        await box(award(page, BCC).locator('h3')).then((b) => b.width),
+      );
+      expect(Math.round(h3.width)).toBe(Math.round(li.width));
     });
   }
 
@@ -149,7 +179,7 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
   }) => {
     await page.setViewportSize(phone);
     await page.goto('/');
-    for (const id of [BCC, INFOTECH]) {
+    for (const id of [BCC, INFOTECH, EGOVPH]) {
       const fig = await box(award(page, id).locator('figure'));
       const text = await box(award(page, id).locator('h3'));
       expect(Math.round(fig.width)).toBe(120);
@@ -196,8 +226,9 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
     expect(await sideways()).toBeLessThanOrEqual(320);
     await page.route('**/images/*-small.webp', (route) => route.abort());
     await page.goto('/');
-    await expect(award(page, BCC).getByText(BCC_ALT)).toBeVisible();
-    await expect(award(page, INFOTECH).getByText(INFOTECH_ALT)).toBeVisible();
+    for (const [id, alt] of PHOTOS) {
+      await expect(award(page, id).getByText(alt)).toBeVisible();
+    }
     expect(await sideways()).toBeLessThanOrEqual(320);
   });
 
@@ -211,17 +242,19 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
       if (pathname.startsWith('/images/')) requested.push(pathname);
     });
     await page.goto('/');
-    for (const id of [BCC, INFOTECH]) {
+    for (const [id, , file] of PHOTOS) {
       const img = award(page, id).getByRole('img');
+      await expect(img).toHaveAttribute('loading', 'lazy');
       await img.scrollIntoViewIfNeeded();
       await expect
         .poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth))
         .toBeGreaterThan(0);
+      expect(requested).toContain(`/images/${file}-small.webp`);
     }
-    expect(requested).toContain('/images/bcc-small.webp');
-    expect(requested).toContain('/images/infotech-small.webp');
-    expect(requested).not.toContain('/images/bcc.jpg');
-    expect(requested).not.toContain('/images/infotech.jpg');
+    // Checked after every picture has loaded, so a late full-size request is caught too.
+    for (const [, , file] of PHOTOS) {
+      expect(requested).not.toContain(`/images/${file}.jpg`);
+    }
     // The link still opens the full JPEG.
     await expect(
       award(page, BCC).getByRole('link', { name: /opens the full image/i }),
@@ -237,6 +270,7 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
     for (const [id, file, alt] of [
       [BCC, '/images/bcc.jpg', BCC_ALT],
       [INFOTECH, '/images/infotech.jpg', INFOTECH_ALT],
+      [EGOVPH, '/images/egovph.jpg', EGOVPH_ALT],
     ] as const) {
       const link = award(page, id).getByRole('link', {
         name: /opens the full image in a new tab/i,
@@ -247,8 +281,6 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
       await expect(link).toHaveAttribute('rel', /noreferrer/);
       expect(await link.getAttribute('aria-label')).toContain(alt);
     }
-    await expect(award(page, EGOVPH).getByRole('link')).toHaveCount(0);
-
     const link = award(page, BCC).getByRole('link', { name: /opens the full image/i });
     expect(await tabTo(page, link)).toBe(true);
     expect(await link.evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe('none');
@@ -301,7 +333,7 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
   }) => {
     await page.goto('/');
     const c = card(page, 'ehanda');
-    const badge = c.getByRole('link', { name: /Top 10/ });
+    const badge = c.getByRole('link', { name: EGOVPH_BADGE });
 
     await test.step('closed: the badge is visible and usable, the panel is not shown', async () => {
       await expect(badge).toBeVisible();
@@ -361,10 +393,7 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
       await page.setViewportSize(phone);
       await page.route('**/images/*-small.webp', (route) => route.abort());
       await page.goto('/');
-      for (const [id, alt] of [
-        [BCC, BCC_ALT],
-        [INFOTECH, INFOTECH_ALT],
-      ] as const) {
+      for (const [id, alt] of PHOTOS) {
         const img = award(page, id).getByRole('img', { name: alt });
         await expect(img).toBeVisible();
         const m = await img.evaluate((el: HTMLImageElement, text: string) => {
@@ -432,7 +461,7 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
     test(`the photo column is ${column} px beside the text at ${width} px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 800 });
       await page.goto('/');
-      for (const id of [BCC, INFOTECH]) {
+      for (const id of [BCC, INFOTECH, EGOVPH]) {
         const fig = await box(award(page, id).locator('figure'));
         const text = await box(award(page, id).locator('h3'));
         expect(Math.round(fig.width)).toBe(column);
@@ -552,7 +581,7 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
       expect(await img.evaluate((el) => getComputedStyle(el).color)).not.toMatch(
         /^rgba\(0, 0, 0, 0\)$|^transparent$/,
       );
-      await expect(award(page, EGOVPH)).toContainText('Top 10, eGovPH Hackathon 2026');
+      await expect(award(page, EGOVPH)).toContainText(EGOVPH_BADGE);
     });
   });
 

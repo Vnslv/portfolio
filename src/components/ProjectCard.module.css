@@ -124,16 +124,6 @@ details[open] > .head {
   gap: 10px;
 }
 
-.status {
-  min-height: 1.5em;
-  overflow-wrap: anywhere;
-}
-
-.address {
-  font-weight: 700;
-  user-select: all;
-}
-
 @media (min-width: 900px) {
   .head {
     grid-template-columns: 40px 1.2fr 1.4fr 1fr;

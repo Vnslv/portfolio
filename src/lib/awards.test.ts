@@ -26,7 +26,7 @@ describe('award content (AWARD-01, AWARD-03)', () => {
         'Project manager',
         3,
       ],
-      ['eGovPH Hackathon 2026', 'eGovPH', 'Top 10', 'eHanda', 'Project manager', 5],
+      ['eGovPH Hackathon 2026', 'eGovPH', 'Top 30', 'eHanda', 'Project manager', 5],
     ]);
   });
 
@@ -34,7 +34,7 @@ describe('award content (AWARD-01, AWARD-03)', () => {
     expect(awards.map((a) => a.date)).toEqual(['November 2026', 'October 2026', 'July 2026']);
   });
 
-  it('has the two approved images with descriptions, and none for eGovPH', () => {
+  it('has the three approved images with descriptions (eGovPH: owner, 2026-11-25)', () => {
     expect(awards.map((a) => a.image)).toEqual([
       {
         src: '/images/bcc.jpg',
@@ -46,7 +46,11 @@ describe('award content (AWARD-01, AWARD-03)', () => {
         small: '/images/infotech-small.webp',
         alt: 'Three teammates wearing champion medals, one holding an Infotechnolympics 2026 envelope',
       },
-      undefined,
+      {
+        src: '/images/egovph.jpg',
+        small: '/images/egovph-small.webp',
+        alt: 'Five teammates and three others on stage holding a check for the Top 30 eGovHackathon 2026 finalist teams',
+      },
     ]);
   });
 
