@@ -28,6 +28,13 @@ html:has(.bar) {
   outline-offset: -5px;
 }
 
+/* A hovered button takes the title colors, where the usual inward outline is too faint (NFR-04). */
+@media (hover: hover) {
+  .bar :global(.button):hover:focus-visible {
+    outline-color: var(--titleText);
+  }
+}
+
 .bar .summary {
   list-style: none;
 }

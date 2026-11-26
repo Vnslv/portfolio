@@ -2,6 +2,7 @@ import { Awards } from '@/components/Awards';
 import { Footer } from '@/components/Footer';
 import { Intro } from '@/components/Intro';
 import { Links } from '@/components/Links';
+import { Motion } from '@/components/Motion';
 import { Taskbar } from '@/components/Taskbar';
 import { Work } from '@/components/Work';
 import { awards } from '@/content/awards';
@@ -26,6 +27,7 @@ export default function Home() {
         </div>
       </div>
       <Taskbar sections={sections} />
+      <Motion />
     </div>
   );
 }

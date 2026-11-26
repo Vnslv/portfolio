@@ -49,6 +49,21 @@ describe('the Projects window (SITE-01, T12 ticket)', () => {
   });
 });
 
+describe('the typed line and the announcement (MOTION-03, NFR-08)', () => {
+  it('shows the whole line before any script runs, hidden from assistive technology', () => {
+    const line = html.match(/<p[^>]*data-term=""[^>]*>.*?<\/p>/)?.[0] ?? '';
+    expect(line).toContain('aria-hidden="true"');
+    // The text alone: nothing is split up or waiting to be typed.
+    expect(line.replace(/<[^>]*>/g, '')).toBe('&gt; SHOW ALL  [2 FOUND]');
+    expect(line).not.toContain('animation');
+  });
+
+  it('has one polite live region, silent until a filter is chosen', () => {
+    expect(html.match(/aria-live=/g)).toHaveLength(1);
+    expect(html).toMatch(/<p[^>]*aria-live="polite"[^>]*><\/p>/);
+  });
+});
+
 describe('Work with a project that is not ready (WORK-06)', () => {
   it('shows its name, role label and "Coming soon"', () => {
     const soon = item('soon-one');

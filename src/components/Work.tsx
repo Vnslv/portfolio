@@ -54,8 +54,40 @@ const noSubscription = () => () => undefined;
 const enhancedNow = () => true;
 const enhancedOnServer = () => false;
 
+const COMMANDS: Record<Filter, string> = {
+  all: 'SHOW ALL',
+  'software-development': 'SHOW SOFTWARE DEVELOPMENT',
+  'project-management': 'SHOW PROJECT MANAGEMENT',
+};
+
+// The terminal line (MOTION-03). Decorative: the announcement beside it says the result in words.
+// After a choice each character appears a moment after the one before, all within half a second.
+// Before that, without script and with reduced motion, the whole line is simply there.
+function TerminalLine({ text, typed }: { text: string; typed: boolean }) {
+  const step = Math.min(22, 480 / text.length);
+  return (
+    <p
+      className={typed ? `${styles.term} ${styles.typed}` : styles.term}
+      aria-hidden="true"
+      data-term=""
+    >
+      {typed
+        ? Array.from(text, (character, i) => (
+            <span key={i} style={{ animationDelay: `${i * step}ms` }}>
+              {character}
+            </span>
+          ))
+        : text}
+      <span className={styles.caret} data-caret="" />
+    </p>
+  );
+}
+
 export function Work({ projects }: { projects: readonly Project[] }) {
   const [filter, setFilter] = useState<Filter>('all');
+  // How many filter choices were made, and what the last one found. Each choice moves the rows,
+  // types the line and is announced once; a #link does none of that.
+  const [choice, setChoice] = useState({ times: 0, found: 0 });
   const link = useSyncExternalStore(subscribeToHash, currentLink, serverLink);
   const hash = link.slice(link.indexOf('|') + 1);
   // False in the server HTML and until the page runs script, so the controls that need script
@@ -74,6 +106,8 @@ export function Work({ projects }: { projects: readonly Project[] }) {
     });
     dropLink(projects);
     setFilter(next);
+    const found = filterProjects(projects, next, undefined).length;
+    setChoice(({ times }) => ({ times: times + 1, found }));
   }
 
   // Runs before the browser opens or closes a section. A section that is open is about to close,
@@ -103,7 +137,26 @@ export function Work({ projects }: { projects: readonly Project[] }) {
       status={`${shown.length} of ${projects.length} projects`}
     >
       <RoleFilter value={filter} onChange={chooseFilter} disabled={!enhanced} />
-      <ul ref={list} className={styles.list} onClick={onSummaryClick}>
+      <TerminalLine
+        key={choice.times}
+        text={`> ${COMMANDS[filter]}  [${shown.length} FOUND]`}
+        typed={choice.times > 0}
+      />
+      {/* A new node for each choice, so the same words are told again. */}
+      <p className={styles.announce} aria-live="polite">
+        {choice.times > 0 ? (
+          <span key={choice.times}>
+            {`Showing ${choice.found} ${choice.found === 1 ? 'project' : 'projects'}`}
+          </span>
+        ) : null}
+      </p>
+      {/* data-sort changes its value at each choice, which starts the rows' movement again. */}
+      <ul
+        ref={list}
+        className={styles.list}
+        data-sort={choice.times > 0 ? (choice.times % 2 ? 'a' : 'b') : undefined}
+        onClick={onSummaryClick}
+      >
         {shown.map((project) => (
           <ProjectCard
             key={project.id}

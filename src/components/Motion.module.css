@@ -1,0 +1,95 @@
+/* The startup box (MOTION-01): one line over the taskbar, so it covers nothing of the page. It
+   shows only while the page is marked as opening, takes no clicks, and leaves by itself after
+   1.5 seconds, with or without the page's script. */
+.boot {
+  display: none;
+}
+
+.bar {
+  height: 18px;
+  padding: 2px;
+  border: 2px solid var(--lo);
+  background: var(--field);
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  background: repeating-linear-gradient(90deg, var(--link) 0 10px, transparent 10px 13px);
+  transform-origin: left;
+}
+
+/* Confetti (MOTION-02): pieces the script puts inside the awards window for half a second. */
+.confetti {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  pointer-events: none;
+}
+
+.confetti i {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :global(html[data-opening]) .boot {
+    position: fixed;
+    z-index: 4;
+    right: 0;
+    bottom: 4px;
+    left: 0;
+    width: min(320px, 100% - 8px);
+    height: 44px;
+    margin: 0 auto;
+    padding: 0 12px;
+    /* A fixed column for the word, so the bar stays put when the web font arrives (no layout
+       shift). */
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 12px;
+    align-items: center;
+    pointer-events: none;
+    background: var(--face);
+    border: 2px solid;
+    border-color: var(--hi) var(--edge) var(--edge) var(--hi);
+    font: 700 18px/1.2 var(--display);
+    animation: leave 1.5s steps(1, end) forwards;
+  }
+
+  .fill {
+    animation: fill 0.5s steps(5);
+  }
+
+  .confetti i {
+    display: block;
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    animation: fall 0.5s steps(6) forwards;
+  }
+}
+
+/* Keyboard focus ends it at once, even before the script runs: nothing hides a focused control
+   (NFR-04). */
+:global(html[data-opening]:has(:focus-visible)) .boot {
+  display: none;
+}
+
+@keyframes leave {
+  to {
+    visibility: hidden;
+  }
+}
+
+@keyframes fill {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes fall {
+  to {
+    transform: translate(var(--x), var(--y));
+    opacity: 0;
+  }
+}

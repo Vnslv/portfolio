@@ -56,6 +56,41 @@ details[open] > .head {
   background: var(--face);
 }
 
+/* Hover inverts the row (MOTION-03). */
+@media (hover: hover) {
+  summary.head:hover {
+    background: var(--title);
+    color: var(--titleText);
+  }
+
+  summary.head:hover .meta {
+    color: var(--titleText);
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  summary.head:hover .name::before {
+    /* The marker is seen, not read out. */
+    content: '> ' / '';
+  }
+}
+
+/* The panel unfolds each time its project opens, also beside the details element of a card with a
+   badge. It closes at once. */
+@media (prefers-reduced-motion: no-preference) {
+  .project details[open] .details,
+  .project details[open] ~ div .details {
+    transform-origin: top;
+    animation: unfold 0.28s steps(4);
+  }
+}
+
+@keyframes unfold {
+  from {
+    transform: scaleY(0.6);
+  }
+}
+
 .details {
   padding: 12px;
   border-top: 2px groove var(--lo);

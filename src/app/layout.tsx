@@ -25,13 +25,20 @@ export const metadata: Metadata = {
   title: SITE_TITLE,
 };
 
+// MOTION-01: marks the first view of a visit before the first paint, so the opening neither starts
+// late nor plays again. A constant string. It reads one session flag, which the motion component
+// sets, and nothing else; a blocked store is normal and counts as a first view. With reduced motion
+// set, or on a page without the opening, the mark does nothing.
+const openingScript = `(function(){try{if(sessionStorage.getItem('opening'))return}catch(e){}document.documentElement.setAttribute('data-opening','')})()`;
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    // data-theme is set by the head script before React hydrates, so the attributes differ on purpose.
+    // The head scripts set data-theme and data-opening before React hydrates, so the attributes differ on purpose.
     <html lang="en" className={`${pixelify.variable} ${plex.variable}`} suppressHydrationWarning>
       <head>
         {/* A constant string from src/lib/theme.ts, never visitor input. */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <script dangerouslySetInnerHTML={{ __html: openingScript }} />
       </head>
       <body>{children}</body>
     </html>

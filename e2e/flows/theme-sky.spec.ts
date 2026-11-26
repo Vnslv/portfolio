@@ -290,7 +290,8 @@ test.describe('the sky and the night', () => {
         page,
       }) => {
         await page.setViewportSize({ width, height });
-        await page.emulateMedia({ colorScheme: scheme });
+        // The still sky (T14): a drifting one is never the same in two pictures.
+        await page.emulateMedia({ colorScheme: scheme, reducedMotion: 'reduce' });
         await page.goto('/');
         await expect(toggle(page)).toBeVisible();
         // The sky alone: the page keeps its height, so it still scrolls.
@@ -318,7 +319,9 @@ test.describe('the sky and the night', () => {
 
     test(`${scheme}: scrolling does not repaint the sky layer`, async ({ page }) => {
       await page.setViewportSize(desktop);
-      await page.emulateMedia({ colorScheme: scheme });
+      // The still sky (T14): the opening repaints it once or twice just after load, which is not
+      // scrolling. motion.spec.ts checks the drifting sky.
+      await page.emulateMedia({ colorScheme: scheme, reducedMotion: 'reduce' });
       const session = await page.context().newCDPSession(page);
       const paints = new Map<number, number>();
       session.on('LayerTree.layerTreeDidChange', ({ layers }) => {

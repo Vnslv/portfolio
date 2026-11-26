@@ -263,6 +263,8 @@ test.describe('the intro photo', () => {
   test('a loaded photo keeps its reserved space: nothing moves when it arrives', async ({
     page,
   }) => {
+    // Measured still (T14): the opening would change the other windows' widths meanwhile.
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     for (const size of [phone, desktop]) {
       await page.setViewportSize(size);
       let release: () => void = () => undefined;

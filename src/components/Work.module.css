@@ -4,3 +4,102 @@
   border: 2px solid;
   border-color: var(--lo) var(--hi) var(--hi) var(--lo);
 }
+
+/* The terminal line (MOTION-03), in a system monospace font. */
+.term {
+  min-height: 42px;
+  padding: 8px 12px;
+  background: var(--edge);
+  color: var(--badge);
+  border: 2px solid;
+  border-color: var(--lo) var(--hi) var(--hi) var(--lo);
+  font:
+    700 15px/1.5 'Courier New',
+    monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.caret {
+  display: inline-block;
+  width: 0.6em;
+  height: 1.05em;
+  vertical-align: -0.15em;
+  background: var(--badge);
+}
+
+/* Read out, not shown. */
+.announce {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .typed span {
+    animation: type 1ms steps(1) backwards;
+  }
+
+  /* The caret appears when the line is typed, and blinks for 3 seconds. */
+  .typed .caret {
+    animation: blink 0.5s steps(1) 0.48s 6 backwards;
+  }
+
+  /* The listed rows move into place, one after the other. They are visible at once. Sideways, so a
+     project that is scrolled to meanwhile (#link) still lands in its place. Two equal movements, so
+     each new choice starts again. */
+  .list[data-sort='a'] > li {
+    animation: sort-a 0.24s steps(4) backwards;
+  }
+
+  .list[data-sort='b'] > li {
+    animation: sort-b 0.24s steps(4) backwards;
+  }
+
+  .list[data-sort] > li:nth-child(2) {
+    animation-delay: 0.04s;
+  }
+
+  .list[data-sort] > li:nth-child(3) {
+    animation-delay: 0.08s;
+  }
+
+  .list[data-sort] > li:nth-child(4) {
+    animation-delay: 0.12s;
+  }
+
+  .list[data-sort] > li:nth-child(5) {
+    animation-delay: 0.16s;
+  }
+}
+
+@keyframes type {
+  from {
+    visibility: hidden;
+  }
+}
+
+@keyframes blink {
+  0% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes sort-a {
+  from {
+    transform: translateX(-12px);
+  }
+}
+
+@keyframes sort-b {
+  from {
+    transform: translateX(-12px);
+  }
+}

@@ -18,6 +18,25 @@
   padding: 0;
 }
 
+/* Hover lifts the award (MOTION-03). */
+@media (hover: hover) {
+  .award:hover {
+    box-shadow: 5px 5px 0 var(--title);
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .award {
+    transition:
+      transform 0.16s steps(3),
+      box-shadow 0.16s steps(3);
+  }
+
+  .award:hover {
+    transform: translate(-3px, -3px);
+  }
+}
+
 /* Below 640 px the photo is a small 120 px column beside the text (board, NFR-01). The column
    exists only for an award with an image; one without uses the full width. */
 .withImage {
