@@ -383,6 +383,8 @@ test.describe('WORK-01 to WORK-06 work list, filter, details', () => {
     test.use({ javaScriptEnabled: false, viewport: phone });
 
     test('a failed image keeps its space and its description can be seen', async ({ page }) => {
+      // Measured still (T14): the panel unfolds for 0.28 s after it opens.
+      await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.route('**/images/heronpay-logo.png', (route) => route.abort());
       await page.goto('/');
       await summary(page, 'heronpay').click();
@@ -439,6 +441,8 @@ test.describe('WORK-01 to WORK-06 work list, filter, details', () => {
     test.use({ javaScriptEnabled: false, viewport: phone });
 
     test('the failed logo keeps its space and its description can be seen', async ({ page }) => {
+      // Measured still (T14): the panel unfolds for 0.28 s after it opens.
+      await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.route('**/images/idiya-logo.png', (route) => route.abort());
       await page.goto('/');
       await summary(page, 'idiya').click();

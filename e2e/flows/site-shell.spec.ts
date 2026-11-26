@@ -194,6 +194,8 @@ test.describe('SITE-01, SITE-02 page shell', () => {
       });
 
       test('the windows are one centered column of at most 1040 px', async ({ page }) => {
+        // Measured still (T14): the opening would change the windows' widths.
+        await page.emulateMedia({ reducedMotion: 'reduce' });
         await page.goto('/');
         const sections = page.locator('main > section, main > div > section');
         await expect(sections).toHaveCount(4);

@@ -149,6 +149,8 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
   for (const width of [390, 768, 1280]) {
     test(`layout at ${width} px: an award with no image uses the full width`, async ({ page }) => {
       await page.setViewportSize({ width, height: 800 });
+      // Measured still (T14): the opening would change widths between two measurements.
+      await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.goto('/');
       // React removes nodes it does not know while it hydrates, so inject only after it has: script
       // enables the filter. Below 640 px the radios are hidden, so they are found by selector.
@@ -178,6 +180,8 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
     page,
   }) => {
     await page.setViewportSize(phone);
+    // Measured still (T14): the opening would change widths.
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
     for (const id of [BCC, INFOTECH, EGOVPH]) {
       const fig = await box(award(page, id).locator('figure'));
@@ -200,6 +204,8 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
   for (const width of [768, 1280]) {
     test(`from 640 px the photo stays 260 px beside the text, at ${width} px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 800 });
+      // Measured still (T14): the opening would change widths.
+      await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.goto('/');
       const fig = await box(award(page, BCC).locator('figure'));
       const text = await box(award(page, BCC).locator('h3'));
@@ -293,6 +299,8 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
     page,
   }) => {
     await page.setViewportSize(phone);
+    // Measured still (T14): the opening would change widths.
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.route('**/images/bcc-small.webp', (route) => route.abort());
     await page.goto('/');
     const fig = award(page, BCC).locator('figure');
@@ -460,6 +468,8 @@ test.describe('AWARD-01, AWARD-02, AWARD-03 awards and badges', () => {
   ] as const) {
     test(`the photo column is ${column} px beside the text at ${width} px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 800 });
+      // Measured still (T14): the opening would change widths.
+      await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.goto('/');
       for (const id of [BCC, INFOTECH, EGOVPH]) {
         const fig = await box(award(page, id).locator('figure'));

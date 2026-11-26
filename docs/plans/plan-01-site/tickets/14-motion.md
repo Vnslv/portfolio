@@ -32,6 +32,7 @@
 - Scroll reveals, project and filter movement, hover feedback, award confetti once per visit, and the filter's typed terminal line, each at most 0.5 s except the sky, idle bobbing, typing and the cursor blink.
 - With reduced motion set, nothing moves, and nothing is hidden waiting for an animation. Without JavaScript, everything shows and works.
 - Motion is mostly CSS. Any script is one small client component, loaded so it never delays the first paint; report its compressed size. Pause sky and loops while the tab is hidden.
+- Lead decisions at go (2026-11-26), not the owner's: one small inline pre-paint script in `layout.tsx` (under 400 bytes, reading only the session flag) is allowed beside the client component; the page CSS cap may rise to 7699 bytes gzipped; the sky drifts left in 2 px steps (clouds about 8 px/s, stars about 13 px/s); the startup box is one line over the taskbar, filling in 0.5 s and gone by 1.5 s; when session storage is blocked the opening and confetti play on each load and one warning is logged, as theme.ts does (system-design rule: never swallow an error; the lead reversed an earlier "nothing is logged" after review).
 - NFR-01 holds in CI (`lighthouse`) and NFR-04 holds (axe, keyboard, contrast, focus), apart from the PRD's 2.2.2 exception for background and Tools motion.
 
 ## Tests First

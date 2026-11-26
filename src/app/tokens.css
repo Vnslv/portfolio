@@ -19,6 +19,8 @@
   --clouds: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='420' shape-rendering='crispEdges'%3E%3Cpath fill='%23f4f8ff' d='M346 206h80v16h-80zM330 222h112v16h-112zM362 190h40v16h-40z'/%3E%3Cpath fill='%23ffffff' d='M52 72h60v12h-60zM40 84h84v12h-84zM64 60h30v12h-30zM160 330h50v10h-50zM150 340h70v10h-70zM170 320h25v10h-25z'/%3E%3C/svg%3E");
   --stars: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512' shape-rendering='crispEdges'%3E%3Cpath fill='%23ffffff' d='M470 148h2v2h-2zM170 78h4v4h-4zM448 30h2v2h-2zM260 214h2v2h-2zM472 262h2v2h-2zM272 314h2v2h-2zM202 362h4v4h-4zM208 78h2v2h-2zM112 322h4v4h-4zM140 4h2v2h-2zM0 314h2v2h-2zM250 352h2v2h-2zM352 456h2v2h-2zM446 470h2v2h-2zM484 246h2v2h-2zM370 148h2v2h-2zM458 18h2v2h-2zM54 42h2v2h-2zM484 98h2v2h-2zM212 30h2v2h-2zM246 508h2v2h-2zM160 2h2v2h-2z'/%3E%3Cpath fill='%23cdb4ff' d='M276 350h2v2h-2zM26 350h2v2h-2zM412 62h4v4h-4zM352 328h4v4h-4zM464 190h4v4h-4zM150 478h2v2h-2zM28 186h4v4h-4zM144 186h2v2h-2zM234 440h4v4h-4zM178 168h2v2h-2zM114 106h2v2h-2zM202 120h4v4h-4zM286 178h4v4h-4zM170 370h2v2h-2zM68 254h2v2h-2zM84 338h2v2h-2zM258 386h2v2h-2zM12 152h2v2h-2zM12 390h4v4h-4zM344 124h2v2h-2zM62 106h2v2h-2zM38 138h2v2h-2zM410 338h4v4h-4zM208 254h2v2h-2zM368 340h2v2h-2z'/%3E%3Cpath fill='%237f8cc9' d='M272 168h2v2h-2zM122 190h4v4h-4zM264 258h2v2h-2zM448 56h2v2h-2zM302 70h2v2h-2zM454 452h4v4h-4zM120 190h4v4h-4zM250 0h2v2h-2zM472 10h2v2h-2zM494 288h2v2h-2zM392 358h2v2h-2zM16 56h2v2h-2zM440 508h4v4h-4zM214 126h2v2h-2zM158 504h2v2h-2zM218 38h2v2h-2zM468 464h4v4h-4zM216 344h4v4h-4zM498 78h4v4h-4zM46 118h2v2h-2zM390 222h2v2h-2zM452 432h2v2h-2zM248 490h2v2h-2z'/%3E%3C/svg%3E");
   --sky: var(--clouds);
+  /* The drift moves one tile to the left in 2 px steps: clouds at 8 px/s, stars at 13 px/s. */
+  --drift: drift-clouds 80s steps(320) infinite;
   --display: var(--font-pixelify), 'IBM Plex Sans', sans-serif;
   --body: var(--font-plex), Arial, sans-serif;
   color-scheme: light;
@@ -44,6 +46,7 @@
     --badge: #7fe0b0;
     --badgeText: #08351f;
     --sky: var(--stars);
+    --drift: drift-stars 39.4s steps(256) infinite;
     color-scheme: dark;
   }
 }
@@ -65,6 +68,7 @@
   --badge: #7fe0b0;
   --badgeText: #08351f;
   --sky: var(--stars);
+  --drift: drift-stars 39.4s steps(256) infinite;
   color-scheme: dark;
 }
 
@@ -83,14 +87,15 @@ body {
 }
 
 /* The sky or the night: a fixed layer behind the page, as large as the largest viewport, so it
-   covers every height and width and stays still while the page scrolls. The tile repeats from the
-   top left over the gradient. Its own compositing layer keeps scrolling from repainting it. */
+   covers every height and width and does not move when the page scrolls. The tile repeats from the
+   top left over the gradient. Its own compositing layer keeps scrolling and the drift from
+   repainting it. The layer is one tile wider than the screen, so the drift never shows its edge. */
 body::before {
   content: '';
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
+  width: calc(100% + 640px);
   height: 100vh;
   height: 100lvh;
   z-index: -1;
@@ -142,4 +147,84 @@ a.button {
 
 .button[aria-current='true'] {
   font-weight: 700;
+}
+
+/* Motion (MOTION-02, MOTION-03). Everything that moves is under no-preference, so nothing moves
+   with reduced motion set (NFR-08). No movement starts from a hidden state. */
+@media (prefers-reduced-motion: no-preference) {
+  body::before {
+    animation: var(--drift);
+  }
+
+  /* Set by the motion component for half a second, as a window or a row is reached. */
+  [data-reveal] {
+    animation: reveal 0.38s steps(5);
+  }
+}
+
+@keyframes drift-clouds {
+  to {
+    transform: translateX(-640px);
+  }
+}
+
+@keyframes drift-stars {
+  to {
+    transform: translateX(-512px);
+  }
+}
+
+@keyframes reveal {
+  from {
+    transform: translateX(-18px);
+  }
+}
+
+/* A hidden tab pauses the sky and every loop. */
+html[data-hidden] *,
+html[data-hidden] body::before {
+  animation-play-state: paused !important;
+}
+
+@media (hover: hover) {
+  .button:not(:disabled):hover {
+    background: var(--title);
+    color: var(--titleText);
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .button {
+    transition: transform 0.12s steps(2);
+  }
+
+  .button:not(:disabled):hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 3px 3px 0 var(--edge);
+  }
+
+  .button:not(:disabled):active {
+    transform: translate(1px, 1px);
+    box-shadow: none;
+  }
+}
+
+/* A pixel arrow, and a pixel hand over what can be used, for a mouse only: original drawings in
+   --edge and --hi (light) and --badge (dark). Inline, so nothing is requested. */
+@media (pointer: fine) {
+  :root,
+  :root label,
+  :root :disabled {
+    cursor:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 12 12' shape-rendering='crispEdges'%3E%3Cpath fill='%231c2a44' d='M0 0h2v1h2v1h2v1h2v1h2v2H9v1H8v1h1v1h1v1h1v1h-1v1H8v-1H7v-1H6V9H5v1H3V9H2V6H1V3H0z'/%3E%3Cpath fill='%23fff' d='M1 1h1v1h2v1h2v1h2v1h1v1H7v2h1v1h1v1h1v1H8v-1H7V9H6V8H5v1H3V6H2V3H1z'/%3E%3C/svg%3E")
+        0 0,
+      auto;
+  }
+
+  :root :is(a[href], summary, button:enabled, select:enabled, input:enabled, label:has(:enabled)) {
+    cursor:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 12 12' shape-rendering='crispEdges'%3E%3Cpath fill='%231c2a44' d='M4 0h2v1h1v2h2v1h2v1h1v3h-1v1h-1v2H9v1H3v-1H2V9H1V8H0V6h1V5h2V1h1z'/%3E%3Cpath fill='%237fe0b0' d='M4 1h2v3h2v1h2v1h2v1h-2v2H9v2H3V9H2V8H1V6h2v1h1z'/%3E%3C/svg%3E")
+        9 1,
+      pointer;
+  }
 }

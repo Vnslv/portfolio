@@ -2,6 +2,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import type { Project } from '../content/types';
 import { Work } from './Work';
+import styles from './Work.module.css';
 
 // A fixture, only for this test. The real content has no project that is not ready (WORK-06).
 const fixture: readonly Project[] = [
@@ -46,6 +47,25 @@ describe('the Projects window (SITE-01, T12 ticket)', () => {
     // The title follows the window icon inside the heading.
     expect(html).toContain('</svg>Projects</h2>');
     expect(html).not.toContain('</svg>Work</h2>');
+  });
+});
+
+describe('the typed line and the announcement (MOTION-03, NFR-08)', () => {
+  it('shows the whole line before any script runs, hidden from assistive technology', () => {
+    // The paragraph, cut out between its own tags.
+    const start = html.lastIndexOf('<p', html.indexOf('data-term=""'));
+    const line = html.slice(start, html.indexOf('</p>', start) + '</p>'.length);
+    expect(line).toContain('aria-hidden="true"');
+    // The whole element: the text alone, nothing split up or waiting to be typed.
+    expect(line).toBe(
+      `<p class="${styles.term}" aria-hidden="true" data-term="">&gt; SHOW ALL  [2 FOUND]<span class="${styles.caret}" data-caret=""></span></p>`,
+    );
+    expect(line).not.toContain('animation');
+  });
+
+  it('has one polite live region, silent until a filter is chosen', () => {
+    expect(html.match(/aria-live=/g)).toHaveLength(1);
+    expect(html).toMatch(/<p[^>]*aria-live="polite"[^>]*><\/p>/);
   });
 });
 

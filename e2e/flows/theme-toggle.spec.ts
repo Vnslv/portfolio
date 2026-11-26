@@ -116,10 +116,19 @@ test.describe('THEME-01 light and dark', () => {
       await page.waitForFunction(() => 'fontReady' in document.documentElement.dataset);
       expect(await paint(page)).toMatchObject({ attr: 'dark', ...TOKENS.dark });
       await expect(toggle(page)).toHaveCount(0);
+      // Both measures are taken in the same fonts: under load they are still arriving here, and
+      // the web font is a fraction of a pixel wider than its stand-in. The slot is shown first, so
+      // the page has asked for them.
+      const fontsIn = async () => {
+        await expect(slot(page)).toBeVisible();
+        await page.evaluate(() => document.fonts.ready);
+      };
+      await fontsIn();
       const before = await slot(page).boundingBox();
       await page.unroute('**/_next/static/**/*.js');
       await page.reload();
       await expect(toggle(page)).toBeVisible();
+      await fontsIn();
       expect(await slot(page).boundingBox()).toEqual(before);
       await toggle(page).click();
       await expect(toggle(page)).toHaveText('Dark theme');

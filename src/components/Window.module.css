@@ -25,6 +25,13 @@
   flex: none;
 }
 
+/* Hover lights the title bar (MOTION-03). */
+@media (hover: hover) {
+  .win:hover > .title {
+    background: linear-gradient(90deg, var(--title2), var(--title));
+  }
+}
+
 .body {
   padding: 16px;
   display: grid;

@@ -42,6 +42,28 @@
   gap: 10px;
 }
 
+/* MOTION-01: on the first view of a visit the windows after Welcome open one after the other. They
+   are all visible from the start, and only widen, so no scroll position moves. Welcome is still. */
+@media (prefers-reduced-motion: no-preference) {
+  :global(html[data-opening]) .main > section ~ section {
+    animation: open 0.4s steps(4) 0.13s backwards;
+  }
+
+  :global(html[data-opening]) .main > :nth-child(3) {
+    animation-delay: 0.26s;
+  }
+
+  :global(html[data-opening]) .main > :nth-child(4) {
+    animation-delay: 0.39s;
+  }
+}
+
+@keyframes open {
+  from {
+    transform: scaleX(0.9);
+  }
+}
+
 @media (min-width: 900px) {
   /* One centered column: 1040 px with its 28 px edges, so the windows are 984 px at most. */
   .page {
