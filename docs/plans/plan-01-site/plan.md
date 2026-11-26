@@ -110,7 +110,7 @@ Tickets run in order; several change the same files. One ticket per session and 
 - [x] T11 Owner changes: eGovPH, taskbar, Idiya logo, Copy link (AWARD-01, AWARD-02, AWARD-03, SITE-01, WORK-03, WORK-04, NFR-01, NFR-04) -> tickets/11-egovph.md
 - [x] T12 Full-stack, Projects and role labels (SITE-01, SITE-02, SITE-03, WORK-01, WORK-02, WORK-05, CONT-01) -> tickets/12-wording.md
 - [x] T13 About text in the intro, sky theme, tab icon (SITE-01, SITE-02, THEME-01, NFR-01, NFR-04) -> tickets/13-about.md
-- [ ] T14 Motion (MOTION-01, MOTION-02, MOTION-03, NFR-08, NFR-01, NFR-04) -> tickets/14-motion.md
+- [x] T14 Motion (MOTION-01, MOTION-02, MOTION-03, NFR-08, NFR-01, NFR-04) -> tickets/14-motion.md
 - [ ] T15 Tools board (TOOL-01, SITE-01, CONT-01, NFR-01, NFR-04, NFR-08) -> tickets/15-tools.md
 - [ ] T09 Accessibility, speed, parity checks (NFR-01, NFR-04) -> tickets/09-quality.md
 
