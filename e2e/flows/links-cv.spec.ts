@@ -15,7 +15,7 @@ const intro = (page: Page) => page.locator('#welcome');
 const links = (page: Page) => page.locator('#links');
 const figure = (page: Page) => intro(page).locator('figure');
 const photo = (page: Page) => intro(page).getByRole('img', { name: ALT });
-const cvIn = (area: Locator) => area.getByRole('link', { name: 'Download CV', exact: true });
+const cvIn = (area: Locator) => area.getByRole('link', { name: 'Download Resume', exact: true });
 // The exact accessible name, so no pattern is built from a name.
 const profileLink = (page: Page, name: 'GitHub' | 'LinkedIn') =>
   links(page).getByRole('link', { name: `${name} (opens in a new tab)`, exact: true });
@@ -77,8 +77,8 @@ test.describe('LINK-01, LINK-02 profile links and CV', () => {
       }
     });
 
-    await test.step('LINK-02: the CV is a plain link to the Drive address, in the intro and in Links', async () => {
-      await expect(page.getByRole('link', { name: 'Download CV' })).toHaveCount(2);
+    await test.step('LINK-02: the Resume is a plain link to the Drive address, in the intro and in Links', async () => {
+      await expect(page.getByRole('link', { name: 'Download Resume' })).toHaveCount(2);
       for (const area of [intro(page), links(page)]) {
         await expect(cvIn(area)).toHaveAttribute('href', CV);
         await expect(cvIn(area)).not.toHaveAttribute('target', /.*/);
@@ -142,7 +142,7 @@ test.describe('LINK-01, LINK-02 profile links and CV', () => {
       }
     });
 
-    await test.step('Enter on Download CV asks for the Drive address exactly, in the same tab', async () => {
+    await test.step('Enter on Download Resume asks for the Drive address exactly, in the same tab', async () => {
       const link = cvIn(links(page));
       await link.focus();
       const asked = page.waitForRequest(CV);
@@ -152,7 +152,7 @@ test.describe('LINK-01, LINK-02 profile links and CV', () => {
     });
   });
 
-  test('the intro Download CV, clicked, asks for the Drive address exactly', async ({ page }) => {
+  test('the intro Download Resume, clicked, asks for the Drive address exactly', async ({ page }) => {
     await answerOutside(page);
     await page.goto('/');
     const asked = page.waitForRequest(CV);

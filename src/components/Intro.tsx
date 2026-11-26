@@ -61,7 +61,7 @@ export function Intro({ profile = content }: { profile?: Profile }) {
             <a className="button" href="#work">
               See my projects
             </a>
-            <LinkItem label="CV" icon="doc" url={profile.cvUrl} newTab={false} />
+            <LinkItem label="Resume" icon="doc" url={profile.cvUrl} newTab={false} />
           </div>
         </div>
       </div>

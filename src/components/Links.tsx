@@ -44,7 +44,7 @@ export function Links({ profile = content }: { profile?: Profile }) {
       <div className={styles.row}>
         <LinkItem label="GitHub" icon="link" url={profile.github} newTab />
         <LinkItem label="LinkedIn" icon="link" url={profile.linkedin} newTab />
-        <LinkItem label="CV" icon="doc" url={profile.cvUrl} newTab={false} />
+        <LinkItem label="Resume" icon="doc" url={profile.cvUrl} newTab={false} />
       </div>
     </Window>
   );
