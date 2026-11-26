@@ -2,6 +2,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import type { Project } from '../content/types';
 import { Work } from './Work';
+import styles from './Work.module.css';
 
 // A fixture, only for this test. The real content has no project that is not ready (WORK-06).
 const fixture: readonly Project[] = [
@@ -51,10 +52,14 @@ describe('the Projects window (SITE-01, T12 ticket)', () => {
 
 describe('the typed line and the announcement (MOTION-03, NFR-08)', () => {
   it('shows the whole line before any script runs, hidden from assistive technology', () => {
-    const line = html.match(/<p[^>]*data-term=""[^>]*>.*?<\/p>/)?.[0] ?? '';
+    // The paragraph, cut out between its own tags.
+    const start = html.lastIndexOf('<p', html.indexOf('data-term=""'));
+    const line = html.slice(start, html.indexOf('</p>', start) + '</p>'.length);
     expect(line).toContain('aria-hidden="true"');
-    // The text alone: nothing is split up or waiting to be typed.
-    expect(line.replace(/<[^>]*>/g, '')).toBe('&gt; SHOW ALL  [2 FOUND]');
+    // The whole element: the text alone, nothing split up or waiting to be typed.
+    expect(line).toBe(
+      `<p class="${styles.term}" aria-hidden="true" data-term="">&gt; SHOW ALL  [2 FOUND]<span class="${styles.caret}" data-caret=""></span></p>`,
+    );
     expect(line).not.toContain('animation');
   });
 

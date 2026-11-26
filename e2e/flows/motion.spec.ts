@@ -470,17 +470,27 @@ test.describe('MOTION-01 the opening', () => {
   }) => {
     const response = await page.goto('/');
     const html = (await response?.text()) ?? '';
-    const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1] ?? '');
+    // The server's HTML, read by the browser's own parser, where nothing in it runs: the scripts
+    // that have no attribute, and whether each is a child of the head.
+    const scripts = await page.evaluate((source) => {
+      const parsed = new DOMParser().parseFromString(source, 'text/html');
+      return [...parsed.querySelectorAll('script')]
+        .filter((el) => el.attributes.length === 0)
+        .map((el) => ({ text: el.textContent ?? '', inHead: el.parentElement === parsed.head }));
+    }, html);
     // Next also repeats the page's data in its own scripts; those are not this one.
-    const found = scripts.filter((s) => s.includes('data-opening') && !s.includes('__next_f'));
+    const found = scripts.filter(
+      ({ text }) => text.includes('data-opening') && !text.includes('__next_f'),
+    );
     expect(found).toHaveLength(1);
-    const [script = ''] = found;
+    const script = found[0]?.text ?? '';
     expect(Buffer.byteLength(script)).toBeLessThan(SCRIPT_CAP);
     expect(script).toContain('sessionStorage.getItem');
     expect(script).not.toMatch(
       /localStorage|cookie|location|referrer|navigator|history|screen|fetch|XMLHttpRequest|Beacon/,
     );
     // It is in the head, so it runs before anything is painted.
+    expect(found[0]?.inHead).toBe(true);
     expect(html.indexOf(script)).toBeLessThan(html.indexOf('<body'));
   });
 });
@@ -538,6 +548,64 @@ test.describe('MOTION-03 durations', () => {
 
     await test.step('pixel steps, no smooth easing', async () => {
       expect((await playedNow(page)).filter((p) => !p.timing.includes('steps('))).toEqual([]);
+    });
+  });
+
+  test('after a filter choice, rows not yet reached still slide in when reached', async ({
+    page,
+  }) => {
+    // Short, so rows stay below the screen while the filter is used.
+    const height = 300;
+    await page.setViewportSize({ width: 390, height });
+    // Every row marked to slide in, with the movement it then has. An observer sees each mark,
+    // however slowly or quickly the machine draws.
+    await page.addInitScript(() => {
+      const marked: string[] = [];
+      Object.assign(window, { marked });
+      new MutationObserver((changes) => {
+        for (const { target } of changes) {
+          const el = target as Element;
+          if (!el.hasAttribute('data-reveal')) continue;
+          marked.push(`${el.id} ${getComputedStyle(el).animationName}`);
+        }
+      }).observe(document, { attributes: true, subtree: true, attributeFilter: ['data-reveal'] });
+    });
+    await page.goto('/');
+    await ready(page);
+    const select = page.locator('#work select');
+    const marked = () => page.evaluate(() => (window as unknown as { marked: string[] }).marked);
+    const choose = async (label: string) => {
+      await select.selectOption({ label });
+      // The filter's own movement ends and leaves the rows free for the next one.
+      await expect
+        .configure({ soft: true })
+        .poll(() =>
+          rows(page).evaluateAll((els) =>
+            els.map((el) => getComputedStyle(el).animationName).filter((name) => name !== 'none'),
+          ),
+        )
+        .toEqual([]);
+    };
+    const reach = async (id: string) => {
+      expect((await rect(page, `#${id}`)).y).toBeGreaterThan(height);
+      await page.evaluate(() => (window as unknown as { marked: string[] }).marked.splice(0));
+      await page.locator(`#${id}`).evaluate((el) => el.scrollIntoView({ block: 'center' }));
+      await expect.poll(marked).toContain(`${id} reveal`);
+    };
+
+    await test.step('a row that stayed listed through the choice', async () => {
+      await select.evaluate((el) => el.scrollIntoView());
+      await choose(MANAGEMENT);
+      await reach('umak-kalinga');
+    });
+
+    await test.step('a row the filter took out and put back', async () => {
+      await select.evaluate((el) => el.scrollIntoView());
+      await choose(SOFTWARE);
+      await expect(rows(page)).toHaveCount(2);
+      await choose('All');
+      await expect(rows(page)).toHaveCount(5);
+      await reach('ehanda');
     });
   });
 
@@ -819,7 +887,6 @@ test.describe('MOTION-03 the filter', () => {
       page,
     }) => {
       await page.setViewportSize(size);
-      await record(page);
       await page.goto('/');
       await ready(page);
       await expect(announce(page)).toHaveCount(1);
@@ -847,6 +914,71 @@ test.describe('MOTION-03 the filter', () => {
       await page.locator('#work').evaluate((el) => el.scrollIntoView());
       await expect.poll(() => page.locator('[data-reveal]').count()).toBe(0);
 
+      // Holds the rows' movement and the typing at their first frame, so what each choice starts
+      // can be read however slowly or quickly the machine draws.
+      const hold = await page.addStyleTag({
+        content:
+          '#work li[data-project], #work [data-term] span { animation-play-state: paused !important }',
+      });
+      // The movements each listed row has now, each marked new if no earlier read saw it, and how
+      // many of the line's characters have a new typing movement.
+      const started = () =>
+        page.evaluate(() => {
+          const read = (el: Element) =>
+            el.getAnimations().map((animation) => {
+              const fresh = !('counted' in animation);
+              Object.assign(animation, { counted: true });
+              const effect = animation.effect as KeyframeEffect;
+              const timing = effect.getTiming();
+              const frames = effect.getKeyframes();
+              const skip = ['offset', 'computedOffset', 'easing', 'composite'];
+              return {
+                fresh,
+                name: (animation as CSSAnimation).animationName,
+                delay: Number(timing.delay),
+                duration: Number(timing.duration),
+                properties: [
+                  ...new Set(
+                    frames.flatMap((f) => Object.keys(f).filter((k) => !skip.includes(k))),
+                  ),
+                ],
+                from: String(frames[0]?.['transform'] ?? ''),
+              };
+            });
+          const characters = [
+            ...document.querySelectorAll('#work [data-term] span:not([data-caret])'),
+          ];
+          return {
+            rows: [...document.querySelectorAll('#work li[data-project]')].map(
+              (el) => [el.id, read(el)] as const,
+            ),
+            characters: characters.length,
+            typing: characters.filter((el) =>
+              read(el).some((a) => a.fresh && a.name.endsWith('type')),
+            ).length,
+          };
+        });
+      // Each listed row starts one new sideways movement, one after the other, and every
+      // character of the line starts to be typed.
+      const starts = async (ids: readonly string[], line: string) =>
+        expect(await started()).toEqual({
+          rows: ids.map((id, i) => [
+            id,
+            [
+              {
+                fresh: true,
+                name: expect.stringMatching(/sort-[ab]$/),
+                delay: i * 40,
+                duration: 240,
+                properties: ['transform'],
+                from: expect.stringMatching(/^translateX?\(-12px\)$/),
+              },
+            ],
+          ]),
+          characters: line.length,
+          typing: line.length,
+        });
+
       await choose(SOFTWARE);
       // At once: no row is waiting, invisible, for its movement.
       expect(
@@ -863,10 +995,12 @@ test.describe('MOTION-03 the filter', () => {
       ]);
       await expect(term(page)).toHaveText('> SHOW SOFTWARE DEVELOPMENT  [2 FOUND]');
       await expect.poll(told).toEqual(['Showing 2 projects']);
+      await starts(['idiya', 'umak-kalinga'], '> SHOW SOFTWARE DEVELOPMENT  [2 FOUND]');
 
       await choose(MANAGEMENT);
       await expect.poll(told).toEqual(['Showing 2 projects', 'Showing 5 projects']);
       await expect(term(page)).toHaveText('> SHOW PROJECT MANAGEMENT  [5 FOUND]');
+      await starts(NAMES, '> SHOW PROJECT MANAGEMENT  [5 FOUND]');
 
       // The same words again are still told once.
       await choose('All');
@@ -874,13 +1008,16 @@ test.describe('MOTION-03 the filter', () => {
         .poll(told)
         .toEqual(['Showing 2 projects', 'Showing 5 projects', 'Showing 5 projects']);
       await expect(term(page)).toHaveText('> SHOW ALL  [5 FOUND]');
+      // The same five rows move again.
+      await starts(NAMES, '> SHOW ALL  [5 FOUND]');
 
       await test.step('the rows move at every choice, and the line is typed in full', async () => {
-        const moved = await ofKind(page, 'row');
-        // Two rows, then five, then the same five again.
-        expect(moved.length).toBeGreaterThanOrEqual(2 + 5 + 5);
-        expect(moved.flatMap((p) => p.properties).filter((p) => p !== 'transform')).toEqual([]);
-        expect((await ofKind(page, 'typed')).length).toBeGreaterThan(0);
+        // Let go, the movements play to their end: the rows rest and are free for the next one.
+        await hold.evaluate((el) => (el as Element).remove());
+        for (const row of await rows(page).all()) {
+          await expect(row).toHaveCSS('animation-name', 'none');
+          await expect(row).toHaveCSS('transform', 'none');
+        }
         await expect
           .poll(() =>
             term(page).evaluate(

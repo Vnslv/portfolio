@@ -86,6 +86,16 @@ export function Motion() {
       { rootMargin: REACHED },
     );
     document.querySelectorAll(SLIDES).forEach((el) => slides.observe(el));
+    // A filter puts project rows back as new elements, which are reached like any other.
+    const list = document.querySelector('#work ul');
+    const rows = new MutationObserver((changes) => {
+      for (const { addedNodes } of changes) {
+        addedNodes.forEach((node) => {
+          if (node instanceof HTMLLIElement) slides.observe(node);
+        });
+      }
+    });
+    if (list) rows.observe(list, { childList: true });
 
     const award = document.querySelector('#awards li');
     const awards = new IntersectionObserver(
@@ -105,6 +115,7 @@ export function Motion() {
     return () => {
       timers.forEach((timer) => window.clearTimeout(timer));
       slides.disconnect();
+      rows.disconnect();
       awards.disconnect();
       window.removeEventListener('pointerdown', endOpening);
       window.removeEventListener('keydown', endOpening);

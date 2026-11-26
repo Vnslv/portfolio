@@ -88,6 +88,8 @@ export function Work({ projects }: { projects: readonly Project[] }) {
   // How many filter choices were made, and what the last one found. Each choice moves the rows,
   // types the line and is announced once; a #link does none of that.
   const [choice, setChoice] = useState({ times: 0, found: 0 });
+  // The last choice whose rows have come to rest.
+  const [rested, setRested] = useState(0);
   const link = useSyncExternalStore(subscribeToHash, currentLink, serverLink);
   const hash = link.slice(link.indexOf('|') + 1);
   // False in the server HTML and until the page runs script, so the controls that need script
@@ -120,6 +122,13 @@ export function Work({ projects }: { projects: readonly Project[] }) {
     if (details.open || details.closest('li')?.id !== linkedId) dropLink(projects);
   }
 
+  // While a choice moves the rows, that movement is theirs. Once every row has come to rest the
+  // list lets go of it, so a row can slide in again when it is reached (MOTION-03).
+  function onRowAnimationEnd() {
+    const rows = Array.from(list.current?.children ?? []);
+    if (rows.every((row) => row.getAnimations().length === 0)) setRested(choice.times);
+  }
+
   // WORK-04: a known #link opens its project, which stays listed even when the filter hides it.
   useEffect(() => {
     if (!linkedId) return;
@@ -150,12 +159,14 @@ export function Work({ projects }: { projects: readonly Project[] }) {
           </span>
         ) : null}
       </p>
-      {/* data-sort changes its value at each choice, which starts the rows' movement again. */}
+      {/* data-sort is there while the rows move, and changes its value at each choice, which
+          starts the movement again even before the last one ended. */}
       <ul
         ref={list}
         className={styles.list}
-        data-sort={choice.times > 0 ? (choice.times % 2 ? 'a' : 'b') : undefined}
+        data-sort={choice.times > rested ? (choice.times % 2 ? 'a' : 'b') : undefined}
         onClick={onSummaryClick}
+        onAnimationEnd={onRowAnimationEnd}
       >
         {shown.map((project) => (
           <ProjectCard
