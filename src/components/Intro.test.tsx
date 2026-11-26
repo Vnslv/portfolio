@@ -30,7 +30,7 @@ describe('Intro (SITE-02, T13 ticket)', () => {
       '>Fixture role line</p>',
       '>Fixture about,  first sentence. Second sentence (with brackets).</p>',
       '>See my projects</a>',
-      'Download CV</a>',
+      'Download Resume</a>',
     ].map((part) => at(html, part));
     expect(order).toEqual([...order].sort((a, b) => a - b));
   });

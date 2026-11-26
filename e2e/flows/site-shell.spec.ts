@@ -573,7 +573,7 @@ test.describe('SITE-01, SITE-02 the about text is in Welcome and there is no Abo
         intro.getByText(ABOUT, { exact: true }),
         intro.getByRole('link', { name: 'See my projects', exact: true }),
       ];
-      await expect(intro.getByRole('link', { name: 'Download CV', exact: true })).toBeVisible();
+      await expect(intro.getByRole('link', { name: 'Download Resume', exact: true })).toBeVisible();
       await expect(intro.getByText(ABOUT, { exact: true })).toHaveText(ABOUT);
       // The reading order, as a screen reader meets it.
       expect(

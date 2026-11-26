@@ -91,7 +91,7 @@ async function tabHome(page: Page, key: Key) {
   const outside = stops.filter((s) => !s.inBar);
   return {
     badge: outside.some((s) => s.name === BADGE),
-    downloads: outside.filter((s) => s.name === 'Download CV').length,
+    downloads: outside.filter((s) => s.name === 'Download Resume').length,
     missed: await missed(page),
     covered: covered(stops),
   };

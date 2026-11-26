@@ -34,7 +34,7 @@ describe('Links with every link supplied (LINK-01, LINK-02)', () => {
     expect(anchors(html)).toHaveLength(3);
     expect(html).toContain('GitHub');
     expect(html).toContain('LinkedIn');
-    expect(html).toContain('Download CV');
+    expect(html).toContain('Download Resume');
   });
 
   it('opens each profile in a new tab, safely, and says so in its name', () => {
@@ -69,14 +69,14 @@ describe('Links with a link missing (empty state)', () => {
     expect(html).toContain('&lt;your LinkedIn link&gt;');
     expect(anchors(html)).toHaveLength(2);
     expect(html).not.toContain('fixture-linkedin');
-    expect(html).toContain('Download CV');
+    expect(html).toContain('Download Resume');
   });
 
   it('shows a labeled placeholder, not a link, for a missing CV', () => {
     const html = renderToStaticMarkup(<Links profile={{ ...full, cvUrl: undefined }} />);
-    expect(html).toContain('&lt;your CV link&gt;');
+    expect(html).toContain('&lt;your Resume link&gt;');
     expect(anchors(html)).toHaveLength(2);
-    expect(html).not.toContain('Download CV');
+    expect(html).not.toContain('Download Resume');
     expect(html).toContain('href="https://example.com/fixture-github"');
   });
 
@@ -87,26 +87,26 @@ describe('Links with a link missing (empty state)', () => {
     expect(anchors(html)).toHaveLength(0);
     expect(html).toContain('&lt;your GitHub link&gt;');
     expect(html).toContain('&lt;your LinkedIn link&gt;');
-    expect(html).toContain('&lt;your CV link&gt;');
+    expect(html).toContain('&lt;your Resume link&gt;');
     expect(html).not.toContain('href=');
   });
 });
 
-describe('Intro: the Download CV button (LINK-02)', () => {
-  it('links the CV to the same address as Links, as a plain link', () => {
+describe('Intro: the Download Resume button (LINK-02)', () => {
+  it('links the Resume to the same address as Links, as a plain link', () => {
     const html = renderToStaticMarkup(<Intro profile={full} />);
     const a = anchorFor(html, 'https://example.com/fixture-cv?export=download&amp;id=abc');
     expect(a).not.toContain('target=');
     expect(a).not.toContain('rel=');
-    expect(html).toContain('Download CV');
+    expect(html).toContain('Download Resume');
     expect(anchorFor(html, '#work')).toContain('class="button"');
   });
 
   it('shows a labeled placeholder and keeps See my projects when the CV is missing', () => {
     for (const cvUrl of [undefined, '', '  ']) {
       const html = renderToStaticMarkup(<Intro profile={{ ...full, cvUrl }} />);
-      expect(html).toContain('&lt;your CV link&gt;');
-      expect(html).not.toContain('Download CV');
+      expect(html).toContain('&lt;your Resume link&gt;');
+      expect(html).not.toContain('Download Resume');
       expect(anchors(html)).toHaveLength(1);
       expect(html).toContain('>See my projects</a>');
     }
