@@ -12,8 +12,9 @@ const COLORS = ['--badge', '--link', '--title2', '--title'];
 
 const moving = () => matchMedia('(prefers-reduced-motion: no-preference)').matches;
 
-// "Once per visit" is a flag in the tab's session store. A blocked store is normal, so it fails
-// quietly: the effect then plays once on each page load (owner, 2026-11-26).
+// "Once per visit" is a flag in the tab's session store. A blocked store is normal in private
+// browsing and is not an error, so it fails quietly: the effect then plays once on each page load
+// (lead decision, T14 ticket, 2026-11-26).
 function played(key: string): boolean {
   try {
     return sessionStorage.getItem(key) !== null;

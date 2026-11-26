@@ -4,7 +4,7 @@ import AxeBuilder from '@axe-core/playwright';
 
 // Motion (T14): MOTION-01 opening, MOTION-02 sky and confetti, MOTION-03 interaction, NFR-08
 // limits, NFR-01 weight, NFR-04 contrast and keyboard. The numbers are from the PRD, the T14
-// ticket, and the owner's and lead's answers to the T14 plan (2026-11-26).
+// ticket with its lead decisions (2026-11-26), the design brief and the motion board.
 
 const phone = { width: 390, height: 844 };
 const desktop = { width: 1280, height: 800 };
@@ -660,8 +660,12 @@ test.describe('MOTION-03 durations', () => {
       await expect(rows(page)).toHaveCount(2);
       await page.evaluate(() => (location.hash = '#alunsina'));
       await expect(page.locator('#alunsina details')).toHaveJSProperty('open', true);
-      // Longer than any movement: this is where it comes to rest. 12 px is its scroll margin.
-      await idle(page, 800);
+      // Once nothing in it moves, this is where it rests. 12 px is its scroll margin.
+      await expect
+        .poll(() =>
+          page.locator('#alunsina').evaluate((el) => el.getAnimations({ subtree: true }).length),
+        )
+        .toBe(0);
       expect(Math.round((await rect(page, '#alunsina')).y)).toBe(12);
     });
   }
@@ -746,8 +750,9 @@ test.describe('MOTION-02 the sky and the confetti', () => {
     await page.goto('/');
     await ready(page);
     await expect.poll(() => opening(page), { timeout: 4000 }).toBe(false);
-    // What the end of the opening repaints, once, is past after this.
-    await idle(page, 1000);
+    // The opening, its box and the confetti are over once only the sky is animating; what they
+    // repaint, once, is past then.
+    await expect.poll(() => animating(page)).toEqual(['CSSAnimation BODY::before running']);
     await session.send('DOM.enable');
     const { root } = await session.send('DOM.getDocument', { depth: -1 });
     const body = root.children
@@ -780,6 +785,35 @@ test.describe('MOTION-02 the sky and the confetti', () => {
   }) => {
     await page.setViewportSize({ width: 390, height: 500 });
     await record(page);
+    // Each confetti layer as it is the moment it is put in the page: it is gone half a second
+    // later, which may be before the test can look.
+    await page.addInitScript(() => {
+      const layers: unknown[] = [];
+      Object.assign(window, { layers });
+      new MutationObserver((changes) => {
+        changes
+          .flatMap((change) => [...change.addedNodes])
+          .filter((node) => node instanceof HTMLElement)
+          .filter((el) => el.hasAttribute('data-confetti'))
+          .forEach((el) => {
+            const style = getComputedStyle(el);
+            const own = el.getBoundingClientRect();
+            const host = el.closest('section')?.getBoundingClientRect();
+            layers.push({
+              host: el.parentElement?.id,
+              hidden: el.getAttribute('aria-hidden'),
+              overflow: style.overflow,
+              pointer: style.pointerEvents,
+              inside:
+                !!host &&
+                own.left >= host.left &&
+                own.right <= host.right &&
+                own.top >= host.top &&
+                own.bottom <= host.bottom,
+            });
+          });
+      }).observe(document, { childList: true, subtree: true });
+    });
     await page.goto('/');
     await ready(page);
     await expect(page.locator('[data-confetti]')).toHaveCount(0);
@@ -792,35 +826,11 @@ test.describe('MOTION-02 the sky and the confetti', () => {
     await expect.poll(async () => (await ofKind(page, 'confetti')).length).toBeGreaterThan(0);
 
     await test.step('decorative, clipped to the window, and not in the way', async () => {
-      const layer = await page.evaluate(() => {
-        const el = document.querySelector('[data-confetti]');
-        if (!el) return null;
-        const style = getComputedStyle(el);
-        const own = el.getBoundingClientRect();
-        const host = el.closest('section')?.getBoundingClientRect();
-        return {
-          host: el.parentElement?.id,
-          hidden: el.getAttribute('aria-hidden'),
-          overflow: style.overflow,
-          pointer: style.pointerEvents,
-          inside:
-            !!host &&
-            own.left >= host.left &&
-            own.right <= host.right &&
-            own.top >= host.top &&
-            own.bottom <= host.bottom,
-        };
-      });
-      // Under load the half second can be over before this reads the page.
-      if (layer) {
-        expect(layer).toEqual({
-          host: 'awards',
-          hidden: 'true',
-          overflow: 'clip',
-          pointer: 'none',
-          inside: true,
-        });
-      }
+      await expect
+        .poll(() => page.evaluate(() => (window as unknown as { layers: unknown[] }).layers))
+        .toEqual([
+          { host: 'awards', hidden: 'true', overflow: 'clip', pointer: 'none', inside: true },
+        ]);
     });
 
     await expect(page.locator('[data-confetti]')).toHaveCount(0, { timeout: 2000 });
