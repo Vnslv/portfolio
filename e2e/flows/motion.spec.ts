@@ -428,29 +428,82 @@ test.describe('MOTION-01 the opening', () => {
     await expect(rows(page)).toHaveCount(5);
   });
 
-  test('error: with storage blocked it plays on each load, and says nothing', async ({ page }) => {
-    const messages: string[] = [];
-    page.on('console', (m) => messages.push(m.text()));
-    page.on('pageerror', (e) => messages.push(e.message));
-    await page.addInitScript(() => {
-      for (const name of ['sessionStorage', 'localStorage']) {
-        Object.defineProperty(window, name, {
-          get() {
-            throw new Error('blocked');
-          },
-        });
+  // The warning in full: fixed words, so nothing about the visitor is in it.
+  const STORE_WARNING =
+    'warning: motion: session storage is blocked, so the opening and confetti play on each load';
+  // Every console message and page error, as "type: text".
+  const listen = (page: Page) => {
+    const said: string[] = [];
+    page.on('console', (m) => said.push(`${m.type()}: ${m.text()}`));
+    page.on('pageerror', (e) => said.push(`pageerror: ${e.message}`));
+    return said;
+  };
+  const blockStore = () => {
+    for (const name of ['sessionStorage', 'localStorage']) {
+      Object.defineProperty(window, name, {
+        get() {
+          throw new Error('blocked');
+        },
+      });
+    }
+  };
+  const blockWrites = () => {
+    Storage.prototype.setItem = () => {
+      throw new Error('blocked');
+    };
+  };
+  const blockConfettiRead = () => {
+    const read = Reflect.get(Storage.prototype, 'getItem');
+    Storage.prototype.getItem = function (key) {
+      if (key === 'confetti') throw new Error('blocked');
+      return read.call(this, key);
+    };
+  };
+
+  // How many windows open on the first and the second load: an opening whose flag cannot be
+  // kept plays again.
+  for (const { failing, block, windows } of [
+    { failing: 'the whole store is blocked', block: blockStore, windows: [3, 3] },
+    { failing: 'only writing is blocked', block: blockWrites, windows: [3, 3] },
+    { failing: 'only the confetti flag is unreadable', block: blockConfettiRead, windows: [3, 0] },
+  ]) {
+    test(`error: when ${failing} it plays, and warns once on each load`, async ({ page }) => {
+      const said = listen(page);
+      await page.addInitScript(block);
+      await record(page);
+      for (const opened of windows) {
+        said.length = 0;
+        await page.goto('/');
+        await ready(page);
+        await expect.poll(async () => (await ofKind(page, 'window')).length).toBe(opened);
+        await page.locator('#awards li').first().scrollIntoViewIfNeeded();
+        await expect.poll(async () => (await ofKind(page, 'confetti')).length).toBeGreaterThan(0);
+        // The theme's own warning is older than this ticket; motion adds its one and no error.
+        await expect
+          .poll(() => said.filter((m) => !m.startsWith('warning: theme:')))
+          .toEqual([STORE_WARNING]);
       }
     });
-    await record(page);
-    for (let load = 0; load < 2; load += 1) {
+  }
+
+  test('error: with the store blocked the head script warns once by itself', async ({ page }) => {
+    const said = listen(page);
+    await page.addInitScript(blockStore);
+    const motion = () => said.filter((m) => m.includes('motion:') || m.startsWith('pageerror'));
+
+    await test.step('on the not-found page, which has no motion component', async () => {
+      await page.goto('/no-such-page');
+      await expect(toggle(page)).toBeVisible();
+      await expect.poll(motion).toEqual([STORE_WARNING]);
+    });
+
+    await test.step('when the page scripts never run', async () => {
+      said.length = 0;
+      await page.route('**/_next/static/**/*.js', (route) => route.abort());
       await page.goto('/');
-      await ready(page);
-      await expect.poll(async () => (await ofKind(page, 'window')).length).toBe(3);
-      await page.locator('#awards li').first().scrollIntoViewIfNeeded();
-      await expect.poll(async () => (await ofKind(page, 'confetti')).length).toBeGreaterThan(0);
-    }
-    // The theme's own warning is older than this ticket; motion adds nothing.
-    expect(messages.filter((m) => !m.startsWith('theme:'))).toEqual([]);
+      await expect(box(page)).toBeHidden({ timeout: 10000 });
+      await expect.poll(motion).toEqual([STORE_WARNING]);
+    });
   });
 
   test('empty: the not-found page has no opening, box or confetti', async ({ page }) => {

@@ -12,13 +12,27 @@ const COLORS = ['--badge', '--link', '--title2', '--title'];
 
 const moving = () => matchMedia('(prefers-reduced-motion: no-preference)').matches;
 
-// "Once per visit" is a flag in the tab's session store. A blocked store is normal in private
-// browsing and is not an error, so it fails quietly: the effect then plays once on each page load
-// (lead decision, T14 ticket, 2026-11-26).
+// The same words as in the head script (layout.tsx): fixed, with nothing about the visitor.
+const BLOCKED_MESSAGE =
+  'motion: session storage is blocked, so the opening and confetti play on each load';
+
+// One warning for each page load (lead decision, T14 ticket, 2026-11-26). The head script says it
+// first when it cannot read the store, and marks the page so that it is not said again.
+function warnBlocked(): void {
+  const root = document.documentElement;
+  if (root.hasAttribute('data-storage-warned')) return;
+  root.setAttribute('data-storage-warned', '');
+  console.warn(BLOCKED_MESSAGE);
+}
+
+// "Once per visit" is a flag in the tab's session store. When the store is blocked, the effect
+// plays once on each page load.
 function played(key: string): boolean {
   try {
     return sessionStorage.getItem(key) !== null;
   } catch {
+    // Expected when storage is blocked: logged, then the effect plays.
+    warnBlocked();
     return false;
   }
 }
@@ -27,7 +41,8 @@ function remember(key: string): void {
   try {
     sessionStorage.setItem(key, '1');
   } catch {
-    // A blocked store: see above.
+    // Expected when storage is blocked: logged, and the effect plays again on the next load.
+    warnBlocked();
   }
 }
 
