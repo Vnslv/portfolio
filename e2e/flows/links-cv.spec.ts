@@ -152,7 +152,9 @@ test.describe('LINK-01, LINK-02 profile links and CV', () => {
     });
   });
 
-  test('the intro Download Resume, clicked, asks for the Drive address exactly', async ({ page }) => {
+  test('the intro Download Resume, clicked, asks for the Drive address exactly', async ({
+    page,
+  }) => {
     await answerOutside(page);
     await page.goto('/');
     const asked = page.waitForRequest(CV);
