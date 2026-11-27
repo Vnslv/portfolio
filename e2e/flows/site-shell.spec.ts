@@ -2,8 +2,8 @@ import { readFileSync } from 'node:fs';
 import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-const IDS = ['welcome', 'awards', 'work', 'links'];
-const LABELS = ['Welcome', 'Awards', 'Projects', 'Links'];
+const IDS = ['welcome', 'awards', 'work', 'tools', 'links'];
+const LABELS = ['Welcome', 'Awards', 'Projects', 'Tools', 'Links'];
 const phone = { width: 390, height: 844 };
 const desktop = { width: 1280, height: 800 };
 // The owner's words (T12 ticket).
@@ -198,7 +198,7 @@ test.describe('SITE-01, SITE-02 page shell', () => {
         await page.emulateMedia({ reducedMotion: 'reduce' });
         await page.goto('/');
         const sections = page.locator('main > section, main > div > section');
-        await expect(sections).toHaveCount(4);
+        await expect(sections).toHaveCount(5);
         const first = await sections.first().boundingBox();
         expect(first!.width).toBeLessThanOrEqual(1040);
         // 984 px at 1280: the 1040 px page less its 28 px edges. 844 px at 900.
@@ -212,6 +212,7 @@ test.describe('SITE-01, SITE-02 page shell', () => {
         const column = await edges('welcome');
         expect(await edges('awards')).toEqual(column);
         expect(await edges('work')).toEqual(column);
+        expect(await edges('tools')).toEqual(column);
         expect(await edges('links')).toEqual(column);
         expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
           width,
@@ -542,7 +543,7 @@ test.describe('SITE-01, SITE-02 the about text is in Welcome and there is no Abo
       .evaluateAll((els) => els.map((el) => el.getAttribute('href')));
 
   for (const { size, reveal } of NAV) {
-    test(`four sections in the page, bar and Menu, and no About, at ${size.width} px`, async ({
+    test(`five sections in the page, bar and Menu, and no About, at ${size.width} px`, async ({
       page,
     }) => {
       await page.setViewportSize(size);
@@ -612,13 +613,13 @@ test.describe('SITE-01, SITE-02 the about text is in Welcome and there is no Abo
       await expect(page.locator('a[href$="#about"]')).toHaveCount(0);
     });
 
-    test(`the current mark follows each of the four sections, at ${size.width} px`, async ({
+    test(`the current mark follows each of the five sections, at ${size.width} px`, async ({
       page,
     }) => {
       await page.setViewportSize(size);
       await page.goto('/');
       await expect(bar(page).locator('button')).toBeVisible();
-      for (const i of [3, 2, 1, 0]) {
+      for (const i of [4, 3, 2, 1, 0]) {
         await reveal(page);
         await barLink(page, LABELS[i] ?? '').click();
         await expect(page).toHaveURL(`/#${IDS[i]}`);
@@ -636,7 +637,7 @@ test.describe('SITE-01, SITE-02 the about text is in Welcome and there is no Abo
       }
     });
 
-    test(`error state: not-found has the same four links and no About, at ${size.width} px`, async ({
+    test(`error state: not-found has the same five links and no About, at ${size.width} px`, async ({
       page,
     }) => {
       await page.setViewportSize(size);
@@ -674,8 +675,8 @@ test.describe('SITE-01, SITE-02 the about text is in Welcome and there is no Abo
   });
 });
 
-// The bar keeps room: for wider fallback fonts, and for a fifth section, Tools, which only these
-// tests add (T13 ticket; the 32 px is the lead's number, 2026-11-26).
+// The bar keeps room: for wider fallback fonts, with its five sections (T13 and T15 tickets; the
+// 32 px is the lead's number, 2026-11-26).
 test.describe('SITE-01 the room in the bar', () => {
   const measure = (page: Page) =>
     bar(page).evaluate((nav) => {
@@ -699,17 +700,6 @@ test.describe('SITE-01 the room in the bar', () => {
     });
   const FITS = { outside: 0, rows: 1, clipped: 0, sideways: false };
 
-  const addTools = (page: Page) =>
-    bar(page).evaluate((nav) => {
-      const last = [...nav.querySelectorAll<HTMLAnchorElement>(':scope > a')].at(-1);
-      if (!last?.lastChild) throw new Error('no section link');
-      const copy = last.cloneNode(true) as HTMLAnchorElement;
-      copy.removeAttribute('aria-current');
-      copy.setAttribute('href', '#tools');
-      if (copy.lastChild) copy.lastChild.textContent = 'Tools';
-      last.before(copy);
-    });
-
   const loadedFonts = (page: Page) =>
     page.evaluate(async () => {
       await document.fonts.ready;
@@ -726,7 +716,6 @@ test.describe('SITE-01 the room in the bar', () => {
       await page.goto(path);
       await expect(bar(page).locator('button')).toBeVisible();
       expect((await loadedFonts(page)).join()).toMatch(/Plex/);
-      await addTools(page);
       await expect(bar(page).locator(':scope > a:visible')).toHaveCount(5);
       const room = await measure(page);
       expect(room).toMatchObject(FITS);
@@ -741,19 +730,16 @@ test.describe('SITE-01 the room in the bar', () => {
       await page.goto(path);
       await expect(bar(page).locator('button')).toBeVisible();
       expect(await loadedFonts(page)).toEqual([]);
-      expect(await measure(page)).toMatchObject(FITS);
-      await addTools(page);
       await expect(bar(page).locator(':scope > a:visible')).toHaveCount(5);
       expect(await measure(page)).toMatchObject(FITS);
     });
   }
 
   for (const width of [899, 900]) {
-    test(`at ${width} px a fifth section still fits on one row`, async ({ page }) => {
+    test(`at ${width} px the five sections fit on one row`, async ({ page }) => {
       await page.setViewportSize({ width, height: 800 });
       await page.goto('/#work');
       await expect(bar(page).locator('button')).toBeVisible();
-      await addTools(page);
       await expect(bar(page).locator(':scope > a:visible')).toHaveCount(5);
       expect(await measure(page)).toMatchObject(FITS);
     });

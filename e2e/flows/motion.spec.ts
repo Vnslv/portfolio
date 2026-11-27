@@ -32,7 +32,7 @@ const ready = (page: Page) =>
 
 type Played = {
   // 'sky', 'boot', 'fill', 'window', 'reveal', 'row', 'unfold', 'typed', 'caret', 'confetti',
-  // 'hover' or 'other', from what moves.
+  // 'hover', 'bob', 'hop' or 'other', from what moves.
   kind: string;
   target: string;
   duration: number;
@@ -75,6 +75,8 @@ async function record(page: Page) {
         else if (/sort-[ab]$/.test(name)) kind = 'row';
         else if (/reveal$/.test(name)) kind = 'reveal';
         else if (/unfold$/.test(name)) kind = 'unfold';
+        else if (/bob$/.test(name)) kind = 'bob';
+        else if (/hop$/.test(name)) kind = 'hop';
         else if (el.matches('main > section')) kind = 'window';
         const id = el.closest('[id]')?.id ?? '';
         played.push({
@@ -108,6 +110,20 @@ const animating = (page: Page) =>
       const el = effect.target;
       return `${a.constructor.name} ${el?.tagName}${effect.pseudoElement ?? ''} ${a.playState}`;
     }),
+  );
+
+// The same without the Tools pieces, which keep bobbing (TOOL-01; MOTION-03 lets idle bobbing
+// run on).
+const besidesBobbing = (page: Page) =>
+  page.evaluate(() =>
+    document
+      .getAnimations()
+      .filter((a) => !/bob$/.test((a as CSSAnimation).animationName ?? ''))
+      .map((a) => {
+        const effect = a.effect as KeyframeEffect;
+        const el = effect.target;
+        return `${a.constructor.name} ${el?.tagName}${effect.pseudoElement ?? ''} ${a.playState}`;
+      }),
   );
 
 // The sections and rows that are not where they rest, or not shown.
@@ -221,7 +237,7 @@ test.describe('NFR-08 without JavaScript', () => {
       await test.step('no opening, nothing waiting for an animation', async () => {
         expect(await opening(page)).toBe(false);
         await expect(box(page)).toBeHidden();
-        await expect(page.locator('main > section')).toHaveCount(4);
+        await expect(page.locator('main > section')).toHaveCount(5);
         for (const section of await page.locator('main > section').all()) {
           await expect(section).toBeVisible();
         }
@@ -257,13 +273,14 @@ test.describe('MOTION-01 the opening', () => {
     await page.setViewportSize(desktop);
     await record(page);
     await page.goto('/');
-    await expect.poll(async () => (await ofKind(page, 'window')).length).toBe(3);
+    await expect.poll(async () => (await ofKind(page, 'window')).length).toBe(4);
 
-    await test.step('the three windows after Welcome, one after the other', async () => {
+    await test.step('the four windows after Welcome, one after the other', async () => {
       const windows = await ofKind(page, 'window');
       expect(windows.map((w) => w.target)).toEqual([
         'section#awards',
         'section#work',
+        'section#tools',
         'section#links',
       ]);
       const delays = windows.map((w) => w.delay);
@@ -463,9 +480,9 @@ test.describe('MOTION-01 the opening', () => {
   // How many windows open on the first and the second load: an opening whose flag cannot be
   // kept plays again.
   for (const { failing, block, windows } of [
-    { failing: 'the whole store is blocked', block: blockStore, windows: [3, 3] },
-    { failing: 'only writing is blocked', block: blockWrites, windows: [3, 3] },
-    { failing: 'only the confetti flag is unreadable', block: blockConfettiRead, windows: [3, 0] },
+    { failing: 'the whole store is blocked', block: blockStore, windows: [4, 4] },
+    { failing: 'only writing is blocked', block: blockWrites, windows: [4, 4] },
+    { failing: 'only the confetti flag is unreadable', block: blockConfettiRead, windows: [4, 0] },
   ]) {
     test(`error: when ${failing} it plays, and warns once on each load`, async ({ page }) => {
       const said = listen(page);
@@ -515,7 +532,7 @@ test.describe('MOTION-01 the opening', () => {
     await expect.poll(() => kinds(page)).toEqual(['sky']);
     // The visit's opening is not used up there: the home page still plays it.
     await page.goto('/');
-    await expect.poll(async () => (await ofKind(page, 'window')).length).toBe(3);
+    await expect.poll(async () => (await ofKind(page, 'window')).length).toBe(4);
   });
 
   test('the script before the first paint is small and reads only the session flag', async ({
@@ -572,6 +589,7 @@ test.describe('MOTION-03 durations', () => {
 
     await test.step('every kind of motion happened, so the limit below is not empty', async () => {
       expect(await kinds(page)).toEqual([
+        'bob',
         'boot',
         'caret',
         'confetti',
@@ -586,10 +604,10 @@ test.describe('MOTION-03 durations', () => {
       ]);
     });
 
-    await test.step('each at most 0.5 s; the sky, the caret blink and the box stay aside', async () => {
+    await test.step('each at most 0.5 s; the sky, bobbing, caret blink and box stay aside', async () => {
       const long = (await playedNow(page)).filter(
         // The box staying up (at most 1.5 s) is not movement.
-        (p) => !['sky', 'caret', 'boot'].includes(p.kind) && p.duration * p.iterations > 500,
+        (p) => !['sky', 'bob', 'caret', 'boot'].includes(p.kind) && p.duration * p.iterations > 500,
       );
       expect(long).toEqual([]);
     });
@@ -692,7 +710,7 @@ test.describe('MOTION-03 durations', () => {
       for (let open = 1; open <= 2; open += 1) {
         await summary(page, id).click();
         await expect.poll(async () => (await ofKind(page, 'unfold')).length).toBe(open);
-        await expect.poll(() => animating(page).then((a) => a.length)).toBeLessThanOrEqual(1);
+        await expect.poll(() => besidesBobbing(page).then((a) => a.length)).toBeLessThanOrEqual(1);
         await summary(page, id).click();
         await expect(page.locator(`li[data-project="${id}"] dl`)).toBeHidden();
       }
@@ -803,9 +821,9 @@ test.describe('MOTION-02 the sky and the confetti', () => {
     await page.goto('/');
     await ready(page);
     await expect.poll(() => opening(page), { timeout: 4000 }).toBe(false);
-    // The opening, its box and the confetti are over once only the sky is animating; what they
-    // repaint, once, is past then.
-    await expect.poll(() => animating(page)).toEqual(['CSSAnimation BODY::before running']);
+    // The opening, its box and the confetti are over once only the sky is animating, besides the
+    // bobbing; what they repaint, once, is past then.
+    await expect.poll(() => besidesBobbing(page)).toEqual(['CSSAnimation BODY::before running']);
     await session.send('DOM.enable');
     const { root } = await session.send('DOM.getDocument', { depth: -1 });
     const body = root.children

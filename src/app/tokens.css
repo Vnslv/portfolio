@@ -15,6 +15,15 @@
   --link: #1c4587;
   --badge: #b7f0d0;
   --badgeText: #08351f;
+  /* The Tools board only: a tile for each group, the path, the chip behind each logo or letter
+     tile, and the black of the letters. */
+  --t1: #bfe3c6;
+  --t2: #f7e3a8;
+  --t3: #f3c6cf;
+  --t4: #c9c6f2;
+  --path: #eadfc4;
+  --chip: #ffffff;
+  --mark: #000000;
   /* Pixel clouds and pixel stars (owner mock A2): inline SVG tiles, so nothing is requested. */
   --clouds: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='420' shape-rendering='crispEdges'%3E%3Cpath fill='%23f4f8ff' d='M346 206h80v16h-80zM330 222h112v16h-112zM362 190h40v16h-40z'/%3E%3Cpath fill='%23ffffff' d='M52 72h60v12h-60zM40 84h84v12h-84zM64 60h30v12h-30zM160 330h50v10h-50zM150 340h70v10h-70zM170 320h25v10h-25z'/%3E%3C/svg%3E");
   --stars: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512' shape-rendering='crispEdges'%3E%3Cpath fill='%23ffffff' d='M470 148h2v2h-2zM170 78h4v4h-4zM448 30h2v2h-2zM260 214h2v2h-2zM472 262h2v2h-2zM272 314h2v2h-2zM202 362h4v4h-4zM208 78h2v2h-2zM112 322h4v4h-4zM140 4h2v2h-2zM0 314h2v2h-2zM250 352h2v2h-2zM352 456h2v2h-2zM446 470h2v2h-2zM484 246h2v2h-2zM370 148h2v2h-2zM458 18h2v2h-2zM54 42h2v2h-2zM484 98h2v2h-2zM212 30h2v2h-2zM246 508h2v2h-2zM160 2h2v2h-2z'/%3E%3Cpath fill='%23cdb4ff' d='M276 350h2v2h-2zM26 350h2v2h-2zM412 62h4v4h-4zM352 328h4v4h-4zM464 190h4v4h-4zM150 478h2v2h-2zM28 186h4v4h-4zM144 186h2v2h-2zM234 440h4v4h-4zM178 168h2v2h-2zM114 106h2v2h-2zM202 120h4v4h-4zM286 178h4v4h-4zM170 370h2v2h-2zM68 254h2v2h-2zM84 338h2v2h-2zM258 386h2v2h-2zM12 152h2v2h-2zM12 390h4v4h-4zM344 124h2v2h-2zM62 106h2v2h-2zM38 138h2v2h-2zM410 338h4v4h-4zM208 254h2v2h-2zM368 340h2v2h-2z'/%3E%3Cpath fill='%237f8cc9' d='M272 168h2v2h-2zM122 190h4v4h-4zM264 258h2v2h-2zM448 56h2v2h-2zM302 70h2v2h-2zM454 452h4v4h-4zM120 190h4v4h-4zM250 0h2v2h-2zM472 10h2v2h-2zM494 288h2v2h-2zM392 358h2v2h-2zM16 56h2v2h-2zM440 508h4v4h-4zM214 126h2v2h-2zM158 504h2v2h-2zM218 38h2v2h-2zM468 464h4v4h-4zM216 344h4v4h-4zM498 78h4v4h-4zM46 118h2v2h-2zM390 222h2v2h-2zM452 432h2v2h-2zM248 490h2v2h-2z'/%3E%3C/svg%3E");
@@ -45,6 +54,11 @@
     --link: #b9c9ff;
     --badge: #7fe0b0;
     --badgeText: #08351f;
+    --t1: #2c5a45;
+    --t2: #6a5726;
+    --t3: #6b3344;
+    --t4: #433f86;
+    --path: #2c3354;
     --sky: var(--stars);
     --drift: drift-stars 39.4s steps(256) infinite;
     color-scheme: dark;
@@ -67,6 +81,11 @@
   --link: #b9c9ff;
   --badge: #7fe0b0;
   --badgeText: #08351f;
+  --t1: #2c5a45;
+  --t2: #6a5726;
+  --t3: #6b3344;
+  --t4: #433f86;
+  --path: #2c3354;
   --sky: var(--stars);
   --drift: drift-stars 39.4s steps(256) infinite;
   color-scheme: dark;

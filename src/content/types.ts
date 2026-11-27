@@ -47,6 +47,21 @@ export type Award = {
   image?: ProjectImage;
 };
 
+// A piece (TOOL-01) shows the brand's logo, a symbol in public/images/tools.svg, where the brand
+// allows it, and otherwise a two-letter tile: 20 rows of 20 characters, "#" filled.
+export type Tool = { name: string } & ({ logo: string } | { tile: readonly string[] });
+
+// The tools board: its wording, and the groups with their tools in path order.
+export type ToolBoard = {
+  lead: string;
+  prompt: { title: string; text: string };
+  start: string;
+  finish: string;
+  // The notices the logos need, under the board.
+  credit: string;
+  groups: readonly { name: string; tools: readonly Tool[] }[];
+};
+
 export type Profile = {
   name: string;
   intro: string;
