@@ -49,6 +49,8 @@ function covered(stops: Stop[]) {
 }
 
 // The visible controls outside the bar that the keyboard did not reach, so a pass cannot be empty.
+// The Tools board is one tab stop (T15 ticket): its other pieces are reached with the arrow keys,
+// which tools-board.spec.ts tests.
 function missed(page: Page) {
   return page.evaluate(() =>
     [
@@ -56,6 +58,7 @@ function missed(page: Page) {
         'main a[href], main summary, main button:not([disabled]), main select:not([disabled]), footer a[href]',
       ),
     ]
+      .filter((el) => !el.matches('#tools button[tabindex="-1"]'))
       .filter((el) => el.checkVisibility() && !el.hasAttribute('data-visited'))
       .map((el) => el.textContent),
   );

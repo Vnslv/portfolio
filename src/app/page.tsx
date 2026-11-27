@@ -4,6 +4,7 @@ import { Intro } from '@/components/Intro';
 import { Links } from '@/components/Links';
 import { Motion } from '@/components/Motion';
 import { Taskbar } from '@/components/Taskbar';
+import { Tools } from '@/components/Tools';
 import { Work } from '@/components/Work';
 import { awards } from '@/content/awards';
 import { projects } from '@/content/projects';
@@ -21,6 +22,7 @@ export default function Home() {
             <Intro />
             <Awards awards={awards} />
             <Work projects={projects} />
+            <Tools />
             <Links />
           </main>
           <Footer />

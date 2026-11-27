@@ -7,12 +7,19 @@ describe('site', () => {
     expect(SITE_TITLE).toBe(profile.name);
   });
 
-  it('lists the four sections in the SITE-01 order, with the board labels', () => {
-    expect(SECTIONS.map((section) => section.id)).toEqual(['welcome', 'awards', 'work', 'links']);
+  it('lists the five sections in the SITE-01 order, with the board labels', () => {
+    expect(SECTIONS.map((section) => section.id)).toEqual([
+      'welcome',
+      'awards',
+      'work',
+      'tools',
+      'links',
+    ]);
     expect(SECTIONS.map((section) => section.label)).toEqual([
       'Welcome',
       'Awards',
       'Projects',
+      'Tools',
       'Links',
     ]);
   });

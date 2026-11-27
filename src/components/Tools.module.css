@@ -1,0 +1,230 @@
+/* The tools board (TOOL-01), as approved in tools-board.html. */
+.lead,
+.credit {
+  color: var(--muted);
+}
+
+.lead {
+  margin-bottom: 12px;
+}
+
+.credit {
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+/* The path winds through 7, 5 or 3 columns; each cell carries its place for all three. */
+.board,
+.key {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+  padding: 10px;
+}
+
+.board,
+.box {
+  background: var(--field);
+  border: 2px solid;
+  border-color: var(--lo) var(--hi) var(--hi) var(--lo);
+}
+
+.cell {
+  grid-area: var(--a7);
+  position: relative;
+  min-width: 0;
+  background: var(--path);
+  border: 2px solid var(--edge);
+  box-shadow: inset 2px 2px 0 rgb(255 255 255 / 25%);
+}
+
+.g0 {
+  background: var(--t1);
+}
+
+.g1 {
+  background: var(--t2);
+}
+
+.g2 {
+  background: var(--t3);
+}
+
+.g3 {
+  background: var(--t4);
+}
+
+/* The picked piece. Tile colors change at once (no fade), so text is never on the old color. */
+.on {
+  background: var(--title);
+  color: var(--titleText);
+}
+
+.tile,
+.mark {
+  min-height: 104px;
+  font: inherit;
+}
+
+/* The top padding is the chip's place: it lies over the tile, 8 px down. */
+.tile {
+  appearance: none;
+  background: none;
+  border: 0;
+  color: inherit;
+  width: 100%;
+  padding: 62px 2px 6px;
+  display: grid;
+  justify-items: center;
+  align-content: end;
+  gap: 6px;
+}
+
+.tile:focus-visible {
+  outline-color: currentcolor;
+  outline-offset: -5px;
+}
+
+/* 48 px, so a 40 px mark fits inside its 2 px border and padding. A tap on it reaches the tile
+   under it. */
+.chip {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  pointer-events: none;
+  width: 48px;
+  height: 48px;
+  padding: 2px;
+  background: var(--chip);
+  border: 2px solid var(--edge);
+  fill: var(--mark);
+}
+
+.chip svg {
+  display: block;
+}
+
+.name {
+  font-size: 14px;
+  line-height: 1.2;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.group,
+.no {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.no {
+  position: absolute;
+  left: 4px;
+  top: 2px;
+  font-family: var(--display);
+}
+
+.mark {
+  display: grid;
+  place-items: center;
+  font: 700 16px/1.2 var(--display);
+}
+
+.box {
+  min-height: 64px;
+  margin-top: 12px;
+  padding: 8px 12px;
+}
+
+.box b {
+  display: block;
+  font-size: 18px;
+}
+
+.key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.key i {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 6px;
+  vertical-align: -2px;
+  border: 2px solid var(--edge);
+}
+
+@media (max-width: 760px) {
+  .board {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .cell {
+    grid-area: var(--a5);
+  }
+}
+
+@media (max-width: 560px) {
+  .board {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    padding: 6px;
+  }
+
+  .cell {
+    grid-area: var(--a3);
+  }
+}
+
+@media (max-width: 330px) {
+  .name {
+    font-size: 13px;
+  }
+}
+
+/* Everything that moves is under no-preference, so nothing moves with reduced motion set. The
+   picked piece hops and its neighbors lift. */
+@media (prefers-reduced-motion: no-preference) {
+  .chip {
+    animation: bob 1.6s steps(2) infinite;
+    animation-delay: var(--d);
+  }
+
+  .on .chip {
+    animation: hop 0.45s steps(6);
+  }
+
+  .near .chip {
+    animation: none;
+    transform: translateY(-3px);
+    transition: transform 0.15s steps(2);
+  }
+}
+
+@keyframes bob {
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes hop {
+  35% {
+    transform: translateY(-22px) rotate(-8deg);
+  }
+
+  70% {
+    transform: translateY(-8px) rotate(8deg);
+  }
+}

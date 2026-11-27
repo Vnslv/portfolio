@@ -38,8 +38,27 @@ Approved in [motion-board.html](../design/motion-board.html) and [tools-board.ht
 - The sky: drifting clouds by day, drifting stars by night (owner).
 - The cursor is an original retro pixel arrow with no sparkles; hover effects are short; the filter types a terminal line.
 - Movement is noticeable and quick: at most 0.5 s, except the sky, idle bobbing, typing and the cursor blink. Pixel-style steps, no smooth easing.
-- Tools: a winding pixel path from Start to Finish; each tool a pixel redraw of its logo with its name as text, colored by group; pieces bob and hop on hover, tap and focus; arrow keys move between pieces.
+- Tools: a winding pixel path from Start to Finish; each tool its brand's unaltered logo in black where the brand's own rules allow it, otherwise a black two-letter tile (owner, 2026-11-26, option C2), with its name as text, colored by group; pieces bob and hop on hover, tap and focus; arrow keys move between pieces.
 - Nothing moves with reduced motion set. Motion never delays reading or the first paint.
+
+### Tools board values (lead, 2026-11-26)
+
+The approved values of [tools-board.html](../design/tools-board.html), for the Tools board only.
+
+| Token | Use | Light | Dark |
+| --- | --- | --- | --- |
+| `--t1` | tile, Languages | `#bfe3c6` | `#2c5a45` |
+| `--t2` | tile, Frontend and mobile | `#f7e3a8` | `#6a5726` |
+| `--t3` | tile, Backend and data | `#f3c6cf` | `#6b3344` |
+| `--t4` | tile, Project management | `#c9c6f2` | `#433f86` |
+| `--path` | Start and Finish tiles | `#eadfc4` | `#2c3354` |
+| `--chip` | chip behind a logo or letter tile | `#ffffff` | `#ffffff` |
+| `--mark` | letter tiles (the logos are black in their file) | `#000000` | `#000000` |
+
+- **Tiles:** at least 104 px high, with a 2 px inner highlight of white at 25%. 7 columns; 5 at 760 px and below; 3 at 560 px and below.
+- **Marks:** 40 px, on a 48 px chip. Logos are the symbols in `public/images/tools.svg`, unaltered. A two-letter tile is a 20 by 20 bitmap.
+- **Type:** name 14 (13 at 330 px and below), piece number and group 12, Start and Finish 16, credit line 14 in `--muted`.
+- **Changes from the board:** piece numbers show at every width and at full strength (AA contrast); the key gives each group its numbers; tile colors change at once, without the board's 0.12 s fade (it left text on the old color after a theme switch); the focus outline takes the tile's text color.
 
 ## Rules
 

@@ -484,7 +484,7 @@ test.describe('NFR-04 contrast in the sky theme', () => {
         // A window takes focus when its section link is used; its outline lies on the sky.
         await page.goto('/');
         await page.keyboard.press('Tab');
-        for (const id of ['welcome', 'awards', 'work', 'links']) {
+        for (const id of ['welcome', 'awards', 'work', 'tools', 'links']) {
           await page.locator(`#${id}`).focus();
           const stop = await focused(page);
           if (!stop) throw new Error(`no focus on ${id}`);
